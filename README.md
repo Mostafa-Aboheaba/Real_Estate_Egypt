@@ -77,6 +77,7 @@ No implementation in `backend/` or `mobile/` until specs are approved.
 - [AI Services Architecture](architecture/ai_services_architecture.md)
 - [Deployment Architecture](architecture/deployment_architecture.md)
 - [Task registry](tasks/README.md) — 133 independently testable tasks (≤4h each)
+- [M2 Platform Bootstrap Report](tasks/m02_platform_bootstrap_completion_report.md)
 - [Master Execution Plan](tasks/master_execution_plan.md)
 - [Roadmap](tasks/roadmap.md)
 - [Documentation Index](docs/README.md)

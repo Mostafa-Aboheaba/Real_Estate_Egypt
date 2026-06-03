@@ -6,38 +6,46 @@
 
 | Field | Value |
 |-------|-------|
-| Version | 0.1.0 |
-| Status | Not Started |
-| Priority | P1 — Phase 5 |
+| Version | 1.0.0 |
+| Status | SDD Complete — Pending Approval |
+| Priority | P1 — Phase 5 (M8) |
 
 ## Overview
 
-Personalized property suggestions based on user preferences, search history, favorites, and explicit feedback.
+Personalized property suggestions based on user preferences, search history, favorites, and explicit feedback. Home feed uses embedding similarity (pgvector) and a per-user preference vector; guests receive popular listings in Greater Cairo.
 
 ## SDD Artifacts
 
+Complete each document before implementation. Status reflects current progress.
+
 | # | Artifact | File | Status |
 |---|----------|------|--------|
-| 1 | Requirements | [requirements.md](./requirements.md) | ⬜ Not started |
+| 1 | Requirements | [requirements.md](./requirements.md) | ✅ Done |
 | 2 | User Stories | [user_stories.md](./user_stories.md) | ✅ Done |
 | 3 | Acceptance Criteria | [acceptance_criteria.md](./acceptance_criteria.md) | ✅ Done |
-| 4 | Architecture Design | [architecture.md](./architecture.md) | ⬜ Not started |
-| 5 | Data Model | [data_model.md](./data_model.md) | ⬜ Not started |
-| 6 | API Design | [api_design.md](./api_design.md) | ⬜ Not started |
-| 7 | Implementation Tasks | [implementation_tasks.md](./implementation_tasks.md) | ⬜ Not started |
-| 8 | Tests | [tests.md](./tests.md) | ⬜ Not started |
+| 4 | Architecture Design | [architecture.md](./architecture.md) | ✅ Done |
+| 5 | Data Model | [data_model.md](./data_model.md) | ✅ Done |
+| 6 | API Design | [api_design.md](./api_design.md) | ✅ Done |
+| 7 | Implementation Tasks | [implementation_tasks.md](./implementation_tasks.md) | ✅ Done |
+| 8 | Tests | [tests.md](./tests.md) | ✅ Done |
 
 ## Traceability
 
-- **FR-004** in [specs/requirements.md](../../specs/requirements.md)
+- **FR-REC-*** in [specs/requirements.md](../../specs/requirements.md) §3.4
+- **NFR-COMP-005** fair housing
 - Bounded context: Personalization in [architecture/system_design.md](../../architecture/system_design.md)
 
 ## Dependencies
 
-- property_search (listing features)
-- profile (user preferences)
-- authentication
+- [authentication](../authentication/) — JWT
+- [profile](../profile/) — preferences, favorites
+- [property_search](../property_search/) — listings, embeddings, search history port
+- M6 RAG / embeddings pipeline
+
+## Blocks
+
+- None (enhances home UX after auth + listings exist)
 
 ## Approval Gate
 
-Implementation blocked until specs approved.
+Implementation in `backend/` and `mobile/` is **blocked** until all SDD artifacts are complete and approved by PO / Tech Lead / QA.

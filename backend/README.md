@@ -1,45 +1,78 @@
-# Backend
+# Backend — AI Property Assistant API
 
-> NestJS modular monolith. **No code until feature specs are approved.**
+> NestJS modular monolith · PostgreSQL 16 + pgvector · Redis + BullMQ
 
 ## Status
 
-Not initialized — folder structure defined; implementation blocked on SDD approval.
+**M2 Platform Bootstrap** — API skeleton, Prisma schema, health checks, Docker Compose, CI.
 
-## Modules
+## Quick start (< 30 min)
 
-| Module | API prefix |
-|--------|------------|
-| Auth | `/api/v1/auth` |
-| Users | `/api/v1/users` |
-| Properties | `/api/v1/properties` |
-| Bookings | `/api/v1/bookings` |
-| AI | `/api/v1/ai`, `/api/v1/agents` |
-| Notifications | `/api/v1/notifications` |
+```bash
+cd backend
+cp .env.example .env
+# Do not put comments on the same line as cp (zsh treats words after # badly).
+docker compose up -d postgres redis
+npm ci
+npx prisma migrate deploy
+npm run prisma:seed
+npm run start:dev
+```
 
-## Project Structure
+Verify:
 
-See **[PROJECT_STRUCTURE.md](./PROJECT_STRUCTURE.md)** for the full Clean Architecture folder tree.
+```bash
+curl http://localhost:3000/health
+curl http://localhost:3000/health/ready
+```
 
-## Architecture
+## Scripts
+
+| Command | Description |
+|---------|-------------|
+| `npm run start:dev` | API with hot reload |
+| `npm run worker:dev` | BullMQ worker |
+| `npm run build` | Production build |
+| `npm test` | Unit tests |
+| `npm run test:e2e` | E2E (requires DB) |
+| `npm run lint` | ESLint |
+| `npx prisma migrate dev` | New migration (dev) |
+| `npm run prisma:seed` | Seed AI agents |
+
+## Docker (full stack)
+
+For local API development, prefer **Postgres + Redis only** (run the API on the host with `npm run start:dev`):
+
+```bash
+docker compose up -d postgres redis
+```
+
+To build and run API + worker in Docker:
+
+```bash
+docker compose up --build
+```
+
+Services: `postgres` (pgvector), `redis`, `api`, `worker`.
+
+## Project structure
+
+See [PROJECT_STRUCTURE.md](./PROJECT_STRUCTURE.md).
+
+| Layer | Path |
+|-------|------|
+| Domain | `src/domain/` — no NestJS imports |
+| Application | `src/application/` |
+| Infrastructure | `src/infrastructure/` |
+| Presentation | `src/presentation/` |
+
+## API
+
+- Health: `GET /health`, `GET /health/ready` (no `/api/v1` prefix)
+- Feature routes: `/api/v1/*` (added in M3+)
+
+## Architecture docs
 
 - [Backend architecture](../architecture/backend_architecture.md)
-- [PostgreSQL schema](../architecture/postgresql_schema.md) — ERD + DDL
-- [Gemini integration layer](../architecture/gemini_integration_layer.md) — streaming, tools, safety
-- [Monitoring strategy](../architecture/monitoring_strategy.md) — logging, metrics, alerts
-- [Deployment architecture](../architecture/deployment_architecture.md) — GCP, Cloud Run, Vertex AI, CI/CD
-
-## Stack
-
-| Component | Technology |
-|-----------|------------|
-| NestJS | Modular monolith |
-| Prisma | PostgreSQL ORM |
-| pgvector | Semantic search / RAG |
-| Gemini | Chat + embeddings |
-| BullMQ | Background jobs |
-| Passport | JWT, Google, Apple |
-
-## Gate
-
-Implementation begins only after feature SDD artifacts are approved and explicit implementation approval is received.
+- [PostgreSQL schema](../architecture/postgresql_schema.md)
+- [API conventions](../architecture/api_conventions.md)

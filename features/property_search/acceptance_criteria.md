@@ -69,7 +69,7 @@
 **When** I sort by "Newest"  
 **Then** results order by `syncedAt` descending  
 **When** I sort by "Relevance"  
-**Then** Elasticsearch relevance score determines order
+**Then** PostgreSQL full-text relevance (`ts_rank`) determines order
 
 ---
 
@@ -189,7 +189,7 @@
 **When** scheduled sync job runs  
 **Then** new/updated listings are normalized to canonical model  
 **And** stored in PostgreSQL  
-**And** indexed in Elasticsearch within same job run
+**And** `search_vector` updated within same job run
 
 ---
 

@@ -174,7 +174,7 @@
 **Traces to:** FR-SYNC-001, FR-SYNC-002, FR-SYNC-003
 
 **As the** platform  
-**I want** listings synced automatically from each provider into PostgreSQL and Elasticsearch  
+**I want** listings synced automatically from each provider into PostgreSQL with full-text and vector indexes  
 **So that** search results reflect provider catalogs without manual data entry
 
 ---

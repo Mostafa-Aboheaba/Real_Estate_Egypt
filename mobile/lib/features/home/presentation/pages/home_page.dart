@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:property_assistant/core/providers/app_providers.dart';
 import 'package:property_assistant/core/routing/route_paths.dart';
 import 'package:property_assistant/core/widgets/app_scaffold.dart';
+import 'package:property_assistant/features/authentication/presentation/providers/auth_provider.dart';
 import 'package:property_assistant/features/home/presentation/providers/home_provider.dart';
 
 class HomePage extends ConsumerWidget {
@@ -15,6 +16,7 @@ class HomePage extends ConsumerWidget {
     final l10n = AppLocalizations.of(context)!;
     final config = ref.watch(appConfigProvider);
     final bootstrap = ref.watch(homeBootstrapProvider);
+    final session = ref.watch(authSessionProvider);
 
     return AppScaffold(
       title: l10n.appTitle,
@@ -30,6 +32,14 @@ class HomePage extends ConsumerWidget {
             const SizedBox(height: 8),
             Text(l10n.homeSubtitle),
             const SizedBox(height: 24),
+            session.when(
+              data: (s) => s == null
+                  ? const SizedBox.shrink()
+                  : Text('Signed in as ${s.user.email}'),
+              loading: () => const LinearProgressIndicator(),
+              error: (e, _) => Text('Session: $e'),
+            ),
+            const SizedBox(height: 16),
             bootstrap.when(
               data: (status) => Text(status.message),
               loading: () => const LinearProgressIndicator(),
@@ -45,10 +55,16 @@ class HomePage extends ConsumerWidget {
               style: Theme.of(context).textTheme.labelSmall,
             ),
             const SizedBox(height: 16),
-            FilledButton(
-              onPressed: () => context.push(RoutePaths.login),
-              child: const Text('Sign in'),
-            ),
+            session.valueOrNull == null
+                ? FilledButton(
+                    onPressed: () => context.push(RoutePaths.login),
+                    child: const Text('Sign in'),
+                  )
+                : OutlinedButton(
+                    onPressed: () =>
+                        ref.read(authSessionProvider.notifier).logout(),
+                    child: const Text('Sign out'),
+                  ),
           ],
         ),
       ),

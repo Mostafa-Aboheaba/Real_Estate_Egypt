@@ -23,6 +23,7 @@
 | **Monitoring Strategy** | [monitoring_strategy.md](./monitoring_strategy.md) |
 | **Deployment** (GCP, Vertex AI, GitHub Actions) | [deployment_architecture.md](./deployment_architecture.md) |
 | Shared layer rules | [clean_architecture.md](./clean_architecture.md) |
+| **API conventions** | [api_conventions.md](./api_conventions.md) |
 
 ---
 

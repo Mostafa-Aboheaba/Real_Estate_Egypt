@@ -15,6 +15,13 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart' as _i558;
 import 'package:get_it/get_it.dart' as _i174;
 import 'package:injectable/injectable.dart' as _i526;
 
+import '../../features/authentication/data/datasources/auth_remote_datasource.dart'
+    as _i14;
+import '../../features/authentication/data/repositories/auth_repository_impl.dart'
+    as _i317;
+import '../../features/authentication/domain/repositories/auth_repository.dart'
+    as _i742;
+import '../auth/token_storage.dart' as _i1002;
 import '../config/app_config.dart' as _i650;
 import '../network/api_client.dart' as _i557;
 import '../network/auth_interceptor.dart' as _i908;
@@ -40,6 +47,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i932.NetworkInfo>(
       () => _i932.NetworkInfoImpl(gh<_i895.Connectivity>()),
     );
+    gh.lazySingleton<_i1002.TokenStorage>(
+      () => _i1002.TokenStorage(gh<_i558.FlutterSecureStorage>()),
+    );
     gh.lazySingleton<_i551.LoggingInterceptor>(
       () => dioModule.loggingInterceptor(gh<_i650.AppConfig>()),
     );
@@ -52,7 +62,7 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i908.AuthInterceptor>(
       () => _i908.AuthInterceptor(
-        gh<_i558.FlutterSecureStorage>(),
+        gh<_i1002.TokenStorage>(),
         refreshDio: gh<_i361.Dio>(instanceName: 'refresh'),
       ),
     );
@@ -65,6 +75,15 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i557.ApiClient>(
       () => _i557.ApiClient(gh<_i361.Dio>(), gh<_i932.NetworkInfo>()),
+    );
+    gh.lazySingleton<_i14.AuthRemoteDataSource>(
+      () => _i14.AuthRemoteDataSource(gh<_i557.ApiClient>()),
+    );
+    gh.lazySingleton<_i742.AuthRepository>(
+      () => _i317.AuthRepositoryImpl(
+        gh<_i14.AuthRemoteDataSource>(),
+        gh<_i1002.TokenStorage>(),
+      ),
     );
     return this;
   }

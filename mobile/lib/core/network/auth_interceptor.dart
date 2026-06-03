@@ -1,21 +1,19 @@
 import 'package:dio/dio.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:injectable/injectable.dart';
+import 'package:property_assistant/core/auth/token_storage.dart';
 import 'package:property_assistant/core/constants/api_constants.dart';
+import 'package:property_assistant/core/network/api_response.dart';
 import 'package:uuid/uuid.dart';
-
-const _accessTokenKey = 'access_token';
-const _refreshTokenKey = 'refresh_token';
 
 /// Attaches JWT and correlation ID; refreshes token on 401.
 @lazySingleton
 class AuthInterceptor extends QueuedInterceptor {
   AuthInterceptor(
-    this._storage, {
+    this._tokens, {
     @Named('refresh') required Dio refreshDio,
   }) : _refreshDio = refreshDio;
 
-  final FlutterSecureStorage _storage;
+  final TokenStorage _tokens;
   final Dio _refreshDio;
   final _uuid = const Uuid();
 
@@ -25,7 +23,7 @@ class AuthInterceptor extends QueuedInterceptor {
     RequestInterceptorHandler handler,
   ) async {
     options.headers.putIfAbsent('X-Correlation-Id', () => _uuid.v4());
-    final token = await _storage.read(key: _accessTokenKey);
+    final token = await _tokens.readAccessToken();
     if (token != null && token.isNotEmpty) {
       options.headers['Authorization'] = 'Bearer $token';
     }
@@ -47,7 +45,7 @@ class AuthInterceptor extends QueuedInterceptor {
       return;
     }
     try {
-      final token = await _storage.read(key: _accessTokenKey);
+      final token = await _tokens.readAccessToken();
       err.requestOptions.headers['Authorization'] = 'Bearer $token';
       final response = await _refreshDio.fetch<dynamic>(err.requestOptions);
       handler.resolve(response);
@@ -57,7 +55,7 @@ class AuthInterceptor extends QueuedInterceptor {
   }
 
   Future<bool> _tryRefresh() async {
-    final refresh = await _storage.read(key: _refreshTokenKey);
+    final refresh = await _tokens.readRefreshToken();
     if (refresh == null || refresh.isEmpty) {
       return false;
     }
@@ -66,20 +64,19 @@ class AuthInterceptor extends QueuedInterceptor {
         ApiConstants.authRefresh,
         data: {'refreshToken': refresh},
       );
-      final data = response.data;
+      final data = unwrapApiData(response.data);
       final access = data?['accessToken'] as String?;
       final newRefresh = data?['refreshToken'] as String?;
-      if (access == null) {
+      if (access == null || newRefresh == null) {
         return false;
       }
-      await _storage.write(key: _accessTokenKey, value: access);
-      if (newRefresh != null) {
-        await _storage.write(key: _refreshTokenKey, value: newRefresh);
-      }
+      await _tokens.saveTokens(
+        accessToken: access,
+        refreshToken: newRefresh,
+      );
       return true;
     } on DioException {
-      await _storage.delete(key: _accessTokenKey);
-      await _storage.delete(key: _refreshTokenKey);
+      await _tokens.clear();
       return false;
     }
   }

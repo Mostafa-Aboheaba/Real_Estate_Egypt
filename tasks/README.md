@@ -19,8 +19,9 @@
 | Metric | Value |
 |--------|-------|
 | Total tasks | 133 |
-| Done | 1 |
-| Pending | 132 |
+| Done | 8 (M2-PLT001–007 platform + mobile) |
+| M1 SDD | 48/48 artifacts — pending formal sign-off |
+| Pending | 125 implementation tasks |
 
 ## Milestone Folders
 
@@ -264,6 +265,10 @@ flowchart LR
 | [M12-PRD005](./m12-production/m12-prd005.md) | Production Vertex Quotas + Budget Alerts | 2h | pending | M12-PRD001 |
 | [M12-PRD006](./m12-production/m12-prd006.md) | Incident Runbook + On-Call Rotation | 3h | pending | M11-DEP009 |
 | [M12-PRD007](./m12-production/m12-prd007.md) | Production Smoke + Hypercare Dashboard | 3h | pending | M12-PRD003, M12-PRD004 |
+
+## Active sprint
+
+- [Sprint 001 — M1 SDD](./sprint_001.md) — 74 micro-tasks (30–90 min each)
 
 ## Related
 

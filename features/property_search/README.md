@@ -6,8 +6,8 @@
 
 | Field | Value |
 |-------|-------|
-| Version | 0.2.0 |
-| Status | Not Started |
+| Version | 0.3.0 |
+| Status | SDD Complete (Pending Approval) |
 | Priority | P0 — Phase 2 |
 
 ## Overview
@@ -22,24 +22,24 @@ Search, filter, sort, and display property listings. Supports geo-based queries,
 | **Aqarmap** | Secondary |
 | **Property Finder Egypt** | Secondary |
 
-Synced to PostgreSQL (canonical store) and Elasticsearch (search index). See [architecture/listing_providers.md](../../architecture/listing_providers.md).
+Synced to **PostgreSQL** (canonical store). Search uses **tsvector** full-text + **pgvector** semantic embeddings per [architecture/postgresql_schema.md](../../architecture/postgresql_schema.md). See [architecture/listing_providers.md](../../architecture/listing_providers.md).
 
 ## SDD Artifacts
 
 | # | Artifact | File | Status |
 |---|----------|------|--------|
-| 1 | Requirements | [requirements.md](./requirements.md) | ⬜ Not started |
+| 1 | Requirements | [requirements.md](./requirements.md) | ✅ Done |
 | 2 | User Stories | [user_stories.md](./user_stories.md) | ✅ Done |
 | 3 | Acceptance Criteria | [acceptance_criteria.md](./acceptance_criteria.md) | ✅ Done |
-| 4 | Architecture Design | [architecture.md](./architecture.md) | ⬜ Not started |
-| 5 | Data Model | [data_model.md](./data_model.md) | ⬜ Not started |
-| 6 | API Design | [api_design.md](./api_design.md) | ⬜ Not started |
-| 7 | Implementation Tasks | [implementation_tasks.md](./implementation_tasks.md) | ⬜ Not started |
-| 8 | Tests | [tests.md](./tests.md) | ⬜ Not started |
+| 4 | Architecture Design | [architecture.md](./architecture.md) | ✅ Done |
+| 5 | Data Model | [data_model.md](./data_model.md) | ✅ Done |
+| 6 | API Design | [api_design.md](./api_design.md) | ✅ Done |
+| 7 | Implementation Tasks | [implementation_tasks.md](./implementation_tasks.md) | ✅ Done |
+| 8 | Tests | [tests.md](./tests.md) | ✅ Done |
 
 ## Traceability
 
-- **FR-002** in [specs/requirements.md](../../specs/requirements.md)
+- **FR-SEARCH-***, **FR-SYNC-*** in [specs/requirements.md](../../specs/requirements.md)
 - Bounded context: Property Catalog in [architecture/system_design.md](../../architecture/system_design.md)
 
 ## Dependencies
@@ -55,4 +55,4 @@ Synced to PostgreSQL (canonical store) and Elasticsearch (search index). See [ar
 
 ## Approval Gate
 
-Implementation blocked until specs approved.
+Implementation blocked until PO / Tech Lead / QA approve SDD artifacts.

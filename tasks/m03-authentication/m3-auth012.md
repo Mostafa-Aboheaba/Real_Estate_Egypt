@@ -8,7 +8,7 @@
 | **Milestone** | M3 — Authentication |
 | **Estimate** | 2h |
 | **Priority** | P0 |
-| **Status** | pending |
+| **Status** | done |
 | **Layer** | mobile |
 
 ## Description

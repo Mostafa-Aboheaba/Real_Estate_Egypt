@@ -26,6 +26,7 @@
 | Clean Architecture | [architecture/clean_architecture.md](../architecture/clean_architecture.md) |
 | Listing Providers | [architecture/listing_providers.md](../architecture/listing_providers.md) |
 | PostgreSQL Schema | [architecture/postgresql_schema.md](../architecture/postgresql_schema.md) |
+| API Conventions | [architecture/api_conventions.md](../architecture/api_conventions.md) |
 
 ## Planning
 
