@@ -13,6 +13,10 @@ import { AuthService } from './auth.service';
 import { AuthErrorCode } from '../../domain/auth/failures/auth.failures';
 import { AUTH_REPOSITORY } from '../../domain/auth/ports/auth.repository.port';
 import { TOKEN_SERVICE } from '../../domain/auth/ports/token.service.port';
+import { PASSWORD_HASHER } from '../../domain/auth/ports/password-hasher.port';
+import { EMAIL_SENDER } from '../../domain/auth/ports/email-sender.port';
+import { OAUTH_VERIFIER } from '../../domain/auth/ports/oauth-verifier.port';
+import { UserRole } from '../../domain/auth/enums/user-role.enum';
 
 describe('AuthService', () => {
   const repo = {
@@ -28,23 +32,23 @@ describe('AuthService', () => {
     consumeEmailVerificationToken: jest.fn(),
     savePasswordResetToken: jest.fn(),
     consumePasswordResetToken: jest.fn(),
-    upsertOAuthAccount: jest.fn(),
+    linkOAuthAccount: jest.fn(),
+    findByOAuth: jest.fn(),
+    findProfileById: jest.fn(),
+    markEmailVerified: jest.fn(),
   };
 
   const tokens = {
-    signAccessToken: jest.fn(),
-    signRefreshToken: jest.fn(),
+    issueTokenPair: jest.fn(),
     verifyAccessToken: jest.fn(),
-    hashRefreshToken: jest.fn(),
   };
 
   const passwords = { hash: jest.fn(), compare: jest.fn() };
-  const emailService = {
+  const emailSender = {
     sendVerificationEmail: jest.fn(),
     sendPasswordResetEmail: jest.fn(),
   };
-  const googleVerifier = { verify: jest.fn() };
-  const appleVerifier = { verify: jest.fn() };
+  const oauthVerifier = { verify: jest.fn() };
 
   let service: AuthService;
 
@@ -54,9 +58,8 @@ describe('AuthService', () => {
       repo as never,
       tokens as never,
       passwords as never,
-      emailService as never,
-      googleVerifier as never,
-      appleVerifier as never,
+      emailSender as never,
+      oauthVerifier as never,
     );
   });
 
@@ -90,7 +93,7 @@ describe('AuthService', () => {
     repo.createUser.mockResolvedValue({
       id: 'u1',
       email: 'new@example.com',
-      role: 'buyer',
+      role: UserRole.Buyer,
       emailVerified: false,
     });
     passwords.hash.mockResolvedValue('hash');
@@ -104,7 +107,24 @@ describe('AuthService', () => {
     });
 
     expect(result.email).toBe('new@example.com');
-    expect(emailService.sendVerificationEmail).toHaveBeenCalled();
+    expect(emailSender.sendVerificationEmail).toHaveBeenCalled();
     expect(repo.saveEmailVerificationToken).toHaveBeenCalled();
+  });
+
+  it('rejects login when email is not verified', async () => {
+    repo.findByEmail.mockResolvedValue({
+      id: 'u1',
+      email: 'a@b.com',
+      passwordHash: 'hash',
+      emailVerified: false,
+      role: UserRole.Buyer,
+      locale: 'en',
+      name: null,
+    });
+    passwords.compare.mockResolvedValue(true);
+
+    await expect(service.login('a@b.com', 'password1')).rejects.toMatchObject({
+      code: AuthErrorCode.EMAIL_NOT_VERIFIED,
+    });
   });
 });

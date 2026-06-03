@@ -17,7 +17,7 @@ Flutter client (iOS + Android) for the AI Property Assistant platform.
 
 | Flavor | Entry point | API base (default) |
 |--------|-------------|-------------------|
-| `dev` | `lib/main_dev.dart` | `http://10.0.2.2:3000/api/v1` |
+| `dev` | `lib/main_dev.dart` | `127.0.0.1` (iOS/macOS), `10.0.2.2` (Android emulator) |
 | `staging` | `lib/main_staging.dart` | `https://api-staging.propertyassistant.eg/api/v1` |
 | `prod` | `lib/main_prod.dart` | `https://api.propertyassistant.eg/api/v1` |
 

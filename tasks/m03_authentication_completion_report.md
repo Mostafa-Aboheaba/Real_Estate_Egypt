@@ -68,6 +68,16 @@ Android emulator API base: `http://10.0.2.2:3000/api/v1` (see `app_config.dart`)
 2. `GET /api/v1/users/me` with access token returns profile.
 3. Mobile: register → verify pending screen → login → home shows email → sign out.
 
+## Post-review refinements (2026-06-03)
+
+- Domain `OAuthProvider` enum (no Prisma in `domain/`)
+- Ports: `EmailSenderPort`, `PasswordHasherPort`, `OAuthVerifierPort`
+- `GetCurrentUserUseCase` + `EmailVerifiedGuard` on `/users/me`
+- Login returns `403 EMAIL_NOT_VERIFIED` until email verified
+- `POST /auth/register` returns **201**
+- E2E: `test/auth.e2e-spec.ts` (requires `DATABASE_URL`)
+- Mobile: `SessionExpiredNotifier` clears session on failed refresh → login redirect
+
 ## Notes
 
 - OAuth requires valid `GOOGLE_CLIENT_ID` / Apple config in backend `.env`.

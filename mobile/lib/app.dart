@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:property_assistant/core/providers/app_providers.dart';
 import 'package:property_assistant/core/providers/locale_provider.dart';
 import 'package:property_assistant/core/routing/app_router.dart';
+import 'package:property_assistant/features/authentication/presentation/providers/auth_provider.dart';
 import 'package:property_assistant/core/theme/app_theme.dart';
 
 class App extends ConsumerWidget {
@@ -13,6 +14,7 @@ class App extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final config = ref.watch(appConfigProvider);
     final locale = ref.watch(localeProvider);
+    ref.watch(sessionExpiryListenerProvider);
     final router = ref.watch(appRouterProvider);
 
     return MaterialApp.router(

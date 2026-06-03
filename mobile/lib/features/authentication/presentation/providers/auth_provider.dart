@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:property_assistant/core/auth/session_expired_notifier.dart';
 import 'package:property_assistant/core/di/injection.dart';
 import 'package:property_assistant/core/error/failure_mapper.dart';
 import 'package:property_assistant/core/error/failures.dart';
@@ -22,10 +25,25 @@ final authSessionProvider =
   AuthSessionNotifier.new,
 );
 
+/// Clears session and refreshes router when token refresh fails.
+final sessionExpiryListenerProvider = Provider<void>((ref) {
+  final notifier = getIt<SessionExpiredNotifier>();
+  final sub = notifier.onExpired.listen((_) {
+    ref.read(authSessionProvider.notifier).clearSession();
+  });
+  ref.onDispose(sub.cancel);
+});
+
 class AuthSessionNotifier extends AsyncNotifier<AuthSession?> {
   @override
   Future<AuthSession?> build() async {
+    ref.watch(sessionExpiryListenerProvider);
     return ref.read(authRepositoryProvider).restoreSession();
+  }
+
+  void clearSession() {
+    state = const AsyncData(null);
+    _notifyRouter();
   }
 
   void _notifyRouter() {

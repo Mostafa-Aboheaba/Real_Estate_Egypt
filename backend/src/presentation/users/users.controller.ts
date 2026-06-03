@@ -1,28 +1,17 @@
 import { Controller, Get, UseGuards } from '@nestjs/common';
-import { PrismaService } from '../../infrastructure/persistence/prisma/prisma.service';
-import { CurrentUser } from '../decorators/current-user.decorator';
-import { JwtAuthGuard } from '../guards/jwt-auth.guard';
+import { GetCurrentUserUseCase } from '../../application/users/get-current-user.use-case';
 import { AccessTokenPayload } from '../../domain/auth/ports/token.service.port';
+import { CurrentUser } from '../decorators/current-user.decorator';
+import { EmailVerifiedGuard } from '../guards/email-verified.guard';
+import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 
 @Controller('users')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, EmailVerifiedGuard)
 export class UsersController {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly getCurrentUser: GetCurrentUserUseCase) {}
 
   @Get('me')
   async me(@CurrentUser() user: AccessTokenPayload) {
-    const row = await this.prisma.user.findUniqueOrThrow({
-      where: { id: user.sub },
-      select: {
-        id: true,
-        email: true,
-        role: true,
-        name: true,
-        locale: true,
-        emailVerified: true,
-        preferredAgentId: true,
-      },
-    });
-    return row;
+    return this.getCurrentUser.execute(user.sub);
   }
 }

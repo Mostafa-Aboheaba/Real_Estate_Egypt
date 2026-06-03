@@ -1,14 +1,27 @@
 import { Injectable } from '@nestjs/common';
-import { OAuthProvider, User } from '@prisma/client';
+import {
+  OAuthProvider as PrismaOAuthProvider,
+  User,
+  UserRole as PrismaUserRole,
+} from '@prisma/client';
 import { AuthUser } from '../../../domain/auth/entities/auth-user.entity';
+import { OAuthProvider } from '../../../domain/auth/enums/oauth-provider.enum';
 import { UserRole } from '../../../domain/auth/enums/user-role.enum';
 import {
   AuthRepositoryPort,
   CreateUserInput,
   OAuthProfile,
-  toDomainRole,
+  UserProfile,
 } from '../../../domain/auth/ports/auth.repository.port';
 import { PrismaService } from '../prisma/prisma.service';
+
+function toDomainRole(role: PrismaUserRole): UserRole {
+  return role as UserRole;
+}
+
+function toPrismaOAuth(provider: OAuthProvider): PrismaOAuthProvider {
+  return provider as PrismaOAuthProvider;
+}
 
 @Injectable()
 export class PrismaAuthRepository implements AuthRepositoryPort {
@@ -38,6 +51,33 @@ export class PrismaAuthRepository implements AuthRepositoryPort {
       where: { id, deletedAt: null },
     });
     return row ? this.mapUser(row) : null;
+  }
+
+  async findProfileById(id: string): Promise<UserProfile | null> {
+    const row = await this.prisma.user.findFirst({
+      where: { id, deletedAt: null },
+      select: {
+        id: true,
+        email: true,
+        role: true,
+        name: true,
+        locale: true,
+        emailVerified: true,
+        preferredAgentId: true,
+      },
+    });
+    if (!row) {
+      return null;
+    }
+    return {
+      id: row.id,
+      email: row.email,
+      role: row.role,
+      name: row.name,
+      locale: row.locale,
+      emailVerified: row.emailVerified,
+      preferredAgentId: row.preferredAgentId,
+    };
   }
 
   async createUser(input: CreateUserInput): Promise<AuthUser> {
@@ -75,7 +115,10 @@ export class PrismaAuthRepository implements AuthRepositoryPort {
   ): Promise<AuthUser | null> {
     const link = await this.prisma.oauthAccount.findUnique({
       where: {
-        provider_providerUserId: { provider, providerUserId },
+        provider_providerUserId: {
+          provider: toPrismaOAuth(provider),
+          providerUserId,
+        },
       },
       include: { user: true },
     });
@@ -94,13 +137,13 @@ export class PrismaAuthRepository implements AuthRepositoryPort {
       await this.prisma.oauthAccount.upsert({
         where: {
           provider_providerUserId: {
-            provider: profile.provider,
+            provider: toPrismaOAuth(profile.provider),
             providerUserId: profile.providerUserId,
           },
         },
         create: {
           userId: existing.id,
-          provider: profile.provider,
+          provider: toPrismaOAuth(profile.provider),
           providerUserId: profile.providerUserId,
         },
         update: {},
@@ -119,7 +162,7 @@ export class PrismaAuthRepository implements AuthRepositoryPort {
         consentAt: new Date(),
         oauthAccounts: {
           create: {
-            provider: profile.provider,
+            provider: toPrismaOAuth(profile.provider),
             providerUserId: profile.providerUserId,
           },
         },

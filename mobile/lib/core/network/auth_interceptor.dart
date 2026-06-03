@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:injectable/injectable.dart';
+import 'package:property_assistant/core/auth/session_expired_notifier.dart';
 import 'package:property_assistant/core/auth/token_storage.dart';
 import 'package:property_assistant/core/constants/api_constants.dart';
 import 'package:property_assistant/core/network/api_response.dart';
@@ -9,11 +10,13 @@ import 'package:uuid/uuid.dart';
 @lazySingleton
 class AuthInterceptor extends QueuedInterceptor {
   AuthInterceptor(
-    this._tokens, {
+    this._tokens,
+    this._sessionExpired, {
     @Named('refresh') required Dio refreshDio,
   }) : _refreshDio = refreshDio;
 
   final TokenStorage _tokens;
+  final SessionExpiredNotifier _sessionExpired;
   final Dio _refreshDio;
   final _uuid = const Uuid();
 
@@ -41,6 +44,7 @@ class AuthInterceptor extends QueuedInterceptor {
     }
     final refreshed = await _tryRefresh();
     if (!refreshed) {
+      _sessionExpired.notify();
       handler.next(err);
       return;
     }
@@ -77,6 +81,7 @@ class AuthInterceptor extends QueuedInterceptor {
       return true;
     } on DioException {
       await _tokens.clear();
+      _sessionExpired.notify();
       return false;
     }
   }

@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { OAuthProvider } from '@prisma/client';
 import { generateSecureToken, hashToken } from '../../common/utils/token-hash';
 import { AuthUser } from '../../domain/auth/entities/auth-user.entity';
+import { OAuthProvider } from '../../domain/auth/enums/oauth-provider.enum';
 import {
   AuthDomainException,
   AuthErrorCode,
@@ -14,14 +14,21 @@ import {
   AuthRepositoryPort,
 } from '../../domain/auth/ports/auth.repository.port';
 import {
+  EMAIL_SENDER,
+  EmailSenderPort,
+} from '../../domain/auth/ports/email-sender.port';
+import {
+  OAUTH_VERIFIER,
+  OAuthVerifierPort,
+} from '../../domain/auth/ports/oauth-verifier.port';
+import {
+  PASSWORD_HASHER,
+  PasswordHasherPort,
+} from '../../domain/auth/ports/password-hasher.port';
+import {
   TOKEN_SERVICE,
-  TokenPair,
   TokenServicePort,
 } from '../../domain/auth/ports/token.service.port';
-import { EmailService } from '../../infrastructure/auth/email.service';
-import { PasswordService } from '../../infrastructure/auth/password.service';
-import { GoogleIdTokenVerifier } from '../../infrastructure/auth/google-id-token.verifier';
-import { AppleIdTokenVerifier } from '../../infrastructure/auth/apple-id-token.verifier';
 
 export interface AuthResponseDto {
   accessToken: string;
@@ -43,10 +50,9 @@ export class AuthService {
   constructor(
     @Inject(AUTH_REPOSITORY) private readonly repo: AuthRepositoryPort,
     @Inject(TOKEN_SERVICE) private readonly tokens: TokenServicePort,
-    private readonly passwords: PasswordService,
-    private readonly emailService: EmailService,
-    private readonly googleVerifier: GoogleIdTokenVerifier,
-    private readonly appleVerifier: AppleIdTokenVerifier,
+    @Inject(PASSWORD_HASHER) private readonly passwords: PasswordHasherPort,
+    @Inject(EMAIL_SENDER) private readonly emailSender: EmailSenderPort,
+    @Inject(OAUTH_VERIFIER) private readonly oauthVerifier: OAuthVerifierPort,
   ) {}
 
   async register(input: {
@@ -95,7 +101,7 @@ export class AuthService {
       hashToken(verifyToken),
       new Date(Date.now() + 24 * 60 * 60 * 1000),
     );
-    await this.emailService.sendVerificationEmail(user.email, verifyToken);
+    await this.emailSender.sendVerificationEmail(user.email, verifyToken);
 
     return {
       userId: user.id,
@@ -129,6 +135,10 @@ export class AuthService {
     const valid = await this.passwords.compare(passwordRaw, user.passwordHash);
     if (!valid) {
       throw new AuthDomainException(AuthErrorCode.INVALID_CREDENTIALS);
+    }
+
+    if (!user.emailVerified) {
+      throw new AuthDomainException(AuthErrorCode.EMAIL_NOT_VERIFIED);
     }
 
     return this.toAuthResponse(user);
@@ -169,7 +179,7 @@ export class AuthService {
       hashToken(token),
       new Date(Date.now() + 60 * 60 * 1000),
     );
-    await this.emailService.sendPasswordResetEmail(user.email, token);
+    await this.emailSender.sendPasswordResetEmail(user.email, token);
   }
 
   async resetPassword(token: string, newPassword: string): Promise<void> {
@@ -194,9 +204,12 @@ export class AuthService {
     idToken: string,
     roleRaw?: string,
   ): Promise<AuthResponseDto> {
-    const profile = await this.googleVerifier.verify(idToken);
+    const profile = await this.oauthVerifier.verify(
+      OAuthProvider.Google,
+      idToken,
+    );
     return this.oauthLogin(
-      OAuthProvider.google,
+      OAuthProvider.Google,
       profile.sub,
       profile.email,
       profile.name,
@@ -208,9 +221,12 @@ export class AuthService {
     identityToken: string,
     roleRaw?: string,
   ): Promise<AuthResponseDto> {
-    const profile = await this.appleVerifier.verify(identityToken);
+    const profile = await this.oauthVerifier.verify(
+      OAuthProvider.Apple,
+      identityToken,
+    );
     return this.oauthLogin(
-      OAuthProvider.apple,
+      OAuthProvider.Apple,
       profile.sub,
       profile.email,
       undefined,

@@ -1,4 +1,16 @@
+import 'package:flutter/foundation.dart';
 import 'package:property_assistant/core/config/flavor.dart';
+
+/// Default dev API host per platform (override with `--dart-define=API_BASE_URL=...`).
+String devApiBaseUrlDefault() {
+  if (kIsWeb) {
+    return 'http://localhost:3000/api/v1';
+  }
+  return switch (defaultTargetPlatform) {
+    TargetPlatform.android => 'http://10.0.2.2:3000/api/v1',
+    _ => 'http://127.0.0.1:3000/api/v1',
+  };
+}
 
 /// Environment configuration resolved at startup from [Flavor].
 class AppConfig {
@@ -22,10 +34,7 @@ class AppConfig {
     return switch (flavor) {
       Flavor.dev => AppConfig(
           flavor: flavor,
-          apiBaseUrl: const String.fromEnvironment(
-            'API_BASE_URL',
-            defaultValue: 'http://10.0.2.2:3000/api/v1',
-          ),
+          apiBaseUrl: _devApiBaseUrl(),
           appName: 'Property Assistant Dev',
           enableNetworkLogging: true,
         ),
@@ -48,5 +57,13 @@ class AppConfig {
           enableNetworkLogging: false,
         ),
     };
+  }
+
+  static String _devApiBaseUrl() {
+    const fromEnv = String.fromEnvironment('API_BASE_URL');
+    if (fromEnv.isNotEmpty) {
+      return fromEnv;
+    }
+    return devApiBaseUrlDefault();
   }
 }

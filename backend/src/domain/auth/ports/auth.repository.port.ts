@@ -1,5 +1,5 @@
-import { OAuthProvider, UserRole as PrismaUserRole } from '@prisma/client';
 import { AuthUser } from '../entities/auth-user.entity';
+import { OAuthProvider } from '../enums/oauth-provider.enum';
 import { UserRole } from '../enums/user-role.enum';
 
 export const AUTH_REPOSITORY = Symbol('AUTH_REPOSITORY');
@@ -20,9 +20,20 @@ export interface OAuthProfile {
   name?: string | null;
 }
 
+export interface UserProfile {
+  id: string;
+  email: string;
+  role: string;
+  name: string | null;
+  locale: string;
+  emailVerified: boolean;
+  preferredAgentId: string | null;
+}
+
 export interface AuthRepositoryPort {
   findByEmail(email: string): Promise<AuthUser | null>;
   findById(id: string): Promise<AuthUser | null>;
+  findProfileById(id: string): Promise<UserProfile | null>;
   createUser(input: CreateUserInput): Promise<AuthUser>;
   markEmailVerified(userId: string): Promise<void>;
   updatePassword(userId: string, passwordHash: string): Promise<void>;
@@ -57,8 +68,4 @@ export interface AuthRepositoryPort {
   consumePasswordResetToken(
     tokenHash: string,
   ): Promise<{ userId: string } | null>;
-}
-
-export function toDomainRole(role: PrismaUserRole): UserRole {
-  return role as UserRole;
 }

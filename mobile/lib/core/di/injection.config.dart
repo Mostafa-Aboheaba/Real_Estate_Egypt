@@ -21,6 +21,7 @@ import '../../features/authentication/data/repositories/auth_repository_impl.dar
     as _i317;
 import '../../features/authentication/domain/repositories/auth_repository.dart'
     as _i742;
+import '../auth/session_expired_notifier.dart' as _i45;
 import '../auth/token_storage.dart' as _i1002;
 import '../config/app_config.dart' as _i650;
 import '../network/api_client.dart' as _i557;
@@ -44,6 +45,9 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i895.Connectivity>(() => registerModule.connectivity);
     gh.lazySingleton<_i650.AppConfig>(() => registerModule.appConfig());
+    gh.lazySingleton<_i45.SessionExpiredNotifier>(
+      () => _i45.SessionExpiredNotifier(),
+    );
     gh.lazySingleton<_i932.NetworkInfo>(
       () => _i932.NetworkInfoImpl(gh<_i895.Connectivity>()),
     );
@@ -63,6 +67,7 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i908.AuthInterceptor>(
       () => _i908.AuthInterceptor(
         gh<_i1002.TokenStorage>(),
+        gh<_i45.SessionExpiredNotifier>(),
         refreshDio: gh<_i361.Dio>(instanceName: 'refresh'),
       ),
     );
