@@ -14,7 +14,8 @@ export const validationSchema = Joi.object({
   JWT_SECRET: Joi.string().min(16).default('dev-only-change-in-production'),
   JWT_ACCESS_EXPIRES_SEC: Joi.number().default(900),
   JWT_REFRESH_EXPIRES_DAYS: Joi.number().default(7),
-  GOOGLE_CLIENT_ID: Joi.string().optional(),
-  APPLE_CLIENT_ID: Joi.string().optional(),
+  // .env often sets these to "" before OAuth is configured
+  GOOGLE_CLIENT_ID: Joi.string().allow('').optional(),
+  APPLE_CLIENT_ID: Joi.string().allow('').optional(),
   PUBLIC_URL: Joi.string().uri().optional(),
 });
