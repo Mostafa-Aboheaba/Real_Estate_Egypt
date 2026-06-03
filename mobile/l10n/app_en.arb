@@ -1,0 +1,9 @@
+{
+  "@@locale": "en",
+  "appTitle": "Property Assistant",
+  "@appTitle": {
+    "description": "Application title"
+  },
+  "homeWelcome": "Welcome",
+  "homeSubtitle": "Discover properties in Egypt with AI assistance."
+}
