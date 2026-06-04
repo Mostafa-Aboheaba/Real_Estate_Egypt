@@ -8,7 +8,10 @@ import { ShaetyAdapter } from '../../infrastructure/listing/shaety/shaety.adapte
 import { PrismaPropertyRepository } from '../../infrastructure/persistence/property/prisma-property.repository';
 import { PrismaSyncRunRepository } from '../../infrastructure/persistence/property/prisma-sync-run.repository';
 import { ListingSyncProcessor } from '../../infrastructure/queue/listing-sync.processor';
-import { LISTING_SYNC_QUEUE } from '../../infrastructure/queue/queue.constants';
+import {
+  EMBED_LISTING_QUEUE,
+  LISTING_SYNC_QUEUE,
+} from '../../infrastructure/queue/queue.constants';
 import { QueueModule } from '../../infrastructure/queue/queue.module';
 import { AuthModule } from '../auth/auth.module';
 import { GuestSearchGuard } from '../guards/guest-search.guard';
@@ -21,6 +24,7 @@ import { PropertiesController } from './properties.controller';
     QueueModule,
     AuthModule,
     BullModule.registerQueue({ name: LISTING_SYNC_QUEUE }),
+    BullModule.registerQueue({ name: EMBED_LISTING_QUEUE }),
   ],
   controllers: [PropertiesController, AdminSyncController],
   providers: [

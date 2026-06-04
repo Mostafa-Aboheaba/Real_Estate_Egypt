@@ -16,6 +16,7 @@ import { TransformInterceptor } from './presentation/interceptors/transform.inte
 import { UsersModule } from './presentation/users/users.module';
 import { PropertiesModule } from './presentation/properties/properties.module';
 import { AgentsModule } from './presentation/agents/agents.module';
+import { RagModule } from './presentation/ai/rag.module';
 
 @Module({
   imports: [
@@ -46,6 +47,7 @@ import { AgentsModule } from './presentation/agents/agents.module';
     UsersModule,
     AgentsModule,
     PropertiesModule,
+    RagModule,
   ],
   providers: [
     {

@@ -1,5 +1,5 @@
 import 'package:injectable/injectable.dart';
-import 'package:property_assistant/features/property_search/data/datasources/property_remote_datasource.dart';
+import 'package:property_assistant/features/property_search/data/datasources/remote/property_remote_datasource.dart';
 import 'package:property_assistant/features/property_search/domain/entities/property_detail.dart';
 import 'package:property_assistant/features/property_search/domain/entities/property_search_filters.dart';
 import 'package:property_assistant/features/property_search/domain/repositories/property_repository.dart';

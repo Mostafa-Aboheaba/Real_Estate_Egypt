@@ -52,21 +52,6 @@ class PropertySearchFilters {
     );
   }
 
-  Map<String, dynamic> toQueryParams() {
-    final params = <String, dynamic>{
-      'page': page,
-      'pageSize': pageSize,
-      'sort': sort,
-    };
-    if (q != null && q!.isNotEmpty) params['q'] = q;
-    if (city != null && city!.isNotEmpty) params['city'] = city;
-    if (listingType != null) params['listingType'] = listingType;
-    if (propertyType != null) params['propertyType'] = propertyType;
-    if (minPrice != null) params['minPrice'] = minPrice;
-    if (maxPrice != null) params['maxPrice'] = maxPrice;
-    if (minBedrooms != null) params['minBedrooms'] = minBedrooms;
-    return params;
-  }
 }
 
 class PropertySearchPage {

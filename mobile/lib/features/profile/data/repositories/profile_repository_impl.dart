@@ -1,5 +1,5 @@
 import 'package:injectable/injectable.dart';
-import 'package:property_assistant/features/profile/data/datasources/profile_remote_datasource.dart';
+import 'package:property_assistant/features/profile/data/datasources/remote/profile_remote_datasource.dart';
 import 'package:property_assistant/features/profile/domain/entities/favorite_item.dart';
 import 'package:property_assistant/features/profile/domain/entities/user_profile.dart';
 import 'package:property_assistant/features/profile/domain/repositories/profile_repository.dart';

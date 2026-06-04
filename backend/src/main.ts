@@ -10,6 +10,7 @@ async function bootstrap(): Promise<void> {
     exclude: [
       { path: 'health', method: RequestMethod.ALL },
       { path: 'health/(.*)', method: RequestMethod.ALL },
+      { path: 'metrics', method: RequestMethod.GET },
     ],
   });
   app.useGlobalPipes(

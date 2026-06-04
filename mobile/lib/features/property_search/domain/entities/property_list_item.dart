@@ -29,26 +29,6 @@ class PropertyListItem {
   final String provider;
   final String providerLabel;
   final String syncedAt;
-
-  factory PropertyListItem.fromJson(Map<String, dynamic> json) {
-    return PropertyListItem(
-      id: json['id'] as String,
-      title: json['title'] as String,
-      priceEgp: json['priceEgp'] as num,
-      listingType: json['listingType'] as String,
-      propertyType: json['propertyType'] as String,
-      bedrooms: json['bedrooms'] as int?,
-      bathrooms: json['bathrooms'] as int?,
-      areaSqm: json['areaSqm'] as num?,
-      location: PropertyLocation.fromJson(
-        json['location'] as Map<String, dynamic>,
-      ),
-      thumbnailUrl: json['thumbnailUrl'] as String?,
-      provider: json['provider'] as String,
-      providerLabel: json['providerLabel'] as String,
-      syncedAt: json['syncedAt'] as String,
-    );
-  }
 }
 
 class PropertyLocation {
@@ -65,16 +45,6 @@ class PropertyLocation {
   final String district;
   final double? latitude;
   final double? longitude;
-
-  factory PropertyLocation.fromJson(Map<String, dynamic> json) {
-    return PropertyLocation(
-      governorate: json['governorate'] as String,
-      city: json['city'] as String,
-      district: json['district'] as String,
-      latitude: (json['latitude'] as num?)?.toDouble(),
-      longitude: (json['longitude'] as num?)?.toDouble(),
-    );
-  }
 
   String get shortLabel => '$district, $city';
 }

@@ -1,0 +1,646 @@
+openapi: 3.1.0
+info:
+  title: Shaety Listing Provider API (Reusable Endpoints)
+  version: 1.0.0
+  description: |
+    OpenAPI specification for **REUSE**-classified Shaety endpoints used by the
+    AI Property Assistant listing sync adapter.
+
+    Source: Postman collection `docs/external_apis/shaety_collection.json`  
+    Domain mapping: `docs/domain_mapping.md` (Mark = **REUSE**)
+
+    **Consumer:** `backend/src/infrastructure/listing/shaety/shaety.adapter.ts` only.  
+    These routes are **not** exposed on the platform `/api/v1` mobile API.
+
+    **Target features:** Property Search (FR-SEARCH-*), Listing Sync (FR-SYNC-001).
+
+    Confirm production `servers.url` and authentication (Bearer service token vs API key)
+    with Shaety before go-live.
+  contact:
+    name: AI Property Assistant — Platform Team
+  license:
+    name: Proprietary
+    url: https://github.com/
+
+externalDocs:
+  description: Domain mapping (REUSE / MODIFY / IGNORE)
+  url: ./domain_mapping.md
+
+servers:
+  - url: '{shaetyBaseUrl}'
+    description: Shaety API base (trailing slash as in Postman `{{url}}`)
+    variables:
+      shaetyBaseUrl:
+        default: https://api.shaety.com/
+        description: Replace with provider-confirmed base URL
+
+tags:
+  - name: Properties
+    description: Listing search and detail (REUSE)
+    x-target-features:
+      - property_search
+      - listing_sync
+  - name: Filters
+    description: Filter vocabulary and reference data (REUSE)
+    x-target-features:
+      - property_search
+      - listing_sync
+
+security:
+  - bearerAuth: []
+
+paths:
+  /properties:
+    get:
+      operationId: listProperties
+      summary: List and search properties
+      description: |
+        Paginated property catalog with optional filters. Primary ingest endpoint
+        for scheduled sync (FR-SEARCH-002).
+
+        Postman samples use numeric `city` IDs (e.g. `12` = Alexandria). The platform
+        adapter must map IDs to governorate/city names for the canonical model.
+
+        Canonical output shape: see `CanonicalListingMapping` schema.
+      tags: [Properties]
+      x-platform-canonical-mapping:
+        $ref: '#/components/schemas/CanonicalListingMapping'
+      x-domain-mapping:
+        mark: REUSE
+        canReuse: true
+        targetFeature: Property Search · Listing Sync
+        srs:
+          - FR-SEARCH-001
+          - FR-SEARCH-002
+          - FR-SEARCH-004
+          - FR-SEARCH-011
+          - FR-SYNC-001
+      parameters:
+        - $ref: '#/components/parameters/AcceptJson'
+        - name: page
+          in: query
+          description: Page number (1-based)
+          schema:
+            type: integer
+            minimum: 1
+            example: 1
+        - name: city
+          in: query
+          description: City filter ID (provider taxonomy)
+          schema:
+            type: integer
+            example: 12
+        - name: area
+          in: query
+          description: District/zone ID
+          schema:
+            type: integer
+            example: 13
+        - name: type
+          in: query
+          description: Property type ID (e.g. apartment)
+          schema:
+            type: integer
+            example: 50
+        - name: status
+          in: query
+          description: Listing status ID (sale/rent taxonomy)
+          schema:
+            type: integer
+            example: 65
+        - name: price
+          in: query
+          description: Minimum price (EGP)
+          schema:
+            type: number
+            example: 50000
+        - name: max_price
+          in: query
+          description: Maximum price (EGP)
+          schema:
+            type: number
+            example: 9000000
+        - name: size
+          in: query
+          description: Minimum area (sqm)
+          schema:
+            type: number
+            example: 50
+        - name: max_size
+          in: query
+          description: Maximum area (sqm)
+          schema:
+            type: number
+            example: 2000
+        - name: bedrooms
+          in: query
+          schema:
+            type: integer
+            minimum: 0
+            example: 3
+        - name: bathrooms
+          in: query
+          schema:
+            type: integer
+            minimum: 0
+            example: 1
+        - name: agents
+          in: query
+          description: Comma-separated agent IDs
+          schema:
+            type: string
+            example: '9936,9934,50354'
+      responses:
+        '200':
+          description: Property list
+          headers:
+            X-RateLimit-Limit:
+              schema:
+                type: integer
+              example: 60
+            X-RateLimit-Remaining:
+              schema:
+                type: integer
+              example: 56
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShaetyEnvelopePropertyList'
+              examples:
+                sample:
+                  summary: Alexandria listings (excerpt)
+                  value:
+                    status: true
+                    message: Success!
+                    status_code: 200
+                    data:
+                      - id: 16797
+                        title: شقة للبيع ١٥٧ متر – سبورتنج
+                        content: شقة للبيع ١٥٧ متر – سبورتنج…
+                        post_date: '2019-07-31T12:07:49.000000Z'
+                        image: https://shaety.com/wp-content/uploads/2019/07/1-40.jpg
+                        post_status: publish
+                        city: الإسكندرية
+                        property_features:
+                          - الشقه داخل الرخصة
+                        property_area: سبورتنج
+                        property_type: شقة
+                        property_status: للبيع
+                        property_label: 1M-2M
+                        property_price: '1300000'
+                        property_size: '157'
+                        property_bedrooms: '3'
+                        property_bathrooms: '1'
+                        agent:
+                          id: 9936
+                          title: ايهاب محمود
+                          mobile: '01063035246'
+                        views: '4142'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+        default:
+          $ref: '#/components/responses/ShaetyError'
+
+  /properties/{propertyId}:
+    get:
+      operationId: getPropertyById
+      summary: Get property by ID
+      description: |
+        Full listing detail including taxonomies on detail responses.
+        Supports Arabic localization via `x-localization` (FR-SEARCH-018).
+      tags: [Properties]
+      x-domain-mapping:
+        mark: REUSE
+        canReuse: true
+        targetFeature: Property Search · Listing Sync
+        srs:
+          - FR-SEARCH-013
+          - FR-SEARCH-014
+          - FR-SEARCH-018
+          - FR-SYNC-001
+      parameters:
+        - $ref: '#/components/parameters/AcceptJson'
+        - $ref: '#/components/parameters/PropertyId'
+        - $ref: '#/components/parameters/XLocalization'
+      responses:
+        '200':
+          description: Property detail
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShaetyEnvelopePropertyDetail'
+              examples:
+                sample:
+                  value:
+                    status: true
+                    message: Success!
+                    status_code: 200
+                    data:
+                      id: 22871
+                      title: شقة للبيع 170م الإبراهيمية
+                      content: شقة للبيع 170م الإبراهيمية…
+                      post_date: '2020-07-22T10:01:43.000000Z'
+                      status: publish
+                      image: https://shaety.com/wp-content/uploads/2020/07/1-17.jpg
+                      city: الإسكندرية
+                      property_area: الابراهيميه
+                      property_type: شقة
+                      property_status: للبيع
+                      property_price: '3000000'
+                      property_size: '170'
+                      property_bedrooms: '3'
+                      property_bathrooms: '2'
+                      views: '908'
+        '404':
+          description: Property not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShaetyEnvelopeError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        default:
+          $ref: '#/components/responses/ShaetyError'
+
+  /filters:
+    get:
+      operationId: getFilters
+      summary: Get search filter metadata
+      description: |
+        Returns vocabulary for cities, property types, areas, listing statuses, and
+        agent names. Used to seed normalized filters and resolve numeric query IDs
+        on `GET /properties`.
+      tags: [Filters]
+      x-domain-mapping:
+        mark: REUSE
+        canReuse: true
+        targetFeature: Property Search · Listing Sync
+        srs:
+          - FR-SEARCH-004
+          - FR-SEARCH-006
+          - FR-SEARCH-007
+          - FR-SEARCH-009
+      parameters:
+        - $ref: '#/components/parameters/AcceptJson'
+      responses:
+        '200':
+          description: Filter metadata
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShaetyEnvelopeFilters'
+              examples:
+                sample:
+                  value:
+                    status: true
+                    message: Success!
+                    status_code: 200
+                    data:
+                      city:
+                        - الإسكندرية
+                        - الساحل الشمالي
+                      type:
+                        - شقة
+                        - فيلا
+                      area:
+                        - سبورتنج
+                        - سموحة
+                      status:
+                        - للإيجار
+                        - للبيع
+                      agents:
+                        - ايهاب محمود
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        default:
+          $ref: '#/components/responses/ShaetyError'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: ShaetyToken
+      description: |
+        Postman collection uses `Authorization: Bearer {{token}}` from Shaety login.
+        **Platform sync** should use provider-issued service credentials (API key or
+        service account) — not end-user tokens. Confirm with Shaety.
+
+  parameters:
+    AcceptJson:
+      name: Accept
+      in: header
+      required: true
+      schema:
+        type: string
+        enum: [application/json]
+        default: application/json
+    PropertyId:
+      name: propertyId
+      in: path
+      required: true
+      description: Shaety property (listing) ID
+      schema:
+        type: integer
+        format: int64
+        example: 22871
+    XLocalization:
+      name: x-localization
+      in: header
+      required: false
+      description: Response locale (`ar` observed in collection)
+      schema:
+        type: string
+        enum: [ar, en]
+        default: ar
+        example: ar
+
+  responses:
+    Unauthorized:
+      description: Missing or invalid bearer token
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ShaetyEnvelopeError'
+    RateLimited:
+      description: Rate limit exceeded (60 req/min observed)
+      headers:
+        X-RateLimit-Limit:
+          schema:
+            type: integer
+        X-RateLimit-Remaining:
+          schema:
+            type: integer
+    ShaetyError:
+      description: Shaety error envelope
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ShaetyEnvelopeError'
+
+  schemas:
+    ShaetyEnvelopeBase:
+      type: object
+      required: [status, message, status_code]
+      properties:
+        status:
+          type: boolean
+          description: Request success flag
+        message:
+          type: string
+          example: Success!
+        status_code:
+          type: integer
+          example: 200
+
+    ShaetyEnvelopeError:
+      allOf:
+        - $ref: '#/components/schemas/ShaetyEnvelopeBase'
+        - type: object
+          properties:
+            status:
+              type: boolean
+              example: false
+            data:
+              type: 'null'
+
+    ShaetyEnvelopePropertyList:
+      allOf:
+        - $ref: '#/components/schemas/ShaetyEnvelopeBase'
+        - type: object
+          required: [data]
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/PropertyListItem'
+
+    ShaetyEnvelopePropertyDetail:
+      allOf:
+        - $ref: '#/components/schemas/ShaetyEnvelopeBase'
+        - type: object
+          required: [data]
+          properties:
+            data:
+              $ref: '#/components/schemas/PropertyDetail'
+
+    ShaetyEnvelopeFilters:
+      allOf:
+        - $ref: '#/components/schemas/ShaetyEnvelopeBase'
+        - type: object
+          required: [data]
+          properties:
+            data:
+              $ref: '#/components/schemas/FilterMetadata'
+
+    PropertyListItem:
+      type: object
+      description: Property summary in list responses
+      required:
+        - id
+        - title
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Provider listing ID → maps to `externalId`
+        title:
+          type: string
+        content:
+          type: string
+          description: Full description (may contain HTML)
+        post_date:
+          type: string
+          format: date-time
+        image:
+          type: string
+          format: uri
+          description: Primary thumbnail URL
+        post_status:
+          type: string
+          example: publish
+        city:
+          type: string
+          description: City name (Arabic)
+        property_features:
+          type: array
+          items:
+            type: string
+        property_area:
+          type: string
+          description: District/neighborhood
+        property_type:
+          type: string
+          example: شقة
+        property_status:
+          type: string
+          description: للبيع (sale) or للإيجار (rent)
+          example: للبيع
+        property_label:
+          type: string
+          description: Price band label
+        property_price:
+          type: string
+          description: Price in EGP (string in API)
+        property_size:
+          type: string
+          description: Area in sqm
+        property_bedrooms:
+          type: string
+        property_bathrooms:
+          type: string
+        agent:
+          $ref: '#/components/schemas/AgentSummary'
+        views:
+          type: string
+
+    PropertyDetail:
+      allOf:
+        - $ref: '#/components/schemas/PropertyListItem'
+        - type: object
+          properties:
+            status:
+              type: string
+              description: Publish status on detail (replaces post_status in some fields)
+            terms:
+              $ref: '#/components/schemas/PropertyTerms'
+            taxonomies:
+              type: array
+              items:
+                $ref: '#/components/schemas/TaxonomyTerm'
+
+    AgentSummary:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+          description: Agent display name
+        content:
+          type: string
+        post_date:
+          type: string
+          format: date-time
+        image:
+          type: string
+          format: uri
+        email:
+          type: string
+          format: email
+        mobile:
+          type: string
+        facebook:
+          type: string
+
+    PropertyTerms:
+      type: object
+      description: Taxonomy slug → label maps (detail only)
+      additionalProperties:
+        type: object
+        additionalProperties:
+          type: string
+
+    TaxonomyTerm:
+      type: object
+      properties:
+        term_taxonomy_id:
+          type: integer
+        term_id:
+          type: integer
+        taxonomy:
+          type: string
+          enum:
+            - property_city
+            - property_area
+            - property_feature
+            - property_type
+            - property_status
+            - property_label
+            - project_property
+        description:
+          type: string
+        parent:
+          type: integer
+        count:
+          type: integer
+        pivot:
+          type: object
+          properties:
+            object_id:
+              type: integer
+            term_taxonomy_id:
+              type: integer
+        term:
+          type: object
+          properties:
+            term_id:
+              type: integer
+            name:
+              type: string
+            slug:
+              type: string
+            term_group:
+              type: integer
+
+    FilterMetadata:
+      type: object
+      properties:
+        city:
+          type: array
+          items:
+            type: string
+        type:
+          type: array
+          items:
+            type: string
+          description: Property types (Arabic labels)
+        area:
+          type: array
+          items:
+            type: string
+          description: Districts/neighborhoods
+        status:
+          type: array
+          items:
+            type: string
+          description: Listing status labels (sale/rent)
+        agents:
+          type: array
+          items:
+            type: string
+          description: Agent display names
+
+    # Platform canonical mapping (adapter output — not returned by Shaety)
+    CanonicalListingMapping:
+      type: object
+      description: |
+        Reference mapping applied in `listing-normalizer` / `ShaetyAdapter`.
+        Documented for implementers; not part of Shaety responses.
+      properties:
+        externalId:
+          type: string
+          description: Stringified Shaety `id`
+        provider:
+          type: string
+          const: shaety
+        title:
+          type: string
+        priceEgp:
+          type: number
+        listingType:
+          type: string
+          enum: [sale, rent]
+        propertyType:
+          type: string
+        location:
+          type: object
+          properties:
+            governorate:
+              type: string
+            city:
+              type: string
+            district:
+              type: string

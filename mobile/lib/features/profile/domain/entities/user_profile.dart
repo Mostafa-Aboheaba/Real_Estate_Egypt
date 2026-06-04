@@ -25,20 +25,4 @@ class UserProfile {
   final String? preferredAgentId;
   final Map<String, dynamic>? searchPreferences;
   final String? createdAt;
-
-  factory UserProfile.fromJson(Map<String, dynamic> json) {
-    return UserProfile(
-      id: json['id'] as String,
-      email: json['email'] as String,
-      role: json['role'] as String,
-      emailVerified: json['emailVerified'] as bool? ?? false,
-      locale: json['locale'] as String? ?? 'en',
-      name: json['name'] as String?,
-      phone: json['phone'] as String?,
-      avatarUrl: json['avatarUrl'] as String?,
-      preferredAgentId: json['preferredAgentId'] as String?,
-      searchPreferences: json['searchPreferences'] as Map<String, dynamic>?,
-      createdAt: json['createdAt'] as String?,
-    );
-  }
 }

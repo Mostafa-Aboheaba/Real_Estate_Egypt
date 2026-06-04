@@ -1,4 +1,4 @@
-import { Inject, Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import { Inject, Injectable, Logger, OnModuleInit, Optional } from '@nestjs/common';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Queue } from 'bullmq';
 import { mapRawListingToProperty } from '../../infrastructure/listing/listing-normalizer';
@@ -22,6 +22,8 @@ import {
   SyncRunRepositoryPort,
 } from '../../domain/property/ports/sync-run.repository.port';
 import {
+  EMBED_LISTING_JOB,
+  EMBED_LISTING_QUEUE,
   LISTING_SYNC_JOB,
   LISTING_SYNC_QUEUE,
 } from '../../infrastructure/queue/queue.constants';
@@ -41,6 +43,9 @@ export class PropertyService implements OnModuleInit {
     private readonly listingProvider: ListingProviderPort,
     @InjectQueue(LISTING_SYNC_QUEUE)
     private readonly syncQueue: Queue,
+    @Optional()
+    @InjectQueue(EMBED_LISTING_QUEUE)
+    private readonly embedQueue?: Queue,
   ) {}
 
   async onModuleInit(): Promise<void> {
@@ -114,6 +119,8 @@ export class PropertyService implements OnModuleInit {
       this.logger.log(
         `Sync ${provider}: fetched=${rawListings.length} upserted=${upserted} deactivated=${deactivated}`,
       );
+
+      await this.enqueueEmbeddingBatch();
     } catch (error) {
       const message =
         error instanceof Error ? error.message : 'Unknown sync error';
@@ -159,6 +166,13 @@ export class PropertyService implements OnModuleInit {
     );
 
     return { providers: providerStatuses, generatedAt };
+  }
+
+  private async enqueueEmbeddingBatch(): Promise<void> {
+    if (!this.embedQueue) {
+      return;
+    }
+    await this.embedQueue.add(EMBED_LISTING_JOB, { batchMissing: true });
   }
 
   async enqueueSync(provider: ListingProvider): Promise<string> {

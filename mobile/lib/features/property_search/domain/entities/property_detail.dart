@@ -39,34 +39,4 @@ class PropertyDetail {
   final String? sourceUrl;
   final String syncedAt;
   final bool isActive;
-
-  factory PropertyDetail.fromJson(Map<String, dynamic> json) {
-    return PropertyDetail(
-      id: json['id'] as String,
-      title: json['title'] as String,
-      description: json['description'] as String?,
-      priceEgp: json['priceEgp'] as num,
-      listingType: json['listingType'] as String,
-      propertyType: json['propertyType'] as String,
-      bedrooms: json['bedrooms'] as int?,
-      bathrooms: json['bathrooms'] as int?,
-      areaSqm: json['areaSqm'] as num?,
-      location: PropertyLocation.fromJson(
-        json['location'] as Map<String, dynamic>,
-      ),
-      amenities: (json['amenities'] as List<dynamic>?)
-              ?.map((e) => e as String)
-              .toList() ??
-          [],
-      images: (json['images'] as List<dynamic>?)
-              ?.map((e) => e as String)
-              .toList() ??
-          [],
-      provider: json['provider'] as String,
-      providerLabel: json['providerLabel'] as String,
-      sourceUrl: json['sourceUrl'] as String?,
-      syncedAt: json['syncedAt'] as String,
-      isActive: json['isActive'] as bool? ?? true,
-    );
-  }
 }

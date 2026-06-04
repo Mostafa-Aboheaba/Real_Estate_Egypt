@@ -3,7 +3,7 @@
 > **Auto-generated** — do not edit by hand. Regenerate after completing a task:
 > `python3 tasks/build_project_status.py`
 
-**Last updated:** 2026-06-04 07:54 UTC  
+**Last updated:** 2026-06-04 07:59 UTC  
 **Source:** 133 tasks under `tasks/m*/` + [`tasks/dashboard_config.json`](tasks/dashboard_config.json)
 
 ---
@@ -12,9 +12,9 @@
 
 | Metric | Value |
 |--------|-------|
-| **Overall completion** | **53.4%** (71 / 133 tasks) |
-| **Current milestone** | **M6** — Embeddings, RAG & Knowledge |
-| **Task breakdown** | Done 71 · Pending 62 · In progress 0 · Blocked 0 |
+| **Overall completion** | **60.2%** (80 / 133 tasks) |
+| **Current milestone** | **M7** — AI Chat |
+| **Task breakdown** | Done 80 · Pending 53 · In progress 0 · Blocked 0 |
 | **Implementation slice** | M2–M4 complete (31 tasks) |
 
 ---
@@ -29,7 +29,7 @@
 | M3 | Authentication | 12/12 (100%) | 100% | Complete |
 | M4 | Property Search & Listing Sync | 12/12 (100%) | 100% | Complete |
 | M5 | User Profile & Preferences | 10/10 (100%) | 100% | Complete |
-| M6 | Embeddings, RAG & Knowledge | 0/9 (0%) | 0% | Not started |
+| M6 | Embeddings, RAG & Knowledge | 9/9 (100%) | 100% | Complete |
 | M7 | AI Chat | 0/11 (0%) | 0% | Not started |
 | M8 | Recommendations | 0/6 (0%) | 0% | Not started |
 | M9 | Booking & Notifications | 0/10 (0%) | 0% | Not started |
@@ -45,18 +45,18 @@
 - M3 — Authentication
 - M4 — Property Search & Listing Sync
 - M5 — User Profile & Preferences
+- M6 — Embeddings, RAG & Knowledge
 
 ### Current milestone
 
-**M6 — Embeddings, RAG & Knowledge**
+**M7 — AI Chat**
 
-**Next recommended task:** [M6-RAG001](tasks/m06-rag/m6-rag001.md) — Gemini Embedding Adapter  
+**Next recommended task:** [M7-CHT001](tasks/m07-ai-chat/m7-cht001.md) — Conversation Domain + Repositories  
   
-*First pending task in M6.*
+*First pending task in M7.*
 
 ### Remaining milestones
 
-- M6 — Embeddings, RAG & Knowledge (0/9 tasks)
 - M7 — AI Chat (0/11 tasks)
 - M8 — Recommendations (0/6 tasks)
 - M9 — Booking & Notifications (0/10 tasks)
@@ -75,25 +75,26 @@
 - **M3** (12): M3-AUTH001, M3-AUTH002, M3-AUTH003, M3-AUTH004, M3-AUTH005, M3-AUTH006, M3-AUTH007, M3-AUTH008, M3-AUTH009, M3-AUTH010, M3-AUTH011, M3-AUTH012
 - **M4** (12): M4-SEA001, M4-SEA002, M4-SEA003, M4-SEA004, M4-SEA005, M4-SEA006, M4-SEA007, M4-SEA008, M4-SEA009, M4-SEA010, M4-SEA011, M4-SEA012
 - **M5** (10): M5-PRO001, M5-PRO002, M5-PRO003, M5-PRO004, M5-PRO005, M5-PRO006, M5-PRO007, M5-PRO008, M5-PRO009, M5-PRO010
+- **M6** (9): M6-RAG001, M6-RAG002, M6-RAG003, M6-RAG004, M6-RAG005, M6-RAG006, M6-RAG007, M6-RAG008, M6-RAG009
 
 ### Pending — implementation path (next 15)
 
-- [M6-RAG001](tasks/m06-rag/m6-rag001.md) — Gemini Embedding Adapter
-- [M6-RAG002](tasks/m06-rag/m6-rag002.md) — embed-listing BullMQ Worker
-- [M6-RAG003](tasks/m06-rag/m6-rag003.md) — HNSW Index Migration + pgvector Tuning
-- [M6-RAG004](tasks/m06-rag/m6-rag004.md) — RAG Orchestrator (hybrid vector + SQL + tsvector)
-- [M6-RAG005](tasks/m06-rag/m6-rag005.md) — POST /api/v1/ai/rag/retrieve (dev/admin)
-- [M6-RAG006](tasks/m06-rag/m6-rag006.md) — Redis RAG Result Cache
-- [M6-RAG007](tasks/m06-rag/m6-rag007.md) — Project Knowledge Ingest (FAQ chunks)
-- [M6-RAG008](tasks/m06-rag/m6-rag008.md) — RAG Metrics Instrumentation
-- [M6-RAG009](tasks/m06-rag/m6-rag009.md) — RAG Golden-Set Evaluation Script
 - [M7-CHT001](tasks/m07-ai-chat/m7-cht001.md) — Conversation Domain + Repositories
 - [M7-CHT002](tasks/m07-ai-chat/m7-cht002.md) — AiModule + Agents Catalog API
 - [M7-CHT003](tasks/m07-ai-chat/m7-cht003.md) — GeminiOrchestrator + Prompt Version Loader
 - [M7-CHT004](tasks/m07-ai-chat/m7-cht004.md) — SafetyPipeline + Fair Housing Rules
 - [M7-CHT005](tasks/m07-ai-chat/m7-cht005.md) — ToolExecutionLoop (semantic_search, etc.)
 - [M7-CHT006](tasks/m07-ai-chat/m7-cht006.md) — POST /conversations + /messages (non-stream)
-- *…and 47 more (excl. M1 registry)*
+- [M7-CHT007](tasks/m07-ai-chat/m7-cht007.md) — SSE Streaming Endpoint
+- [M7-CHT008](tasks/m07-ai-chat/m7-cht008.md) — Conversation Memory Compaction Job
+- [M7-CHT009](tasks/m07-ai-chat/m7-cht009.md) — Mobile Chat UI + Stream Rendering
+- [M7-CHT010](tasks/m07-ai-chat/m7-cht010.md) — Mobile Agent Picker + Listing Cards
+- [M7-CHT011](tasks/m07-ai-chat/m7-cht011.md) — AI Chat P0 Test Pack
+- [M8-REC001](tasks/m08-recommendations/m8-rec001.md) — Recommendation Domain + Scoring Port
+- [M8-REC002](tasks/m08-recommendations/m8-rec002.md) — User Preference Vector Builder
+- [M8-REC003](tasks/m08-recommendations/m8-rec003.md) — GET /api/v1/recommendations
+- [M8-REC004](tasks/m08-recommendations/m8-rec004.md) — POST /recommendations/feedback
+- *…and 38 more (excl. M1 registry)*
 
 ### In progress
 

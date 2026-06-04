@@ -38,4 +38,14 @@ export default () => ({
     shaetyApiKey: process.env.SHAETY_API_KEY,
     shaetyApiUrl: process.env.SHAETY_API_URL,
   },
+  gemini: {
+    apiKey: process.env.GEMINI_API_KEY,
+    mockEmbeddings:
+      process.env.GEMINI_MOCK_EMBEDDINGS === 'true' ||
+      !process.env.GEMINI_API_KEY,
+    embedMaxRetries: parseInt(process.env.GEMINI_EMBED_MAX_RETRIES ?? '3', 10),
+  },
+  rag: {
+    cacheTtlSec: parseInt(process.env.RAG_CACHE_TTL_SEC ?? '900', 10),
+  },
 });

@@ -5,6 +5,7 @@ import { validationSchema } from './config/validation.schema';
 import { PrismaModule } from './infrastructure/persistence/prisma/prisma.module';
 import { QueueModule } from './infrastructure/queue/queue.module';
 import { PropertiesModule } from './presentation/properties/properties.module';
+import { RagModule } from './presentation/ai/rag.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { PropertiesModule } from './presentation/properties/properties.module';
     }),
     PrismaModule,
     QueueModule,
+    RagModule,
     PropertiesModule,
   ],
 })

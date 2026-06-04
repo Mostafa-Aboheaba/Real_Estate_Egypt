@@ -18,6 +18,10 @@ import {
   ProfileDomainException,
   ProfileErrorCode,
 } from '../../domain/profile/failures/profile.failures';
+import {
+  RagDomainException,
+  RagErrorCode,
+} from '../../domain/rag/failures/rag.failures';
 import { CORRELATION_ID_HEADER } from '../../common/middleware/correlation-id.middleware';
 
 const PROPERTY_STATUS: Record<PropertyErrorCode, number> = {
@@ -33,6 +37,12 @@ const PROFILE_STATUS: Record<ProfileErrorCode, number> = {
   [ProfileErrorCode.FAVORITE_NOT_FOUND]: HttpStatus.NOT_FOUND,
   [ProfileErrorCode.PROPERTY_NOT_FOUND]: HttpStatus.NOT_FOUND,
   [ProfileErrorCode.INVALID_CREDENTIALS]: HttpStatus.UNAUTHORIZED,
+};
+
+const RAG_STATUS: Record<RagErrorCode, number> = {
+  [RagErrorCode.EMBEDDING_FAILED]: HttpStatus.BAD_GATEWAY,
+  [RagErrorCode.RETRIEVAL_FAILED]: HttpStatus.INTERNAL_SERVER_ERROR,
+  [RagErrorCode.VALIDATION_ERROR]: HttpStatus.BAD_REQUEST,
 };
 
 const AUTH_STATUS: Record<AuthErrorCode, number> = {
@@ -72,6 +82,19 @@ export class ApiExceptionFilter implements ExceptionFilter {
     if (exception instanceof ProfileDomainException) {
       const status =
         PROFILE_STATUS[exception.code] ?? HttpStatus.BAD_REQUEST;
+      response.status(status).json({
+        error: {
+          code: exception.code,
+          message: exception.message,
+          details: [],
+          correlationId,
+        },
+      });
+      return;
+    }
+
+    if (exception instanceof RagDomainException) {
+      const status = RAG_STATUS[exception.code] ?? HttpStatus.BAD_GATEWAY;
       response.status(status).json({
         error: {
           code: exception.code,

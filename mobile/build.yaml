@@ -8,3 +8,6 @@ targets:
         options:
           explicit_to_json: true
           field_rename: snake
+      retrofit_generator:
+        options:
+          auto_register: false

@@ -1,0 +1,21 @@
+{
+  "title": "RAG Pipeline",
+  "panels": [
+    {
+      "title": "Retrieve latency (avg ms)",
+      "targets": [{ "expr": "ai_rag_retrieve_duration_ms_avg" }]
+    },
+    {
+      "title": "Empty retrieval rate",
+      "targets": [{ "expr": "ai_rag_retrieve_empty_rate" }]
+    },
+    {
+      "title": "Cache hits",
+      "targets": [{ "expr": "ai_rag_cache_hit_total" }]
+    },
+    {
+      "title": "Embeddings completed",
+      "targets": [{ "expr": "ai_rag_embed_total" }]
+    }
+  ]
+}

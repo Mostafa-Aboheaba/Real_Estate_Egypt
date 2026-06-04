@@ -79,6 +79,7 @@ enum MessageRole {
 enum EmbeddingEntityType {
   property
   project
+  faq
 
   @@map("embedding_entity_type")
 }

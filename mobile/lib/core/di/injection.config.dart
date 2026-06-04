@@ -21,16 +21,26 @@ import '../../features/authentication/data/repositories/auth_repository_impl.dar
     as _i317;
 import '../../features/authentication/domain/repositories/auth_repository.dart'
     as _i742;
-import '../../features/profile/data/datasources/profile_remote_datasource.dart'
-    as _i327;
+import '../../features/profile/data/datasources/remote/profile_api_service.dart'
+    as _i428;
+import '../../features/profile/data/datasources/remote/profile_remote_datasource.dart'
+    as _i750;
 import '../../features/profile/data/repositories/profile_repository_impl.dart'
     as _i334;
 import '../../features/profile/domain/repositories/profile_repository.dart'
     as _i894;
-import '../../features/property_search/data/datasources/property_remote_datasource.dart'
-    as _i164;
+import '../../features/property_search/data/datasources/local/property_filter_local_datasource.dart'
+    as _i37;
+import '../../features/property_search/data/datasources/remote/property_api_service.dart'
+    as _i787;
+import '../../features/property_search/data/datasources/remote/property_remote_datasource.dart'
+    as _i993;
+import '../../features/property_search/data/repositories/property_filter_repository_impl.dart'
+    as _i720;
 import '../../features/property_search/data/repositories/property_repository_impl.dart'
     as _i2;
+import '../../features/property_search/domain/repositories/property_filter_repository.dart'
+    as _i209;
 import '../../features/property_search/domain/repositories/property_repository.dart'
     as _i727;
 import '../auth/session_expired_notifier.dart' as _i45;
@@ -60,6 +70,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i45.SessionExpiredNotifier>(
       () => _i45.SessionExpiredNotifier(),
     );
+    gh.lazySingleton<_i37.PropertyFilterLocalDataSource>(
+      () => _i37.PropertyFilterLocalDataSource(),
+    );
     gh.lazySingleton<_i932.NetworkInfo>(
       () => _i932.NetworkInfoImpl(gh<_i895.Connectivity>()),
     );
@@ -68,6 +81,11 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i551.LoggingInterceptor>(
       () => dioModule.loggingInterceptor(gh<_i650.AppConfig>()),
+    );
+    gh.lazySingleton<_i209.PropertyFilterRepository>(
+      () => _i720.PropertyFilterRepositoryImpl(
+        gh<_i37.PropertyFilterLocalDataSource>(),
+      ),
     );
     gh.lazySingleton<_i361.Dio>(
       () => dioModule.refreshDio(
@@ -90,20 +108,26 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i551.LoggingInterceptor>(),
       ),
     );
+    gh.lazySingleton<_i787.PropertyApiService>(
+      () => registerModule.propertyApiService(gh<_i361.Dio>()),
+    );
+    gh.lazySingleton<_i428.ProfileApiService>(
+      () => registerModule.profileApiService(gh<_i361.Dio>()),
+    );
+    gh.lazySingleton<_i993.PropertyRemoteDataSource>(
+      () => _i993.PropertyRemoteDataSource(gh<_i787.PropertyApiService>()),
+    );
     gh.lazySingleton<_i557.ApiClient>(
       () => _i557.ApiClient(gh<_i361.Dio>(), gh<_i932.NetworkInfo>()),
+    );
+    gh.lazySingleton<_i727.PropertyRepository>(
+      () => _i2.PropertyRepositoryImpl(gh<_i993.PropertyRemoteDataSource>()),
     );
     gh.lazySingleton<_i14.AuthRemoteDataSource>(
       () => _i14.AuthRemoteDataSource(gh<_i557.ApiClient>()),
     );
-    gh.lazySingleton<_i164.PropertyRemoteDataSource>(
-      () => _i164.PropertyRemoteDataSource(gh<_i557.ApiClient>()),
-    );
-    gh.lazySingleton<_i327.ProfileRemoteDataSource>(
-      () => _i327.ProfileRemoteDataSource(gh<_i557.ApiClient>()),
-    );
-    gh.lazySingleton<_i727.PropertyRepository>(
-      () => _i2.PropertyRepositoryImpl(gh<_i164.PropertyRemoteDataSource>()),
+    gh.lazySingleton<_i750.ProfileRemoteDataSource>(
+      () => _i750.ProfileRemoteDataSource(gh<_i428.ProfileApiService>()),
     );
     gh.lazySingleton<_i742.AuthRepository>(
       () => _i317.AuthRepositoryImpl(
@@ -112,7 +136,7 @@ extension GetItInjectableX on _i174.GetIt {
       ),
     );
     gh.lazySingleton<_i894.ProfileRepository>(
-      () => _i334.ProfileRepositoryImpl(gh<_i327.ProfileRemoteDataSource>()),
+      () => _i334.ProfileRepositoryImpl(gh<_i750.ProfileRemoteDataSource>()),
     );
     return this;
   }
