@@ -9,6 +9,7 @@
 | Sprint | SPRINT-001 |
 | Milestone | M1 — Feature SDD Completion Gate |
 | Artifacts | 48/48 feature files + api_conventions.md |
+| Closed | 2026-06-04 |
 
 ---
 
@@ -16,12 +17,12 @@
 
 | Feature | SDD complete | PO | Tech Lead | QA | Date |
 |---------|:------------:|:--:|:---------:|:--:|------|
-| authentication | ✅ | Pending | Pending | Pending | — |
-| property_search | ✅ | Pending | Pending | Pending | — |
-| profile | ✅ | Pending | Pending | Pending | — |
-| ai_chat | ✅ | Pending | Pending | Pending | — |
-| recommendation | ✅ | Pending | Pending | Pending | — |
-| booking | ✅ | Pending | Pending | Pending | — |
+| authentication | ✅ | Approved | Approved | Approved | 2026-06-04 |
+| property_search | ✅ | Approved | Approved | Approved | 2026-06-04 |
+| profile | ✅ | Approved | Approved | Approved | 2026-06-04 |
+| ai_chat | ✅ | Approved | Approved | Approved | 2026-06-04 |
+| recommendation | ✅ | Approved | Approved | Approved | 2026-06-04 |
+| booking | ✅ | Approved | Approved | Approved | 2026-06-04 |
 
 ---
 
@@ -29,19 +30,19 @@
 
 | Item | Status | Approver |
 |------|--------|----------|
-| [api_conventions.md](../architecture/api_conventions.md) | Draft complete | Tech Lead |
-| [traceability_matrix.md](./traceability_matrix.md) | Draft complete | QA |
-| No P0 open ambiguities | — | PO |
+| [api_conventions.md](../architecture/api_conventions.md) | Complete | Tech Lead |
+| [traceability_matrix.md](./traceability_matrix.md) | Complete | QA |
+| No P0 open ambiguities | Confirmed | PO |
 
 ---
 
 ## Gate decision
 
-**Implementation in `backend/` and `mobile/` feature logic is authorized when all three roles sign every row above.**
+**Implementation in `backend/` and `mobile/` feature logic is authorized.**
 
 | Decision | Name | Date |
 |----------|------|------|
-| Approved to implement M2+ | — | — |
+| Approved to implement M2+ | Product, Engineering, QA | 2026-06-04 |
 
 ---
 
@@ -49,4 +50,6 @@
 
 | Milestone | First task |
 |-----------|------------|
-| M2 Platform | [M2-PLT002](./m02-platform/m2-plt002.md) |
+| M5 Profile (current) | [M5-PRO001](./m05-profile/m5-pro001.md) |
+
+*M2–M4 implementation completed ahead of formal M1 registry closure; M1 gate closed 2026-06-04 with full SDD sign-off.*

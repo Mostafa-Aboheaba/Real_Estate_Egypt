@@ -1,11 +1,10 @@
 import { Module } from '@nestjs/common';
-import { GetCurrentUserUseCase } from '../../application/users/get-current-user.use-case';
 import { AuthModule } from '../auth/auth.module';
+import { ProfileModule } from '../profile/profile.module';
 import { UsersController } from './users.controller';
 
 @Module({
-  imports: [AuthModule],
+  imports: [AuthModule, ProfileModule],
   controllers: [UsersController],
-  providers: [GetCurrentUserUseCase],
 })
 export class UsersModule {}

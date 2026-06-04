@@ -53,6 +53,7 @@ import { RolesGuard } from '../guards/roles.guard';
     AuthService,
     TOKEN_SERVICE,
     AUTH_REPOSITORY,
+    PASSWORD_HASHER,
     JwtAuthGuard,
     RolesGuard,
     EmailVerifiedGuard,

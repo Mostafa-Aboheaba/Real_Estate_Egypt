@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:property_assistant/core/error/failures.dart';
 import 'package:property_assistant/core/widgets/error_view.dart';
 import 'package:property_assistant/core/widgets/loading_indicator.dart';
+import 'package:property_assistant/features/authentication/presentation/providers/auth_provider.dart';
+import 'package:property_assistant/features/profile/presentation/providers/profile_provider.dart';
 import 'package:property_assistant/features/property_search/presentation/providers/property_search_provider.dart';
 import 'package:property_assistant/l10n/app_localizations.dart';
 
@@ -15,9 +17,31 @@ class PropertyDetailPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final asyncDetail = ref.watch(propertyDetailProvider(propertyId));
+    final session = ref.watch(authSessionProvider);
+    final isSignedIn = session.valueOrNull != null;
+    if (isSignedIn) {
+      ref.watch(favoritesProvider);
+    }
+    final isFavorite = isSignedIn
+        ? ref.watch(isFavoriteProvider(propertyId))
+        : false;
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.propertyDetailTitle)),
+      appBar: AppBar(
+        title: Text(l10n.propertyDetailTitle),
+        actions: [
+          if (isSignedIn)
+            IconButton(
+              icon: Icon(
+                isFavorite ? Icons.favorite : Icons.favorite_border,
+                color: isFavorite ? Colors.red : null,
+              ),
+              onPressed: () async {
+                await toggleFavorite(ref, propertyId, isFavorite);
+              },
+            ),
+        ],
+      ),
       body: asyncDetail.when(
         loading: () => const LoadingIndicator(),
         error: (e, _) => ErrorView(

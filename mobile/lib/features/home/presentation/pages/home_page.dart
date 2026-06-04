@@ -50,6 +50,14 @@ class HomePage extends ConsumerWidget {
               icon: const Icon(Icons.search),
               label: Text(l10n.browseProperties),
             ),
+            if (session.valueOrNull != null) ...[
+              const SizedBox(height: 12),
+              OutlinedButton.icon(
+                onPressed: () => context.push(RoutePaths.profile),
+                icon: const Icon(Icons.person_outline),
+                label: Text(l10n.profileTitle),
+              ),
+            ],
             const Spacer(),
             Text(
               'Flavor: ${config.flavor.name}',

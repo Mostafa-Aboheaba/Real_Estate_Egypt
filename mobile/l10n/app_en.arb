@@ -19,5 +19,16 @@
   },
   "propertyDetailTitle": "Property details",
   "propertyDescription": "Description",
-  "propertyAmenities": "Amenities"
+  "propertyAmenities": "Amenities",
+  "profileTitle": "Profile",
+  "profileEdit": "Edit profile",
+  "profileName": "Name",
+  "profilePhone": "Phone",
+  "profileLanguage": "Language",
+  "profileDefaultAgent": "Default AI agent",
+  "profileFavorites": "Favorites",
+  "profileFavoritesEmpty": "No saved properties yet.",
+  "profileSave": "Save",
+  "profileSignOut": "Sign out",
+  "profileSignInRequired": "Sign in to view your profile."
 }

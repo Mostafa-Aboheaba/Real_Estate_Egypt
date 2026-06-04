@@ -15,6 +15,12 @@ class RouteGuards {
     RoutePaths.verifyEmailPending,
   };
 
+  static const _authenticatedPaths = {
+    RoutePaths.profile,
+    RoutePaths.editProfile,
+    RoutePaths.favorites,
+  };
+
   /// Guest browse (FR-SEARCH-016): home, search, listing detail without login.
   static bool isGuestAllowed(String location) {
     if (_authOnlyPaths.contains(location)) {
@@ -32,7 +38,9 @@ class RouteGuards {
   String? redirect(BuildContext context, GoRouterState state) {
     final location = state.matchedLocation;
 
-    if (!isAuthenticated && !isGuestAllowed(location)) {
+    if (!isAuthenticated &&
+        (_authenticatedPaths.contains(location) ||
+            !isGuestAllowed(location))) {
       return RoutePaths.login;
     }
     if (isAuthenticated && _authOnlyPaths.contains(location)) {

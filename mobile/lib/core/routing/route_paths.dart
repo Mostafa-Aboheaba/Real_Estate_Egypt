@@ -7,5 +7,8 @@ abstract final class RoutePaths {
   static const String forgotPassword = '/forgot-password';
   static const String verifyEmailPending = '/verify-email-pending';
   static const String search = '/search';
+  static const String profile = '/profile';
+  static const String editProfile = '/profile/edit';
+  static const String favorites = '/favorites';
   static String propertyDetail(String id) => '/properties/$id';
 }

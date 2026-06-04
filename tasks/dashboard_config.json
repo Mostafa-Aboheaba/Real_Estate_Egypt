@@ -8,8 +8,7 @@
     "M1": {
       "name": "SDD Completion Gate",
       "type": "specification",
-      "notes": "48/48 feature artifacts exist; formal PO/Tech/QA sign-off pending.",
-      "process_blocker": true
+      "notes": "Closed 2026-06-04 — 48/48 artifacts; PO/Tech/QA sign-off recorded."
     },
     "M2": { "name": "Platform Bootstrap", "type": "implementation" },
     "M3": { "name": "Authentication", "type": "implementation" },
@@ -24,20 +23,32 @@
     "M12": { "name": "Production Release", "type": "implementation" }
   },
   "milestone_order": [
-    "M1", "M2", "M3", "M4", "M5", "M6", "M7", "M8", "M9", "M10", "M11", "M12"
+    "M1",
+    "M2",
+    "M3",
+    "M4",
+    "M5",
+    "M6",
+    "M7",
+    "M8",
+    "M9",
+    "M10",
+    "M11",
+    "M12"
   ],
   "sdd": {
     "artifact_target": 48,
     "artifact_count": 48,
-    "signoff_file": "tasks/m1_approval_signoff.md"
+    "signoff_file": "tasks/m1_approval_signoff.md",
+    "signoff_complete": true
+  },
+  "next_task": {
+    "id": "M5-PRO001",
+    "name": "Profile Domain + Repository Port",
+    "path": "tasks/m05-profile/m5-pro001.md",
+    "reason": "First task in M5 — domain layer unblocks all profile APIs."
   },
   "risks": [
-    {
-      "id": "R1",
-      "severity": "medium",
-      "title": "M1 formal sign-off incomplete",
-      "impact": "Process gate undocumented; task registry shows M1 pending while M2–M4 shipped."
-    },
     {
       "id": "R2",
       "severity": "medium",
@@ -82,8 +93,13 @@
       ]
     },
     {
-      "source": "tasks/master_execution_plan.md",
-      "items": ["Section 1.1 stale (claims backend blocked; implementation exists)"]
+      "source": "tasks/m05_profile_implementation_review.md",
+      "items": [
+        "PropertyService imports infrastructure (application layer violation)",
+        "PrismaProfileRepository throws generic Error for missing property",
+        "No profile.service.spec.ts; ~16% line coverage",
+        "No e2e for DELETE /users/me or GET /agents/:id"
+      ]
     }
   ]
 }

@@ -15,6 +15,7 @@ import { HealthModule } from './presentation/health/health.module';
 import { TransformInterceptor } from './presentation/interceptors/transform.interceptor';
 import { UsersModule } from './presentation/users/users.module';
 import { PropertiesModule } from './presentation/properties/properties.module';
+import { AgentsModule } from './presentation/agents/agents.module';
 
 @Module({
   imports: [
@@ -43,6 +44,7 @@ import { PropertiesModule } from './presentation/properties/properties.module';
     QueueModule,
     AuthModule,
     UsersModule,
+    AgentsModule,
     PropertiesModule,
   ],
   providers: [

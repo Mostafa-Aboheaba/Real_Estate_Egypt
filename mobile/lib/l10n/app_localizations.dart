@@ -157,6 +157,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Amenities'**
   String get propertyAmenities;
+
+  /// No description provided for @profileTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile'**
+  String get profileTitle;
+
+  /// No description provided for @profileEdit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit profile'**
+  String get profileEdit;
+
+  /// No description provided for @profileName.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get profileName;
+
+  /// No description provided for @profilePhone.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone'**
+  String get profilePhone;
+
+  /// No description provided for @profileLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'Language'**
+  String get profileLanguage;
+
+  /// No description provided for @profileDefaultAgent.
+  ///
+  /// In en, this message translates to:
+  /// **'Default AI agent'**
+  String get profileDefaultAgent;
+
+  /// No description provided for @profileFavorites.
+  ///
+  /// In en, this message translates to:
+  /// **'Favorites'**
+  String get profileFavorites;
+
+  /// No description provided for @profileFavoritesEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No saved properties yet.'**
+  String get profileFavoritesEmpty;
+
+  /// No description provided for @profileSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get profileSave;
+
+  /// No description provided for @profileSignOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign out'**
+  String get profileSignOut;
+
+  /// No description provided for @profileSignInRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to view your profile.'**
+  String get profileSignInRequired;
 }
 
 class _AppLocalizationsDelegate

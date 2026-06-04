@@ -8,7 +8,7 @@
 | **Milestone** | M1 — SDD Completion |
 | **Estimate** | 2–3h |
 | **Priority** | P0 |
-| **Status** | pending |
+| **Status** | done |
 | **Layer** | spec |
 
 ## Description

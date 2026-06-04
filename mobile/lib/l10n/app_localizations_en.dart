@@ -46,4 +46,37 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get propertyAmenities => 'Amenities';
+
+  @override
+  String get profileTitle => 'Profile';
+
+  @override
+  String get profileEdit => 'Edit profile';
+
+  @override
+  String get profileName => 'Name';
+
+  @override
+  String get profilePhone => 'Phone';
+
+  @override
+  String get profileLanguage => 'Language';
+
+  @override
+  String get profileDefaultAgent => 'Default AI agent';
+
+  @override
+  String get profileFavorites => 'Favorites';
+
+  @override
+  String get profileFavoritesEmpty => 'No saved properties yet.';
+
+  @override
+  String get profileSave => 'Save';
+
+  @override
+  String get profileSignOut => 'Sign out';
+
+  @override
+  String get profileSignInRequired => 'Sign in to view your profile.';
 }

@@ -46,4 +46,37 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get propertyAmenities => 'المرافق';
+
+  @override
+  String get profileTitle => 'الملف الشخصي';
+
+  @override
+  String get profileEdit => 'تعديل الملف';
+
+  @override
+  String get profileName => 'الاسم';
+
+  @override
+  String get profilePhone => 'الهاتف';
+
+  @override
+  String get profileLanguage => 'اللغة';
+
+  @override
+  String get profileDefaultAgent => 'وكيل الذكاء الاصطناعي';
+
+  @override
+  String get profileFavorites => 'المفضلة';
+
+  @override
+  String get profileFavoritesEmpty => 'لا توجد عقارات محفوظة.';
+
+  @override
+  String get profileSave => 'حفظ';
+
+  @override
+  String get profileSignOut => 'تسجيل الخروج';
+
+  @override
+  String get profileSignInRequired => 'سجّل الدخول لعرض ملفك.';
 }

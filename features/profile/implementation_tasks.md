@@ -5,10 +5,10 @@
 | Field | Value |
 |-------|-------|
 | Version | 1.0.0 |
-| Status | Draft |
-| Approval | Pending PO / Tech Lead / QA |
+| Status | Approved |
+| Approval | PO / Tech Lead / QA — 2026-06-04 (M1 gate) |
 
-Implementation is **blocked** until this feature SDD is approved.
+Implementation authorized — see [m05_profile_implementation_plan.md](../../tasks/m05_profile_implementation_plan.md).
 
 ---
 

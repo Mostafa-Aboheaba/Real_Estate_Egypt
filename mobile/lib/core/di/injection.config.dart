@@ -21,6 +21,12 @@ import '../../features/authentication/data/repositories/auth_repository_impl.dar
     as _i317;
 import '../../features/authentication/domain/repositories/auth_repository.dart'
     as _i742;
+import '../../features/profile/data/datasources/profile_remote_datasource.dart'
+    as _i327;
+import '../../features/profile/data/repositories/profile_repository_impl.dart'
+    as _i334;
+import '../../features/profile/domain/repositories/profile_repository.dart'
+    as _i894;
 import '../../features/property_search/data/datasources/property_remote_datasource.dart'
     as _i164;
 import '../../features/property_search/data/repositories/property_repository_impl.dart'
@@ -93,6 +99,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i164.PropertyRemoteDataSource>(
       () => _i164.PropertyRemoteDataSource(gh<_i557.ApiClient>()),
     );
+    gh.lazySingleton<_i327.ProfileRemoteDataSource>(
+      () => _i327.ProfileRemoteDataSource(gh<_i557.ApiClient>()),
+    );
     gh.lazySingleton<_i727.PropertyRepository>(
       () => _i2.PropertyRepositoryImpl(gh<_i164.PropertyRemoteDataSource>()),
     );
@@ -101,6 +110,9 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i14.AuthRemoteDataSource>(),
         gh<_i1002.TokenStorage>(),
       ),
+    );
+    gh.lazySingleton<_i894.ProfileRepository>(
+      () => _i334.ProfileRepositoryImpl(gh<_i327.ProfileRemoteDataSource>()),
     );
     return this;
   }

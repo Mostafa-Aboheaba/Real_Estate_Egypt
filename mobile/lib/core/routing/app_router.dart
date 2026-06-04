@@ -10,6 +10,9 @@ import 'package:property_assistant/features/authentication/presentation/pages/ve
 import 'package:property_assistant/features/authentication/presentation/providers/auth_provider.dart';
 import 'package:property_assistant/features/home/presentation/pages/home_page.dart';
 import 'package:property_assistant/features/property_search/presentation/pages/property_detail_page.dart';
+import 'package:property_assistant/features/profile/presentation/pages/edit_profile_page.dart';
+import 'package:property_assistant/features/profile/presentation/pages/favorites_page.dart';
+import 'package:property_assistant/features/profile/presentation/pages/profile_page.dart';
 import 'package:property_assistant/features/property_search/presentation/pages/search_page.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -65,6 +68,21 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: RoutePaths.verifyEmailPending,
         name: 'verifyEmailPending',
         builder: (context, state) => const VerifyEmailPendingPage(),
+      ),
+      GoRoute(
+        path: RoutePaths.profile,
+        name: 'profile',
+        builder: (context, state) => const ProfilePage(),
+      ),
+      GoRoute(
+        path: RoutePaths.editProfile,
+        name: 'editProfile',
+        builder: (context, state) => const EditProfilePage(),
+      ),
+      GoRoute(
+        path: RoutePaths.favorites,
+        name: 'favorites',
+        builder: (context, state) => const FavoritesPage(),
       ),
     ],
   );

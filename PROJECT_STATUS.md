@@ -3,7 +3,7 @@
 > **Auto-generated** — do not edit by hand. Regenerate after completing a task:
 > `python3 tasks/build_project_status.py`
 
-**Last updated:** 2026-06-04 07:05 UTC  
+**Last updated:** 2026-06-04 07:54 UTC  
 **Source:** 133 tasks under `tasks/m*/` + [`tasks/dashboard_config.json`](tasks/dashboard_config.json)
 
 ---
@@ -12,9 +12,9 @@
 
 | Metric | Value |
 |--------|-------|
-| **Overall completion** | **23.3%** (31 / 133 tasks) |
-| **Current milestone** | **M5** — User Profile & Preferences |
-| **Task breakdown** | Done 31 · Pending 102 · In progress 0 · Blocked 0 |
+| **Overall completion** | **53.4%** (71 / 133 tasks) |
+| **Current milestone** | **M6** — Embeddings, RAG & Knowledge |
+| **Task breakdown** | Done 71 · Pending 62 · In progress 0 · Blocked 0 |
 | **Implementation slice** | M2–M4 complete (31 tasks) |
 
 ---
@@ -24,11 +24,11 @@
 | ID | Milestone | Tasks | Progress | State |
 |----|-----------|-------|----------|-------|
 | M0 | Architecture & Product Foundation | — | 100% | Complete |
-| M1 | SDD Completion Gate | 0/30 (0%) | 0% | Blocked (process) — 48/48 feature artifacts exist; formal PO/Tech/QA sign-off pending. |
+| M1 | SDD Completion Gate | 30/30 (100%) | 100% | Complete |
 | M2 | Platform Bootstrap | 7/7 (100%) | 100% | Complete |
 | M3 | Authentication | 12/12 (100%) | 100% | Complete |
 | M4 | Property Search & Listing Sync | 12/12 (100%) | 100% | Complete |
-| M5 | User Profile & Preferences | 0/10 (0%) | 0% | Not started |
+| M5 | User Profile & Preferences | 10/10 (100%) | 100% | Complete |
 | M6 | Embeddings, RAG & Knowledge | 0/9 (0%) | 0% | Not started |
 | M7 | AI Chat | 0/11 (0%) | 0% | Not started |
 | M8 | Recommendations | 0/6 (0%) | 0% | Not started |
@@ -40,23 +40,22 @@
 ### Completed milestones
 
 - M0 — Architecture & Product Foundation
+- M1 — SDD Completion Gate
 - M2 — Platform Bootstrap
 - M3 — Authentication
 - M4 — Property Search & Listing Sync
-- M1 SDD artifacts: **48/48** (content); registry/sign-off incomplete
+- M5 — User Profile & Preferences
 
 ### Current milestone
 
-**M5 — User Profile & Preferences**
+**M6 — Embeddings, RAG & Knowledge**
 
-**Next recommended task:** [M5-PRO001](tasks/m05-profile/m5-pro001.md) — Profile Domain + Repository Port  
+**Next recommended task:** [M6-RAG001](tasks/m06-rag/m6-rag001.md) — Gemini Embedding Adapter  
   
-*First pending task in M5.*
+*First pending task in M6.*
 
 ### Remaining milestones
 
-- M1 — SDD Completion Gate (0/30 tasks)
-- M5 — User Profile & Preferences (0/10 tasks)
 - M6 — Embeddings, RAG & Knowledge (0/9 tasks)
 - M7 — AI Chat (0/11 tasks)
 - M8 — Recommendations (0/6 tasks)
@@ -71,29 +70,30 @@
 
 ### Completed
 
+- **M1** (30): M1-AUT-API, M1-AUT-ARC, M1-AUT-DAT, M1-AUT-REQ, M1-AUT-TST, M1-BOK-API, M1-BOK-ARC, M1-BOK-DAT, M1-BOK-REQ, M1-BOK-TST, M1-CHT-API, M1-CHT-ARC, M1-CHT-DAT, M1-CHT-REQ, M1-CHT-TST, M1-PRO-API, M1-PRO-ARC, M1-PRO-DAT, M1-PRO-REQ, M1-PRO-TST, M1-REC-API, M1-REC-ARC, M1-REC-DAT, M1-REC-REQ, M1-REC-TST, M1-SEA-API, M1-SEA-ARC, M1-SEA-DAT, M1-SEA-REQ, M1-SEA-TST
 - **M2** (7): M2-PLT001, M2-PLT002, M2-PLT003, M2-PLT004, M2-PLT005, M2-PLT006, M2-PLT007
 - **M3** (12): M3-AUTH001, M3-AUTH002, M3-AUTH003, M3-AUTH004, M3-AUTH005, M3-AUTH006, M3-AUTH007, M3-AUTH008, M3-AUTH009, M3-AUTH010, M3-AUTH011, M3-AUTH012
 - **M4** (12): M4-SEA001, M4-SEA002, M4-SEA003, M4-SEA004, M4-SEA005, M4-SEA006, M4-SEA007, M4-SEA008, M4-SEA009, M4-SEA010, M4-SEA011, M4-SEA012
+- **M5** (10): M5-PRO001, M5-PRO002, M5-PRO003, M5-PRO004, M5-PRO005, M5-PRO006, M5-PRO007, M5-PRO008, M5-PRO009, M5-PRO010
 
 ### Pending — implementation path (next 15)
 
-- [M5-PRO001](tasks/m05-profile/m5-pro001.md) — Profile Domain + Repository Port
-- [M5-PRO002](tasks/m05-profile/m5-pro002.md) — GET/PATCH /api/v1/users/me
-- [M5-PRO003](tasks/m05-profile/m5-pro003.md) — Favorites CRUD API
-- [M5-PRO004](tasks/m05-profile/m5-pro004.md) — Search Preferences API
-- [M5-PRO005](tasks/m05-profile/m5-pro005.md) — Default AI Agent Preference
-- [M5-PRO006](tasks/m05-profile/m5-pro006.md) — Account Deletion + Data Export Stub
-- [M5-PRO007](tasks/m05-profile/m5-pro007.md) — Agent Public Profile GET /agents/:id
-- [M5-PRO008](tasks/m05-profile/m5-pro008.md) — Mobile Profile Tab + Edit Profile
-- [M5-PRO009](tasks/m05-profile/m5-pro009.md) — Mobile Favorites Screen
-- [M5-PRO010](tasks/m05-profile/m5-pro010.md) — Profile P0 Integration Tests
 - [M6-RAG001](tasks/m06-rag/m6-rag001.md) — Gemini Embedding Adapter
 - [M6-RAG002](tasks/m06-rag/m6-rag002.md) — embed-listing BullMQ Worker
 - [M6-RAG003](tasks/m06-rag/m6-rag003.md) — HNSW Index Migration + pgvector Tuning
 - [M6-RAG004](tasks/m06-rag/m6-rag004.md) — RAG Orchestrator (hybrid vector + SQL + tsvector)
 - [M6-RAG005](tasks/m06-rag/m6-rag005.md) — POST /api/v1/ai/rag/retrieve (dev/admin)
-- *…and 57 more (excl. M1 registry)*
-- *M1 SDD registry: 30 tasks still `pending`*
+- [M6-RAG006](tasks/m06-rag/m6-rag006.md) — Redis RAG Result Cache
+- [M6-RAG007](tasks/m06-rag/m6-rag007.md) — Project Knowledge Ingest (FAQ chunks)
+- [M6-RAG008](tasks/m06-rag/m6-rag008.md) — RAG Metrics Instrumentation
+- [M6-RAG009](tasks/m06-rag/m6-rag009.md) — RAG Golden-Set Evaluation Script
+- [M7-CHT001](tasks/m07-ai-chat/m7-cht001.md) — Conversation Domain + Repositories
+- [M7-CHT002](tasks/m07-ai-chat/m7-cht002.md) — AiModule + Agents Catalog API
+- [M7-CHT003](tasks/m07-ai-chat/m7-cht003.md) — GeminiOrchestrator + Prompt Version Loader
+- [M7-CHT004](tasks/m07-ai-chat/m7-cht004.md) — SafetyPipeline + Fair Housing Rules
+- [M7-CHT005](tasks/m07-ai-chat/m7-cht005.md) — ToolExecutionLoop (semantic_search, etc.)
+- [M7-CHT006](tasks/m07-ai-chat/m7-cht006.md) — POST /conversations + /messages (non-stream)
+- *…and 47 more (excl. M1 registry)*
 
 ### In progress
 
@@ -105,13 +105,12 @@
 
 ### Blocked (process / external)
 
-- M1 task registry — 30/30 SDD tasks still `pending` (artifacts exist under `features/`)
+- *None*
 
 ---
 
 ## Risks
 
-- **[MEDIUM] M1 formal sign-off incomplete** — Process gate undocumented; task registry shows M1 pending while M2–M4 shipped.
 - **[MEDIUM] Listing data provider dependency** — Production sync needs Shaety credentials; dev uses mock (12 listings).
 - **[LOW] OAuth / device configuration** — Google/Apple sign-in requires platform keys and `.env` for real devices.
 - **[MEDIUM] Vertex AI & GCP not provisioned** — M6–M7 blocked on cloud AI until staging (M11) or local mocks.
@@ -132,8 +131,11 @@
 - Deferred pgvector semantic search param
 - No recurring scheduled listing sync (FR-SEARCH-002)
 
-### tasks/master_execution_plan.md
-- Section 1.1 stale (claims backend blocked; implementation exists)
+### tasks/m05_profile_implementation_review.md
+- PropertyService imports infrastructure (application layer violation)
+- PrismaProfileRepository throws generic Error for missing property
+- No profile.service.spec.ts; ~16% line coverage
+- No e2e for DELETE /users/me or GET /agents/:id
 
 ---
 
@@ -141,9 +143,11 @@
 
 | Milestone | Report |
 |-----------|--------|
+| M1 | [SDD completion gate](tasks/m1_sdd_completion_report.md) · [Sign-off](tasks/m1_approval_signoff.md) |
 | M2 | [Platform bootstrap](tasks/m02_platform_bootstrap_completion_report.md) |
 | M3 | [Authentication](tasks/m03_authentication_completion_report.md) · [Review](tasks/m03_authentication_implementation_review.md) |
 | M4 | [Property search](tasks/m04_property_search_completion_report.md) · [Review](tasks/m04_property_search_implementation_review.md) |
+| M5 | [Implementation plan](tasks/m05_profile_implementation_plan.md) |
 
 ---
 

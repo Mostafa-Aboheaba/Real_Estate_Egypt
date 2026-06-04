@@ -14,11 +14,25 @@ import {
   PropertyDomainException,
   PropertyErrorCode,
 } from '../../domain/property/failures/property.failures';
+import {
+  ProfileDomainException,
+  ProfileErrorCode,
+} from '../../domain/profile/failures/profile.failures';
 import { CORRELATION_ID_HEADER } from '../../common/middleware/correlation-id.middleware';
 
 const PROPERTY_STATUS: Record<PropertyErrorCode, number> = {
   [PropertyErrorCode.LISTING_NOT_FOUND]: HttpStatus.NOT_FOUND,
   [PropertyErrorCode.INVALID_FILTERS]: HttpStatus.BAD_REQUEST,
+};
+
+const PROFILE_STATUS: Record<ProfileErrorCode, number> = {
+  [ProfileErrorCode.NOT_FOUND]: HttpStatus.NOT_FOUND,
+  [ProfileErrorCode.VALIDATION_ERROR]: HttpStatus.BAD_REQUEST,
+  [ProfileErrorCode.INVALID_AGENT_ID]: HttpStatus.BAD_REQUEST,
+  [ProfileErrorCode.FORBIDDEN]: HttpStatus.FORBIDDEN,
+  [ProfileErrorCode.FAVORITE_NOT_FOUND]: HttpStatus.NOT_FOUND,
+  [ProfileErrorCode.PROPERTY_NOT_FOUND]: HttpStatus.NOT_FOUND,
+  [ProfileErrorCode.INVALID_CREDENTIALS]: HttpStatus.UNAUTHORIZED,
 };
 
 const AUTH_STATUS: Record<AuthErrorCode, number> = {
@@ -44,6 +58,20 @@ export class ApiExceptionFilter implements ExceptionFilter {
 
     if (exception instanceof PropertyDomainException) {
       const status = PROPERTY_STATUS[exception.code] ?? HttpStatus.BAD_REQUEST;
+      response.status(status).json({
+        error: {
+          code: exception.code,
+          message: exception.message,
+          details: [],
+          correlationId,
+        },
+      });
+      return;
+    }
+
+    if (exception instanceof ProfileDomainException) {
+      const status =
+        PROFILE_STATUS[exception.code] ?? HttpStatus.BAD_REQUEST;
       response.status(status).json({
         error: {
           code: exception.code,

@@ -6,13 +6,14 @@
 
 | Field | Value |
 |-------|-------|
-| Version | 1.0.0 |
-| Status | Draft |
-| Last Updated | 2026-06-03 |
+| Version | 1.1.0 |
+| Status | Active |
+| Last Updated | 2026-06-04 |
 | Methodology | Specification Driven Development (SDD) |
 | Total user stories | 76 (63 P0 MVP) |
-| Architecture docs | 13 complete (draft) |
-| Feature SDD artifacts | 6/48 complete (user stories + AC only) |
+| Architecture docs | 13 complete |
+| Feature SDD artifacts | 48/48 complete (M1 closed) |
+| Current implementation focus | **M5** — User Profile & Preferences |
 
 ---
 
@@ -43,15 +44,18 @@ flowchart LR
     M11 --> M12[M12 Production]
 ```
 
-### 1.1 Current State (2026-06-03)
+### 1.1 Current State (2026-06-04)
 
 | Area | Status |
 |------|--------|
 | `specs/vision.md`, `requirements.md`, `user_stories_index.md` | ✅ Complete |
-| `architecture/*` (13 docs) | ✅ Draft complete |
-| Feature user stories + acceptance criteria (6 features) | ✅ Complete |
-| Feature requirements, data model, API design, tests | ⬜ Not started |
-| `backend/` implementation | ⬜ Blocked (SDD gate) |
+| `architecture/*` (13 docs) | ✅ Complete |
+| Feature SDD (6 features × 8 artifacts) | ✅ Complete — [M1 report](./m1_sdd_completion_report.md) |
+| M1 approval gate | ✅ Closed — [sign-off](./m1_approval_signoff.md) |
+| M2 platform bootstrap | ✅ Complete |
+| M3 authentication | ✅ Complete — [report](./m03_authentication_completion_report.md) |
+| M4 property search & sync | ✅ Complete — [report](./m04_property_search_completion_report.md) |
+| **M5 profile (current)** | 🔄 Not started — [plan](./m05_profile_implementation_plan.md) |
 | `mobile/` platform bootstrap | ✅ Done — [report](./mobile_platform_bootstrap_completion_report.md) |
 
 ### 1.2 Approved Stack (Implementation Reference)
@@ -73,11 +77,11 @@ flowchart LR
 | ID | Name | Runnable as | Est. duration |
 |----|------|-------------|---------------|
 | **M0** | Architecture & Product Foundation | Documentation + approvals | Complete |
-| **M1** | Feature SDD Completion Gate | Spec review sign-off | 2–3 weeks |
-| **M2** | Platform Bootstrap | `docker compose up` + health checks | 1–2 weeks |
-| **M3** | Authentication | Register/login mobile ↔ API | 2 weeks |
-| **M4** | Property Search & Listing Sync | Browse/search listings (guest OK) | 2–3 weeks |
-| **M5** | User Profile & Preferences | Favorites + prefs with auth | 1–2 weeks |
+| **M1** | Feature SDD Completion Gate | Spec review sign-off | Complete (2026-06-04) |
+| **M2** | Platform Bootstrap | `docker compose up` + health checks | Complete |
+| **M3** | Authentication | Register/login mobile ↔ API | Complete |
+| **M4** | Property Search & Listing Sync | Browse/search listings (guest OK) | Complete |
+| **M5** | User Profile & Preferences | Favorites + prefs with auth | **Current** — 1–2 weeks |
 | **M6** | Embeddings, RAG & Knowledge | RAG API returns grounded chunks | 2 weeks |
 | **M7** | AI Chat | Full chat with agents + streaming | 2–3 weeks |
 | **M8** | Recommendations | Home feed personalized | 1–2 weeks |
@@ -160,14 +164,14 @@ Per feature (`authentication`, `property_search`, `profile`, `ai_chat`, `recomme
 
 | # | Artifact | Status (all features) |
 |---|----------|----------------------|
-| 1 | `requirements.md` | ⬜ |
+| 1 | `requirements.md` | ✅ |
 | 2 | `user_stories.md` | ✅ |
 | 3 | `acceptance_criteria.md` | ✅ |
-| 4 | `architecture.md` | ⬜ |
-| 5 | `data_model.md` | ⬜ |
-| 6 | `api_design.md` | ⬜ |
-| 7 | `implementation_tasks.md` | ⬜ |
-| 8 | `tests.md` | ⬜ |
+| 4 | `architecture.md` | ✅ |
+| 5 | `data_model.md` | ✅ |
+| 6 | `api_design.md` | ✅ |
+| 7 | `implementation_tasks.md` | ✅ |
+| 8 | `tests.md` | ✅ |
 
 **Recommended completion order:**
 
@@ -198,11 +202,13 @@ Per feature (`authentication`, `property_search`, `profile`, `ai_chat`, `recomme
 
 #### Definition of Done
 
-- [ ] 48/48 artifact files exist (6 features × 8 artifacts)
-- [ ] Each feature README SDD table shows ✅ for all rows
-- [ ] Written **Approval to implement** per feature (PO + Tech Lead + QA)
-- [ ] No open P0 ambiguities in issue tracker
-- [ ] Global API conventions documented (errors, pagination, i18n, auth headers)
+- [x] 48/48 artifact files exist (6 features × 8 artifacts)
+- [x] Each feature README SDD table shows ✅ for all rows
+- [x] Written **Approval to implement** per feature (PO + Tech Lead + QA) — [m1_approval_signoff.md](./m1_approval_signoff.md)
+- [x] No open P0 ambiguities in issue tracker
+- [x] Global API conventions documented (errors, pagination, i18n, auth headers)
+
+**Completion report:** [m1_sdd_completion_report.md](./m1_sdd_completion_report.md)
 
 #### Independently Runnable Verification
 
@@ -379,7 +385,9 @@ Authenticated users manage profile, locale, favorites, search preferences, defau
 
 - M3 (authentication)
 - M4 (properties exist for favorites)
-- M1: `features/profile/*` approved
+- M1: `features/profile/*` approved ✅
+
+**Implementation plan:** [m05_profile_implementation_plan.md](./m05_profile_implementation_plan.md)
 
 #### Deliverables
 
@@ -785,7 +793,7 @@ Release MVP to production GCP and public app stores; enable monitoring and on-ca
 
 | Risk | Milestone impact | Mitigation |
 |------|------------------|------------|
-| SDD bottleneck | Blocks M2+ | Parallelize per-feature specs in M1; auth first |
+| SDD bottleneck | — (M1 closed) | Maintain specs when FRs change |
 | Shaety API access | Blocks M4 | Mock adapter in M4; real adapter fast-follow |
 | Vertex AI quota/latency | M7, M11 | Staging soak in M11 before prod |
 | AI cost overrun | M7+ | Daily quota, monitoring from M6 |
@@ -801,13 +809,13 @@ gantt
     title Master Execution Plan (indicative)
     dateFormat YYYY-MM-DD
     section Specs
-    M1 SDD Completion           :m1, 2026-06-10, 21d
+    M1 SDD Completion           :done, m1, 2026-06-03, 2d
     section Platform
-    M2 Bootstrap                :m2, after m1, 10d
+    M2 Bootstrap                :done, m2, after m1, 10d
     section Features
-    M3 Auth                     :m3, after m2, 14d
-    M4 Search                   :m4, after m3, 21d
-    M5 Profile                  :m5, after m3, 14d
+    M3 Auth                     :done, m3, after m2, 14d
+    M4 Search                   :done, m4, after m3, 21d
+    M5 Profile                  :active, m5, 2026-06-04, 14d
     M6 RAG                      :m6, after m4, 14d
     M7 AI Chat                  :m7, after m6, 21d
     M8 Recommendations          :m8, after m5, 14d
@@ -832,7 +840,7 @@ gantt
 | Gate | After milestone | Approvers |
 |------|-----------------|-----------|
 | Architecture baseline | M0 | PO, Tech Lead |
-| Implement code | M1 | PO, Tech Lead, QA per feature |
+| Implement code | M1 | PO, Tech Lead, QA per feature — **closed 2026-06-04** |
 | Staging deploy | M10 | Tech Lead, SRE |
 | Production release | M11 | PO, Tech Lead, Security |
 
@@ -855,6 +863,6 @@ gantt
 
 | Role | Name | Date | Status |
 |------|------|------|--------|
-| Product Owner | — | — | Pending |
-| Tech Lead | — | — | Pending |
-| QA Lead | — | — | Pending |
+| Product Owner | — | 2026-06-04 | Approved (M1 gate) |
+| Tech Lead | — | 2026-06-04 | Approved (M1 gate) |
+| QA Lead | — | 2026-06-04 | Approved (M1 gate) |
