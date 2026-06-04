@@ -13,6 +13,8 @@
 | **ID format** | `M{milestone}-{AREA}{nnn}` (e.g. `M4-SEA006`) |
 | **Status** | `pending` · `in_progress` · `done` |
 | **Regenerate** | `python3 tasks/build_registry.py` |
+| **Project dashboard** | `python3 tasks/build_project_status.py` → [`../PROJECT_STATUS.md`](../PROJECT_STATUS.md) |
+| **Mark task done** | `python3 tasks/complete_task.py M5-PRO001` |
 
 ## Progress
 

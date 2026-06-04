@@ -1,0 +1,89 @@
+{
+  "milestones": {
+    "M0": {
+      "name": "Architecture & Product Foundation",
+      "type": "documentation",
+      "notes": "Vision, SRS, architecture docs complete."
+    },
+    "M1": {
+      "name": "SDD Completion Gate",
+      "type": "specification",
+      "notes": "48/48 feature artifacts exist; formal PO/Tech/QA sign-off pending.",
+      "process_blocker": true
+    },
+    "M2": { "name": "Platform Bootstrap", "type": "implementation" },
+    "M3": { "name": "Authentication", "type": "implementation" },
+    "M4": { "name": "Property Search & Listing Sync", "type": "implementation" },
+    "M5": { "name": "User Profile & Preferences", "type": "implementation" },
+    "M6": { "name": "Embeddings, RAG & Knowledge", "type": "implementation" },
+    "M7": { "name": "AI Chat", "type": "implementation" },
+    "M8": { "name": "Recommendations", "type": "implementation" },
+    "M9": { "name": "Booking & Notifications", "type": "implementation" },
+    "M10": { "name": "Quality, Security & E2E", "type": "implementation" },
+    "M11": { "name": "Staging on GCP", "type": "implementation" },
+    "M12": { "name": "Production Release", "type": "implementation" }
+  },
+  "milestone_order": [
+    "M1", "M2", "M3", "M4", "M5", "M6", "M7", "M8", "M9", "M10", "M11", "M12"
+  ],
+  "sdd": {
+    "artifact_target": 48,
+    "artifact_count": 48,
+    "signoff_file": "tasks/m1_approval_signoff.md"
+  },
+  "risks": [
+    {
+      "id": "R1",
+      "severity": "medium",
+      "title": "M1 formal sign-off incomplete",
+      "impact": "Process gate undocumented; task registry shows M1 pending while M2–M4 shipped."
+    },
+    {
+      "id": "R2",
+      "severity": "medium",
+      "title": "Listing data provider dependency",
+      "impact": "Production sync needs Shaety credentials; dev uses mock (12 listings)."
+    },
+    {
+      "id": "R3",
+      "severity": "low",
+      "title": "OAuth / device configuration",
+      "impact": "Google/Apple sign-in requires platform keys and `.env` for real devices."
+    },
+    {
+      "id": "R4",
+      "severity": "medium",
+      "title": "Vertex AI & GCP not provisioned",
+      "impact": "M6–M7 blocked on cloud AI until staging (M11) or local mocks."
+    },
+    {
+      "id": "R5",
+      "severity": "low",
+      "title": "Docker dependency for local stack",
+      "impact": "Postgres/Redis via docker compose; fails if Docker daemon is down."
+    }
+  ],
+  "technical_debt": [
+    {
+      "source": "tasks/m03_authentication_implementation_review.md",
+      "items": [
+        "Monolithic AuthService (split use cases)",
+        "Thin mobile OAuth abstraction",
+        "Expand domain/application test coverage"
+      ]
+    },
+    {
+      "source": "tasks/m04_property_search_implementation_review.md",
+      "items": [
+        "listing-normalizer in infrastructure (move toward domain port)",
+        "Monolithic PropertyService; sequential upserts",
+        "Deferred pgvector semantic search param",
+        "No recurring scheduled listing sync (FR-SEARCH-002)"
+      ]
+    },
+    {
+      "source": "tasks/master_execution_plan.md",
+      "items": ["Section 1.1 stale (claims backend blocked; implementation exists)"]
+    }
+  ]
+}

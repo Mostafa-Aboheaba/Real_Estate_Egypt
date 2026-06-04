@@ -27,6 +27,7 @@ Real_Estate_agent/
 │   ├── ai_provider_strategy.md
 │   ├── listing_providers.md
 │   └── deployment_architecture.md
+├── PROJECT_STATUS.md       # Auto-generated executive dashboard
 ├── tasks/                  # Delivery planning
 │   ├── roadmap.md
 │   └── master_execution_plan.md
@@ -44,7 +45,9 @@ This project follows **Specification Driven Development (SDD)**:
 3. Implementation Tasks → Tests
 4. **Approval gate** → then code
 
-No implementation in `backend/` or `mobile/` until specs are approved.
+Track progress: [`PROJECT_STATUS.md`](PROJECT_STATUS.md) (regenerate with `python3 tasks/build_project_status.py` after completing tasks).
+
+Formal SDD sign-off is still pending in [`tasks/m1_approval_signoff.md`](tasks/m1_approval_signoff.md); M2–M4 implementation is in progress in `backend/` and `mobile/`.
 
 ## Approved Stack
 
