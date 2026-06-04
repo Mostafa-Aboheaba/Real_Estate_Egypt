@@ -115,6 +115,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Discover properties in Egypt with AI assistance.'**
   String get homeSubtitle;
+
+  /// No description provided for @browseProperties.
+  ///
+  /// In en, this message translates to:
+  /// **'Browse properties'**
+  String get browseProperties;
+
+  /// No description provided for @searchTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Search properties'**
+  String get searchTitle;
+
+  /// No description provided for @searchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by keyword, area…'**
+  String get searchHint;
+
+  /// No description provided for @searchResultsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count,plural, =0{No results} =1{1 result} other{{count} results}}'**
+  String searchResultsCount(int count);
+
+  /// No description provided for @propertyDetailTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Property details'**
+  String get propertyDetailTitle;
+
+  /// No description provided for @propertyDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get propertyDescription;
+
+  /// No description provided for @propertyAmenities.
+  ///
+  /// In en, this message translates to:
+  /// **'Amenities'**
+  String get propertyAmenities;
 }
 
 class _AppLocalizationsDelegate

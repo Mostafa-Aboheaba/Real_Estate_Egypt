@@ -17,8 +17,16 @@ class VerifyEmailPendingPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             const Text(
-              'We sent a verification link to your email. '
-              'Open the link, then sign in.',
+              'In local development, no real email is sent. '
+              'Check the backend terminal for a line starting with '
+              '"Verification email" and open that link in a browser. '
+              'Then sign in.',
+            ),
+            const SizedBox(height: 12),
+            const Text(
+              'Or sign in directly — development mode auto-verifies '
+              'your account on login.',
+              style: TextStyle(fontSize: 13),
             ),
             const SizedBox(height: 24),
             FilledButton(

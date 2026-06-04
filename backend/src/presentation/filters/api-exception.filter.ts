@@ -10,7 +10,16 @@ import {
   AuthDomainException,
   AuthErrorCode,
 } from '../../domain/auth/failures/auth.failures';
+import {
+  PropertyDomainException,
+  PropertyErrorCode,
+} from '../../domain/property/failures/property.failures';
 import { CORRELATION_ID_HEADER } from '../../common/middleware/correlation-id.middleware';
+
+const PROPERTY_STATUS: Record<PropertyErrorCode, number> = {
+  [PropertyErrorCode.LISTING_NOT_FOUND]: HttpStatus.NOT_FOUND,
+  [PropertyErrorCode.INVALID_FILTERS]: HttpStatus.BAD_REQUEST,
+};
 
 const AUTH_STATUS: Record<AuthErrorCode, number> = {
   [AuthErrorCode.DUPLICATE_EMAIL]: HttpStatus.CONFLICT,
@@ -32,6 +41,19 @@ export class ApiExceptionFilter implements ExceptionFilter {
     const request = ctx.getRequest<Request & { correlationId?: string }>();
 
     const correlationId = request.correlationId ?? 'unknown';
+
+    if (exception instanceof PropertyDomainException) {
+      const status = PROPERTY_STATUS[exception.code] ?? HttpStatus.BAD_REQUEST;
+      response.status(status).json({
+        error: {
+          code: exception.code,
+          message: exception.message,
+          details: [],
+          correlationId,
+        },
+      });
+      return;
+    }
 
     if (exception instanceof AuthDomainException) {
       const status = AUTH_STATUS[exception.code] ?? HttpStatus.BAD_REQUEST;

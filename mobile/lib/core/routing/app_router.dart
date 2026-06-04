@@ -9,6 +9,8 @@ import 'package:property_assistant/features/authentication/presentation/pages/re
 import 'package:property_assistant/features/authentication/presentation/pages/verify_email_pending_page.dart';
 import 'package:property_assistant/features/authentication/presentation/providers/auth_provider.dart';
 import 'package:property_assistant/features/home/presentation/pages/home_page.dart';
+import 'package:property_assistant/features/property_search/presentation/pages/property_detail_page.dart';
+import 'package:property_assistant/features/property_search/presentation/pages/search_page.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 
@@ -30,6 +32,19 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: RoutePaths.home,
         name: 'home',
         builder: (context, state) => const HomePage(),
+      ),
+      GoRoute(
+        path: RoutePaths.search,
+        name: 'search',
+        builder: (context, state) => const SearchPage(),
+      ),
+      GoRoute(
+        path: '/properties/:id',
+        name: 'propertyDetail',
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          return PropertyDetailPage(propertyId: id);
+        },
       ),
       GoRoute(
         path: RoutePaths.login,

@@ -22,4 +22,20 @@ export default () => ({
   app: {
     publicUrl: process.env.PUBLIC_URL ?? 'http://localhost:3000',
   },
+  auth: {
+    // In development, emails are logged only — auto-verify unless explicitly disabled.
+    devAutoVerifyEmail: (() => {
+      if (process.env.AUTH_DEV_AUTO_VERIFY_EMAIL === 'false') {
+        return false;
+      }
+      if (process.env.AUTH_DEV_AUTO_VERIFY_EMAIL === 'true') {
+        return true;
+      }
+      return process.env.NODE_ENV !== 'production';
+    })(),
+  },
+  listing: {
+    shaetyApiKey: process.env.SHAETY_API_KEY,
+    shaetyApiUrl: process.env.SHAETY_API_URL,
+  },
 });

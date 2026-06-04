@@ -17,6 +17,14 @@ export class TransformInterceptor implements NestInterceptor {
         if (data === undefined || data === null) {
           return data;
         }
+        if (
+          typeof data === 'object' &&
+          data !== null &&
+          'data' in data &&
+          'meta' in data
+        ) {
+          return data as { data: unknown; meta: unknown };
+        }
         return { data };
       }),
     );

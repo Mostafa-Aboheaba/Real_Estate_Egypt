@@ -16,4 +16,34 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get homeSubtitle => 'اكتشف العقارات في مصر بمساعدة الذكاء الاصطناعي.';
+
+  @override
+  String get browseProperties => 'تصفح العقارات';
+
+  @override
+  String get searchTitle => 'بحث العقارات';
+
+  @override
+  String get searchHint => 'ابحث بالكلمة أو المنطقة…';
+
+  @override
+  String searchResultsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count نتائج',
+      one: 'نتيجة واحدة',
+      zero: 'لا نتائج',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get propertyDetailTitle => 'تفاصيل العقار';
+
+  @override
+  String get propertyDescription => 'الوصف';
+
+  @override
+  String get propertyAmenities => 'المرافق';
 }

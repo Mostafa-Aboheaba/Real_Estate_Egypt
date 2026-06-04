@@ -14,6 +14,7 @@ import { ApiExceptionFilter } from './presentation/filters/api-exception.filter'
 import { HealthModule } from './presentation/health/health.module';
 import { TransformInterceptor } from './presentation/interceptors/transform.interceptor';
 import { UsersModule } from './presentation/users/users.module';
+import { PropertiesModule } from './presentation/properties/properties.module';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { UsersModule } from './presentation/users/users.module';
     QueueModule,
     AuthModule,
     UsersModule,
+    PropertiesModule,
   ],
   providers: [
     {

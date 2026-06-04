@@ -1,8 +1,8 @@
-# M3 Authentication — Implementation Review
+# M3 Authentication — Implementation Review (v2)
 
 **Date:** 2026-06-03  
-**Scope:** Backend (`backend/src`) + Mobile (`mobile/lib/features/authentication`)  
-**Reviewer:** Code review against project architecture docs and Clean Architecture / SOLID principles
+**Scope:** Backend (`backend/src`) + Mobile (`mobile/lib/features/authentication`, `core/auth`, `core/network`)  
+**Baseline:** Post-refinement implementation (ports, guards, e2e, session expiry)
 
 ---
 
@@ -10,76 +10,87 @@
 
 | Dimension | Backend | Mobile | Overall |
 |-----------|---------|--------|---------|
-| Clean Architecture | **Good** with notable gaps | **Good** | **B** |
-| SOLID | **Fair–Good** | **Fair** | **B−** |
-| Testability | **Fair** | **Weak** | **C+** |
-| Naming conventions | **Good** | **Good** | **A−** |
-| Scalability | **Good** foundation | **Good** foundation | **B** |
+| Clean Architecture | **A−** | **B+** | **B+** |
+| SOLID | **B+** | **B** | **B+** |
+| Testability | **B** | **C+** | **B−** |
+| Naming conventions | **A−** | **A−** | **A−** |
+| Scalability | **B+** | **B** | **B+** |
 
-M3 delivers a **working vertical slice** with the right high-level shape: domain ports, Prisma adapter, thin HTTP controllers, Flutter feature folders, and token refresh. The main gaps are **layer boundary leaks** (application → infrastructure, domain → Prisma, presentation → Prisma), a **monolithic application service**, and **thin automated test coverage** relative to acceptance criteria.
+M3 is **production-viable for an MVP auth slice**. The backend now follows the documented dependency rule for application → domain (ports only). Remaining debt is mostly **SRP** (monolithic `AuthService`), **test breadth**, and **mobile OAuth coupling**.
 
 ---
 
 ## 1. Clean Architecture compliance
 
-### 1.1 Backend — what aligns well
+### 1.1 Backend — aligned
 
-| Practice | Evidence |
-|----------|----------|
-| Layer folders match `PROJECT_STRUCTURE.md` | `domain/`, `application/`, `infrastructure/`, `presentation/` |
-| Repository port + adapter | `AuthRepositoryPort` + `PrismaAuthRepository` |
-| Token abstraction | `TokenServicePort` + `JwtTokenService` |
-| Thin controllers | `AuthController` delegates to `AuthService` |
-| Domain VOs | `Email`, `Password` — no Nest/Prisma imports |
-| Domain errors → HTTP mapping | `AuthDomainException` + `ApiExceptionFilter` |
-| DI at module boundary | `AUTH_REPOSITORY`, `TOKEN_SERVICE` symbols in `AuthModule` |
-
-### 1.2 Backend — violations / drift
-
-| Issue | Severity | Detail |
-|-------|----------|--------|
-| **Application depends on infrastructure** | High | `AuthService` imports `EmailService`, `PasswordService`, `GoogleIdTokenVerifier`, `AppleIdTokenVerifier` directly. Per `PROJECT_STRUCTURE.md`, `application/` should depend only on `domain/` and ports—not concrete infra classes. |
-| **Domain depends on Prisma** | High | `auth.repository.port.ts` imports `OAuthProvider` from `@prisma/client`. Domain must not reference ORM enums. Define `domain/auth/enums/oauth-provider.enum.ts` instead. |
-| **`UsersController` bypasses application layer** | High | `GET /users/me` uses `PrismaService` in presentation. Should be `GetCurrentUserUseCase` + port (or reuse `AuthRepositoryPort.findById`). |
-| **NestJS in application layer** | Medium | `@Injectable()` on `AuthService` couples use cases to the framework. Docs say application has no Nest decorators; wiring belongs in modules only. |
-| **`UseCase<TInput, TOutput>` unused** | Low | `use-case.interface.ts` exists but `AuthService` is one class with many methods—not per-use-case classes. |
-| **`common/` utilities in application** | Low | `auth.service.ts` uses `generateSecureToken` / `hashToken` from `common/`. Acceptable as shared kernel; better as domain or infrastructure crypto port. |
-| **Presentation DTO leakage** | Low | `AuthResponseDto` lives in `application/auth/auth.service.ts`; could be application output type or presentation mapper. |
-
-**Dependency diagram (actual vs intended):**
+| Practice | Status | Evidence |
+|----------|--------|----------|
+| Layer separation | ✅ | `domain/`, `application/`, `infrastructure/`, `presentation/` |
+| Domain free of Prisma/Nest | ✅ | No `@prisma/client` under `domain/`; `OAuthProvider` domain enum |
+| Application depends on ports | ✅ | `AuthService` injects `AUTH_REPOSITORY`, `TOKEN_SERVICE`, `PASSWORD_HASHER`, `EMAIL_SENDER`, `OAUTH_VERIFIER` |
+| Infrastructure implements ports | ✅ | `PrismaAuthRepository`, `JwtTokenService`, `OAuthVerifierAdapter`, `useExisting` for email/password |
+| Thin controllers | ✅ | `AuthController`, `UsersController` delegate to application |
+| Cross-cutting HTTP mapping | ✅ | `ApiExceptionFilter`, `TransformInterceptor`, guards in presentation |
+| Profile read model | ✅ | `UserProfile` + `findProfileById` on repository port |
 
 ```mermaid
 flowchart TB
-  subgraph intended [Intended]
-    P1[presentation] --> A1[application]
-    A1 --> D1[domain]
-    I1[infrastructure] --> D1
+  subgraph presentation
+    AC[AuthController]
+    UC[UsersController]
+    G[JwtAuthGuard / EmailVerifiedGuard]
   end
-
-  subgraph actual [Actual gaps]
-    A2[AuthService] --> I2[EmailService / PasswordService / OAuth verifiers]
-    D2[auth.repository.port] --> Prisma[@prisma/client]
-    P3[UsersController] --> Prisma2[PrismaService]
+  subgraph application
+    AS[AuthService]
+    GC[GetCurrentUserUseCase]
   end
+  subgraph domain
+    P[Ports + VOs + AuthUser]
+  end
+  subgraph infrastructure
+    PR[PrismaAuthRepository]
+    JWT[JwtTokenService]
+    OV[OAuthVerifierAdapter]
+  end
+  AC --> AS
+  UC --> GC
+  G --> JWT
+  AS --> P
+  GC --> P
+  PR --> P
+  JWT --> P
+  OV --> P
 ```
 
-### 1.3 Mobile — what aligns well
-
-| Practice | Evidence |
-|----------|----------|
-| Feature-first layout | `domain/`, `data/`, `presentation/` under `authentication/` |
-| Repository abstraction | `AuthRepository` + `AuthRepositoryImpl` |
-| Remote boundary | `AuthRemoteDataSource` + `ApiClient` |
-| UI does not call Dio directly | Pages → Riverpod → repository |
-| Core cross-cutting | `TokenStorage`, `AuthInterceptor`, `unwrapApiData` |
-
-### 1.4 Mobile — gaps
+### 1.2 Backend — remaining gaps
 
 | Issue | Severity | Detail |
 |-------|----------|--------|
-| **OAuth SDKs inside repository** | Medium | `GoogleSignIn` / `SignInWithApple` in `AuthRepositoryImpl` mix platform I/O with data layer. Prefer `OAuthTokenProvider` port + infra implementation. |
-| **No domain use cases** | Low | Logic split between pages, `AuthSessionNotifier`, and repository—acceptable for M3, less ideal as features grow. |
-| **Register flow bypasses session notifier** | Low | Register page calls repository directly; login uses notifier—consistent UX, inconsistent pattern. |
+| `@Injectable()` on application classes | Low | `AuthService`, `GetCurrentUserUseCase` use Nest decorators; docs prefer framework-free application with wiring only in modules. Acceptable for Nest monolith. |
+| `common/utils/token-hash` in application | Low | Crypto/token helpers are shared kernel, not domain; consider `domain/auth` or `PasswordHasherPort` owning hash contract. |
+| `AuthResponseDto` in application | Low | HTTP-shaped response type in application layer; could be mapper in presentation. |
+| `UseCase<TIn,TOut>` mostly unused | Low | Only `GetCurrentUserUseCase` follows pattern; auth flows live in `AuthService`. |
+| Infra verifiers still loaded in e2e | Low | `jest-e2e-setup.ts` mocks Google/Apple verifiers to avoid ESM `jose` issues. |
+
+### 1.3 Mobile — aligned
+
+| Practice | Status | Evidence |
+|----------|--------|----------|
+| Feature folders | ✅ | `domain/`, `data/`, `presentation/` |
+| Repository abstraction | ✅ | `AuthRepository` + `AuthRepositoryImpl` |
+| Remote boundary | ✅ | `AuthRemoteDataSource`, `ApiClient`, `unwrapApiData` |
+| Core token/session | ✅ | `TokenStorage`, `AuthInterceptor`, `SessionExpiredNotifier` |
+| Platform API URL | ✅ | `devApiBaseUrlDefault()` in `app_config.dart` |
+
+### 1.4 Mobile — remaining gaps
+
+| Issue | Severity | Detail |
+|-------|----------|--------|
+| OAuth SDKs in `AuthRepositoryImpl` | Medium | `google_sign_in` / `sign_in_with_apple` inside data layer; harder to test and swap. |
+| Register bypasses `AuthSessionNotifier` | Low | Register page calls repository directly; login uses notifier. |
+| No domain use-case layer | Low | Acceptable for M3; Riverpod notifiers act as application layer. |
+| API error codes not mapped | Low | UI shows generic Dio failures vs `DUPLICATE_EMAIL`, etc. |
 
 ---
 
@@ -87,42 +98,42 @@ flowchart TB
 
 ### Single Responsibility Principle (SRP)
 
-| Component | Assessment |
-|-----------|------------|
-| `AuthService` | **Weak.** ~270 lines, 10+ responsibilities (register, verify, login, refresh, logout, forgot/reset, Google, Apple). Should split into use cases: `RegisterUser`, `LoginUser`, `RefreshSession`, etc. |
-| `PrismaAuthRepository` | **Good.** Persistence only; maps Prisma → `AuthUser`. |
-| `JwtTokenService` | **Good.** Token issue/verify + refresh persistence via port. |
-| `AuthController` | **Good.** HTTP mapping only. |
-| `AuthRepositoryImpl` (mobile) | **Fair.** HTTP + token storage + OAuth orchestration. |
+| Component | Grade | Notes |
+|-----------|-------|-------|
+| `AuthService` | **C+** | ~285 lines, 10+ operations (register, verify, login, refresh, logout, forgot/reset, Google, Apple). Should split into `RegisterUser`, `LoginUser`, `RefreshSession`, etc. |
+| `GetCurrentUserUseCase` | **A** | Single responsibility, clear input (`userId`). |
+| `PrismaAuthRepository` | **B** | Persistence + token tables + OAuth linking; wide but cohesive for auth bounded context. |
+| `JwtTokenService` | **A−** | Token issue/verify + refresh persistence via port. |
+| `AuthRepositoryImpl` (mobile) | **B−** | HTTP + tokens + OAuth orchestration. |
 
 ### Open/Closed Principle (OCP)
 
-| Area | Assessment |
-|------|------------|
-| New auth methods | Adding endpoints requires editing `AuthService`—closed for extension without modification. Ports help for new storage/token strategies. |
-| OAuth providers | New provider = new verifier class + new `AuthService` method—acceptable; registry/strategy would improve OCP. |
+| Area | Grade | Notes |
+|------|-------|-------|
+| New OAuth provider | **B** | Add enum value + verifier + adapter branch; no registry pattern yet. |
+| New auth endpoint | **C+** | Requires editing `AuthService` / `AuthController`. |
+| Swap email provider | **A−** | Implement `EmailSenderPort`, bind in module. |
 
 ### Liskov Substitution Principle (LSP)
 
-| Area | Assessment |
-|------|------------|
-| `AuthRepositoryPort` / `PrismaAuthRepository` | **Good.** Interface contract is honored. |
-| `TokenServicePort` / `JwtTokenService` | **Good.** |
+| Area | Grade | Notes |
+|------|-------|-------|
+| Repository / token / hasher / email / oauth ports | **A** | Implementations honor contracts. |
 
 ### Interface Segregation Principle (ISP)
 
-| Area | Assessment |
-|------|------------|
-| `AuthRepositoryPort` | **Fair.** One wide port (user CRUD + tokens + OAuth + email/reset tokens). Could split: `UserRepository`, `RefreshTokenRepository`, `VerificationTokenRepository`. |
-| Mobile `AuthRepository` | **Good** for client needs—focused surface. |
+| Area | Grade | Notes |
+|------|-------|-------|
+| `AuthRepositoryPort` | **B−** | 15+ methods (users, refresh, verification, reset, OAuth). Consider `IRefreshTokenStore`, `IVerificationTokenStore` when other modules need narrower deps. |
+| Mobile `AuthRepository` | **A−** | Focused client surface. |
 
 ### Dependency Inversion Principle (DIP)
 
-| Area | Assessment |
-|------|------------|
-| Repository / tokens | **Good** — depend on abstractions via symbols. |
-| Email / password / OAuth in `AuthService` | **Violated** — depends on concrete infrastructure classes. |
-| `UsersController` → `PrismaService` | **Violated** — depends on lowest-level detail. |
+| Area | Grade | Notes |
+|------|-------|-------|
+| `AuthService` | **A−** | Depends on abstractions only (fixed since v1 review). |
+| `UsersController` | **A** | Depends on `GetCurrentUserUseCase`, not Prisma (fixed). |
+| `JwtAuthGuard` | **A** | Depends on `TokenServicePort`. |
 
 ---
 
@@ -130,39 +141,42 @@ flowchart TB
 
 ### Backend
 
-| Asset | Status |
-|-------|--------|
-| `email.vo.spec.ts`, `password.vo.spec.ts` | Present |
-| `auth.service.spec.ts` | 3 cases; mocks OAuth at module boundary |
-| `app.module.spec.ts` | Platform smoke only (avoids full graph) |
-| Integration / E2E auth | **Missing** (`test/integration/`, `test/e2e/` not used for auth flows) |
-| `PrismaAuthRepository` tests | **Missing** |
-| `JwtTokenService` / guards / filter tests | **Missing** |
+| Asset | Count / status |
+|-------|----------------|
+| Unit tests | **11** (`email`, `password`, `result`, `auth.service` ×4, `app.module` smoke) |
+| E2E tests | **5** (`health` ×1, `auth` ×4) |
+| Integration (DB module) | Via e2e with real Prisma when `DATABASE_URL` set |
 
-**Blockers to testing:**
+**Covered behaviors**
 
-1. `AuthService` constructor needs 6 collaborators—wide mock setup; splitting use cases would shrink fixtures.
-2. `jwks-rsa` / ESM forces jest mocks for Apple verifier (already worked around in specs).
-3. No test database harness for register → verify → login integration.
+- Register consent, duplicate email, verification email sent  
+- Login blocked when `emailVerified === false`  
+- E2E: 201 register, 409 duplicate, 403 unverified login, 200 login + `/users/me` after verify  
 
-**M3 task target:** domain unit tests ≥80% for auth domain — **only VOs covered**, not entities/ports/failures.
+**Gaps**
+
+| Gap | Impact |
+|-----|--------|
+| No `PrismaAuthRepository` tests | Regression risk on token consume / OAuth link |
+| No guard/filter unit tests | `EmailVerifiedGuard`, `ApiExceptionFilter` untested in isolation |
+| No `JwtTokenService` unit tests | Refresh rotation logic untested directly |
+| E2E OAuth mocks required | Full AppModule load still pulls auth graph |
+| Domain coverage | VOs only; not entities/failures/enums |
+| M3 task “≥80% domain auth” | **Not met** for full domain folder |
 
 ### Mobile
 
 | Asset | Status |
 |-------|--------|
-| Auth unit tests | **None** |
-| Auth widget tests | **None** |
-| `failure_mapper_test.dart` | Exists (core only) |
+| Auth unit/widget tests | **None** |
+| `SessionExpiredNotifier` | Untested |
+| `failure_mapper_test` | Core only |
 
-**Blockers:**
-
-1. OAuth SDKs instantiated inside repository—hard to unit test without platform channels.
-2. `getIt` in providers—testable via overrides but not set up yet.
+**Enablers:** injectable DI, repository interface, `SessionExpiredNotifier` stream — tests are feasible once OAuth is extracted.
 
 ### Testability score rationale
 
-Ports and DI enable testing **in principle**; **practice** lags (few tests, fat service, direct Prisma in controller).
+Improved from v1 (**C+** → **B** backend) due to e2e auth suite and login-unverified unit test. Still below ideal for a P0 security module.
 
 ---
 
@@ -172,25 +186,22 @@ Ports and DI enable testing **in principle**; **practice** lags (few tests, fat 
 
 | Convention | Compliance | Examples |
 |------------|------------|----------|
-| `*.vo.ts` value objects | Yes | `email.vo.ts`, `password.vo.ts` |
-| `*.port.ts` interfaces | Yes | `auth.repository.port.ts`, `token.service.port.ts` |
-| `*.entity.ts` entities | Yes | `auth-user.entity.ts` |
-| `*.failures.ts` domain errors | Yes | `auth.failures.ts` |
-| Symbol tokens | Yes | `AUTH_REPOSITORY`, `TOKEN_SERVICE` |
-| DTOs in presentation | Yes | `register.dto.ts`, `login.dto.ts` |
-| Nest suffixes | Yes | `AuthController`, `AuthModule`, `JwtAuthGuard` |
-| Prisma in domain port | **No** | `OAuthProvider` from Prisma — rename to domain enum |
-
-Minor: `AuthResponseDto` in application layer blurs “DTO” (usually HTTP) vs “response model.”
+| `*.vo.ts` | ✅ | `email.vo.ts`, `password.vo.ts` |
+| `*.port.ts` | ✅ | `auth.repository.port.ts`, `email-sender.port.ts` |
+| `*.entity.ts` | ✅ | `auth-user.entity.ts` |
+| `*.enum.ts` | ✅ | `oauth-provider.enum.ts`, `user-role.enum.ts` |
+| `*.use-case.ts` | ✅ | `get-current-user.use-case.ts` |
+| Symbol tokens | ✅ | `AUTH_REPOSITORY`, `EMAIL_SENDER`, … |
+| Nest suffixes | ✅ | `AuthController`, `AuthModule`, `*Guard` |
+| Read model naming | ✅ | `UserProfile` vs aggregate `AuthUser` |
 
 ### Mobile
 
 | Convention | Compliance | Examples |
 |------------|------------|----------|
-| `snake_case` files | Yes | `auth_repository_impl.dart` |
-| `PascalCase` types | Yes | `AuthUser`, `AuthSession` |
-| `*Page`, `*Provider` | Yes | `LoginPage`, `authSessionProvider` |
-| Feature folder | Yes | `features/authentication/` |
+| `snake_case` files | ✅ | `auth_repository_impl.dart` |
+| `PascalCase` types | ✅ | `AuthUser`, `AuthSession` |
+| Providers/pages | ✅ | `authSessionProvider`, `LoginPage` |
 
 ---
 
@@ -198,97 +209,89 @@ Minor: `AuthResponseDto` in application layer blurs “DTO” (usually HTTP) vs 
 
 ### Strengths
 
-| Area | Why it scales |
-|------|----------------|
-| Modular monolith + bounded context | Auth isolated in module; can extract microservice later if needed |
-| Port-based persistence | Swap Prisma or shard users without touching use cases (once boundaries fixed) |
-| Refresh token rotation | Revoke-on-refresh limits replay; `revokeAllRefreshTokens` on password reset |
-| Rate limiting | `@Throttle` on auth controller |
-| Stateless API | JWT access tokens; horizontal scale behind load balancer |
-| Token hashing | Verification/reset/refresh stored hashed |
-| Mobile token refresh queue | `QueuedInterceptor` avoids refresh stampedes |
+| Capability | Implementation |
+|------------|----------------|
+| Horizontal API scaling | Stateless JWT access tokens |
+| Refresh security | Hashed storage, rotation on refresh, revoke-all on password reset |
+| Rate limiting | `@Throttle` on `AuthController` |
+| Email verification gate | Login 403 + `EmailVerifiedGuard` on protected routes |
+| Modular monolith | `AuthModule` exports guards/ports for other features |
+| Mobile resilience | Queued refresh interceptor, session expiry → router redirect |
+| Multi-platform dev | iOS `127.0.0.1` / Android `10.0.2.2` defaults |
 
-### Risks as load / features grow
+### Risks at scale
 
-| Risk | Impact | Mitigation |
-|------|--------|------------|
-| Monolithic `AuthService` | Merge conflicts, hard to test/deploy partial changes | Split use cases per `UseCase` interface |
-| Wide `AuthRepositoryPort` | Hard to mock/cache partial concerns | Segregate ports |
-| Email via console logger | No real delivery at scale | Plug SES/SendGrid behind `EmailPort` |
-| No email-verified gate on login | Unverified users get tokens (error code exists but unused) | Enforce `EMAIL_NOT_VERIFIED` in `login` if spec requires |
-| `UsersController` Prisma | Duplicated user mapping logic | Single `UserProfile` query use case |
-| OAuth in mobile repository | Blocks multi-flavor/testing | Extract platform auth adapter |
-| Missing integration tests | Regressions on schema/API changes | Add `test/e2e/auth.e2e-spec.ts` with Testcontainers |
-
-### Horizontal scaling checklist (future)
-
-- [ ] Redis-backed refresh/session denylist (optional)
-- [ ] Distributed rate limit (Redis throttler storage)
-- [ ] Idempotent register (client retry safety)
-- [ ] Audit log for auth events
+| Risk | Mitigation |
+|------|------------|
+| Monolithic `AuthService` | Split use cases before adding MFA, SSO, magic links |
+| Console `EmailService` | SES/SendGrid adapter behind `EmailSenderPort` |
+| Wide repository port | Segregate when bookings/search import auth deps |
+| JWT denylist / session revocation | Redis blocklist for compromised tokens (future) |
+| Distributed throttling | Redis-backed throttler for multi-instance |
+| Mobile OAuth in repository | Platform adapter + flavor-specific client IDs |
 
 ---
 
-## 6. Security & correctness (review adjunct)
+## 6. Security & acceptance criteria
 
-| Item | Status |
-|------|--------|
-| Password hashing (bcrypt) | Implemented via `PasswordService` |
-| Refresh token stored hashed | Yes |
-| Generic forgot-password response | Yes (no user enumeration in controller message) |
-| JWT secret validation (min 16) | Joi schema |
-| CORS / HTTPS | Not in M3 scope |
-| `EMAIL_NOT_VERIFIED` on login | **Not enforced** despite error code + filter mapping |
-| Logout without Bearer | Accepts refresh body only—OK for mobile |
+| Criterion | Status |
+|-----------|--------|
+| AC-AUTH-001: register + verify pending | ✅ 201 + mobile verify screen |
+| AC-AUTH-001: duplicate email | ✅ 409 + domain error |
+| AC-AUTH-001: block unverified protected access | ✅ Login 403 + `EmailVerifiedGuard` on `/users/me` |
+| AC-AUTH-004: verified login | ✅ After `emailVerified` |
+| AC-AUTH-005: logout | ✅ Server revoke + local clear |
+| AC-AUTH-006: forgot password | ✅ Generic message + email log |
+| OAuth (002/003) | ⚠️ Requires env + platform config |
+| Resend verification endpoint | ❌ Not implemented (spec lists it) |
 
 ---
 
 ## 7. Recommendations (prioritized)
 
-### P0 — Architecture integrity
+### P1 — Quality & maintainability
 
-1. **Remove `@prisma/client` from `domain/`** — add `OAuthProvider` domain enum; map in `PrismaAuthRepository`.
-2. **Introduce ports for email, password hashing, OAuth verification** — inject into use cases; remove infra imports from `AuthService`.
-3. **Refactor `GET /users/me`** — `GetCurrentUserQuery` + repository port; remove `PrismaService` from controller.
-
-### P1 — SOLID & tests
-
-4. **Split `AuthService`** into one class per use case implementing `UseCase<TIn, TOut>`.
-5. **Add E2E test:** register → verify (token from test helper) → login → `/users/me`.
-6. **Add `JwtTokenService` unit tests** (mock `AUTH_REPOSITORY`).
-7. **Mobile:** extract `GoogleSignIn` / Apple behind `OAuthSignInPort`; add `auth_repository_impl_test.dart` with mocked remote + storage.
+1. **Split `AuthService`** into one class per flow implementing `UseCase<TIn, TOut>`.
+2. **Add unit tests** for `EmailVerifiedGuard`, `JwtTokenService`, `GetCurrentUserUseCase`.
+3. **Mobile:** extract `OAuthSignInPort`; add `auth_repository_impl_test.dart` with mocked remote + storage.
+4. **Map API `error.code`** in `failure_mapper` / auth UI for register/login.
 
 ### P2 — Product & scale
 
-8. **Enforce email verification on login** if required by `features/authentication` spec.
-9. **Segregate `AuthRepositoryPort`** when adding notifications or admin user APIs.
-10. **Map API error codes in mobile** (`DUPLICATE_EMAIL`, `EMAIL_NOT_VERIFIED`) instead of generic Dio messages.
+5. Implement `POST /auth/resend-verification` (spec).
+6. Explicit `implements EmailSenderPort` on `EmailService` (documentation/clarity).
+7. Segregate `AuthRepositoryPort` when M4+ modules consume auth.
+8. Redis email queue + real provider for production email.
 
 ---
 
-## 8. Strengths (keep doing)
+## 8. v1 → v2 improvements
 
-- Clear bounded context and module wiring (`AuthModule` exports guards + ports).
-- Value objects for email/password at domain boundary.
-- Typed `AuthErrorCode` mapped consistently in `ApiExceptionFilter`.
-- Refresh rotation + revoke-all on password reset.
-- Flutter respects `{ data }` envelope and secure token storage.
-- Throttling and correlation IDs on auth routes.
+| Item | v1 | v2 |
+|------|----|----|
+| Prisma in domain | ❌ | ✅ Removed |
+| Application → infrastructure imports | ❌ | ✅ Ports only |
+| `UsersController` → Prisma | ❌ | ✅ `GetCurrentUserUseCase` |
+| Email verification enforcement | Partial | ✅ Login + guard |
+| Register HTTP status | 200 default | ✅ 201 |
+| E2E auth tests | None | ✅ 4 cases |
+| Mobile failed refresh | Pass-through 401 | ✅ Session clear + redirect |
+| iOS API host | Wrong `10.0.2.2` | ✅ Platform default |
 
 ---
 
 ## 9. Conclusion
 
-M3 authentication is **structurally on the right track** for a modular monolith and feature-based Flutter app, but **not yet strict Clean Architecture** due to application→infrastructure coupling, Prisma in domain ports, and `UsersController` skipping the application layer. **SOLID** is strongest at the persistence/token adapters and weakest in `AuthService` (SRP/DIP). **Testability** and **coverage** are below M3 task claims. **Naming** is consistent with project docs. **Scalability** is adequate for early production with the listed P2 mitigations.
+M3 authentication **meets the architectural intent** of the project’s NestJS and Flutter structure after refinement. Clean Architecture compliance is **strong on the backend** (ports, guards, use case for profile); **good on mobile** with one notable coupling (OAuth SDKs in the repository). SOLID is held back mainly by **SRP** in `AuthService`. **Testability improved** with e2e coverage but remains the weakest dimension overall. **Naming** is consistent. **Scalability** is appropriate for early production with clear upgrade paths.
 
-**Suggested next engineering slice:** P0 items (1–3) + one E2E auth spec—small diff, high architectural payoff.
+**Suggested next slice:** split `AuthService` + mobile OAuth port + resend-verification endpoint.
 
 ---
 
 ## Appendix — files reviewed
 
-**Backend:** `auth.service.ts`, `auth.repository.port.ts`, `prisma-auth.repository.ts`, `jwt-token.service.ts`, `auth.controller.ts`, `users.controller.ts`, `auth.module.ts`, domain VOs/entities/failures, guards, `api-exception.filter.ts`, `validation.schema.ts`
+**Backend:** `auth.service.ts`, `get-current-user.use-case.ts`, all `domain/auth/ports/*`, `prisma-auth.repository.ts`, `oauth-verifier.adapter.ts`, `auth.module.ts`, `users.controller.ts`, `email-verified.guard.ts`, `jwt-auth.guard.ts`, `api-exception.filter.ts`, `test/auth.e2e-spec.ts`, `test/jest-e2e-setup.ts`
 
-**Mobile:** `auth_repository_impl.dart`, `auth_remote_datasource.dart`, `auth_provider.dart`, auth pages, `token_storage.dart`, `auth_interceptor.dart`, `route_guards.dart`, `app_router.dart`
+**Mobile:** `auth_repository_impl.dart`, `auth_remote_datasource.dart`, `auth_provider.dart`, `session_expired_notifier.dart`, `auth_interceptor.dart`, `app_config.dart`, auth pages
 
-**Docs:** `backend/PROJECT_STRUCTURE.md`, `architecture/backend_architecture.md`, `features/authentication/api_design.md`
+**Docs:** `backend/PROJECT_STRUCTURE.md`, `features/authentication/acceptance_criteria.md`

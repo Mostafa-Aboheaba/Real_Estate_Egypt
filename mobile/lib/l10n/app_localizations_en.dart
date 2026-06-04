@@ -16,4 +16,34 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get homeSubtitle => 'Discover properties in Egypt with AI assistance.';
+
+  @override
+  String get browseProperties => 'Browse properties';
+
+  @override
+  String get searchTitle => 'Search properties';
+
+  @override
+  String get searchHint => 'Search by keyword, area…';
+
+  @override
+  String searchResultsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count results',
+      one: '1 result',
+      zero: 'No results',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get propertyDetailTitle => 'Property details';
+
+  @override
+  String get propertyDescription => 'Description';
+
+  @override
+  String get propertyAmenities => 'Amenities';
 }

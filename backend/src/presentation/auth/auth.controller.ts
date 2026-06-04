@@ -14,6 +14,7 @@ import { LoginDto } from './dto/login.dto';
 import { AppleAuthDto, GoogleAuthDto } from './dto/oauth.dto';
 import { RefreshDto } from './dto/refresh.dto';
 import { RegisterDto } from './dto/register.dto';
+import { ResendVerificationDto } from './dto/resend-verification.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 
 @Controller('auth')
@@ -41,6 +42,13 @@ export class AuthController {
   async verifyEmail(@Query('token') token: string) {
     await this.auth.verifyEmail(token);
     return { verified: true };
+  }
+
+  @Post('resend-verification')
+  @HttpCode(HttpStatus.OK)
+  async resendVerification(@Body() dto: ResendVerificationDto) {
+    await this.auth.resendVerificationEmail(dto.email);
+    return { message: 'verification_email_sent_if_needed' };
   }
 
   @Post('login')

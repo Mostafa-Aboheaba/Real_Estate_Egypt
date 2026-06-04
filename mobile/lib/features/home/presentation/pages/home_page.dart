@@ -45,6 +45,11 @@ class HomePage extends ConsumerWidget {
               loading: () => const LinearProgressIndicator(),
               error: (e, _) => Text('Bootstrap: $e'),
             ),
+            FilledButton.icon(
+              onPressed: () => context.push(RoutePaths.search),
+              icon: const Icon(Icons.search),
+              label: Text(l10n.browseProperties),
+            ),
             const Spacer(),
             Text(
               'Flavor: ${config.flavor.name}',

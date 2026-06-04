@@ -1,3 +1,6 @@
+process.env.AUTH_DEV_AUTO_VERIFY_EMAIL = 'false';
+
+import { randomUUID } from 'crypto';
 import { INestApplication, RequestMethod, ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
@@ -10,7 +13,7 @@ const hasDatabase = Boolean(process.env.DATABASE_URL);
 describe('Auth (e2e)', () => {
   let app: INestApplication<App>;
   let prisma: PrismaService;
-  const testEmail = `e2e-${Date.now()}@example.com`;
+  const testEmail = `e2e-${randomUUID()}@example.com`;
   const password = 'password1';
 
   beforeAll(async () => {

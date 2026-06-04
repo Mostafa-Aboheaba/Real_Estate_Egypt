@@ -18,4 +18,7 @@ export const validationSchema = Joi.object({
   GOOGLE_CLIENT_ID: Joi.string().allow('').optional(),
   APPLE_CLIENT_ID: Joi.string().allow('').optional(),
   PUBLIC_URL: Joi.string().uri().optional(),
+  AUTH_DEV_AUTO_VERIFY_EMAIL: Joi.boolean().optional(),
+  SHAETY_API_KEY: Joi.string().allow('').optional(),
+  SHAETY_API_URL: Joi.string().uri().optional(),
 });

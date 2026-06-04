@@ -4,6 +4,7 @@ import configuration from './config/configuration';
 import { validationSchema } from './config/validation.schema';
 import { PrismaModule } from './infrastructure/persistence/prisma/prisma.module';
 import { QueueModule } from './infrastructure/queue/queue.module';
+import { PropertiesModule } from './presentation/properties/properties.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { QueueModule } from './infrastructure/queue/queue.module';
     }),
     PrismaModule,
     QueueModule,
+    PropertiesModule,
   ],
 })
 export class WorkerModule {}

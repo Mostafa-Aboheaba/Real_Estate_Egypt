@@ -1,0 +1,225 @@
+import { Inject, Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import { InjectQueue } from '@nestjs/bullmq';
+import { Queue } from 'bullmq';
+import { mapRawListingToProperty } from '../../infrastructure/listing/listing-normalizer';
+import { Property } from '../../domain/property/entities/property.entity';
+import {
+  PropertyDomainException,
+  PropertyErrorCode,
+} from '../../domain/property/failures/property.failures';
+import { ListingProvider, PROVIDER_LABELS } from '../../domain/property/enums/listing-provider.enum';
+import {
+  LISTING_PROVIDER,
+  ListingProviderPort,
+} from '../../domain/property/ports/listing-provider.port';
+import {
+  PROPERTY_REPOSITORY,
+  PropertyRepositoryPort,
+  PropertySearchFilters,
+} from '../../domain/property/ports/property.repository.port';
+import {
+  SYNC_RUN_REPOSITORY,
+  SyncRunRepositoryPort,
+} from '../../domain/property/ports/sync-run.repository.port';
+import {
+  LISTING_SYNC_JOB,
+  LISTING_SYNC_QUEUE,
+} from '../../infrastructure/queue/queue.constants';
+
+const STALE_HOURS = 24;
+
+@Injectable()
+export class PropertyService implements OnModuleInit {
+  private readonly logger = new Logger(PropertyService.name);
+
+  constructor(
+    @Inject(PROPERTY_REPOSITORY)
+    private readonly properties: PropertyRepositoryPort,
+    @Inject(SYNC_RUN_REPOSITORY)
+    private readonly syncRuns: SyncRunRepositoryPort,
+    @Inject(LISTING_PROVIDER)
+    private readonly listingProvider: ListingProviderPort,
+    @InjectQueue(LISTING_SYNC_QUEUE)
+    private readonly syncQueue: Queue,
+  ) {}
+
+  async onModuleInit(): Promise<void> {
+    const count = await this.properties
+      .countByProvider()
+      .then((stats) =>
+        stats.find((s) => s.provider === ListingProvider.Shaety),
+      );
+
+    if ((count?.activeListingCount ?? 0) === 0) {
+      this.logger.log('No active listings — enqueueing initial Shaety sync');
+      await this.enqueueSync(ListingProvider.Shaety);
+    }
+  }
+
+  async search(filters: PropertySearchFilters) {
+    const result = await this.properties.search(filters);
+    return {
+      items: result.items.map((item) => ({
+        ...item,
+        providerLabel: PROVIDER_LABELS[item.provider],
+        syncedAt: item.syncedAt.toISOString(),
+      })),
+      meta: {
+        page: result.page,
+        pageSize: result.pageSize,
+        total: result.total,
+        totalPages: Math.ceil(result.total / result.pageSize) || 0,
+      },
+    };
+  }
+
+  async getDetail(id: string) {
+    const property = await this.properties.findById(id);
+    if (!property) {
+      throw new PropertyDomainException(
+        PropertyErrorCode.LISTING_NOT_FOUND,
+        'Listing not found',
+      );
+    }
+    return this.toDetailDto(property);
+  }
+
+  async runListingSync(
+    provider: ListingProvider,
+    attemptNumber = 1,
+  ): Promise<void> {
+    const run = await this.syncRuns.create({ provider, attemptNumber });
+
+    try {
+      const rawListings = await this.listingProvider.fetchListings();
+      const domainListings = rawListings.map((raw) =>
+        mapRawListingToProperty(raw, provider),
+      );
+
+      const upserted = await this.properties.upsertMany(domainListings);
+      const staleBefore = new Date(Date.now() - STALE_HOURS * 60 * 60 * 1000);
+      const deactivated = await this.properties.deactivateStale(
+        provider,
+        staleBefore,
+      );
+
+      await this.syncRuns.complete({
+        id: run.id,
+        status: 'success',
+        listingsFetched: rawListings.length,
+        listingsUpserted: upserted,
+        listingsDeactivated: deactivated,
+      });
+
+      this.logger.log(
+        `Sync ${provider}: fetched=${rawListings.length} upserted=${upserted} deactivated=${deactivated}`,
+      );
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : 'Unknown sync error';
+      await this.syncRuns.complete({
+        id: run.id,
+        status: 'failed',
+        listingsFetched: 0,
+        listingsUpserted: 0,
+        listingsDeactivated: 0,
+        errorMessage: message.slice(0, 2000),
+      });
+      throw error;
+    }
+  }
+
+  async getSyncStatus() {
+    const providers = Object.values(ListingProvider);
+    const counts = await this.properties.countByProvider();
+    const generatedAt = new Date().toISOString();
+
+    const providerStatuses = await Promise.all(
+      providers.map(async (provider) => {
+        const stats = counts.find((c) => c.provider === provider);
+        const recent = await this.syncRuns.findRecentByProvider(provider, 5);
+        const latest = recent[0] ?? null;
+        const lastSuccess = recent.find((r) => r.status === 'success') ?? null;
+
+        const consecutiveFailures = countConsecutiveFailures(recent);
+        const status = deriveHealthStatus(consecutiveFailures, lastSuccess);
+
+        return {
+          provider,
+          status,
+          lastRunAt: latest?.startedAt.toISOString() ?? null,
+          lastSuccessAt: lastSuccess?.finishedAt?.toISOString() ?? null,
+          listingCount: stats?.listingCount ?? 0,
+          activeListingCount: stats?.activeListingCount ?? 0,
+          errorCount: recent.filter((r) => r.status === 'failed').length,
+          consecutiveFailures,
+          lastError: latest?.status === 'failed' ? latest.errorMessage : null,
+        };
+      }),
+    );
+
+    return { providers: providerStatuses, generatedAt };
+  }
+
+  async enqueueSync(provider: ListingProvider): Promise<string> {
+    const running = await this.syncRuns.isRunning(provider);
+    if (running) {
+      throw new PropertyDomainException(
+        PropertyErrorCode.INVALID_FILTERS,
+        'Sync already running for provider',
+      );
+    }
+
+    const job = await this.syncQueue.add(LISTING_SYNC_JOB, { provider });
+    return job.id ?? 'unknown';
+  }
+
+  private toDetailDto(property: Property) {
+    return {
+      id: property.id,
+      title: property.title,
+      description: property.description,
+      priceEgp: property.priceEgp,
+      listingType: property.listingType,
+      propertyType: property.propertyType,
+      bedrooms: property.bedrooms,
+      bathrooms: property.bathrooms,
+      areaSqm: property.areaSqm,
+      location: property.location.toJSON(),
+      amenities: property.amenities,
+      images: property.images,
+      provider: property.provider,
+      providerLabel: PROVIDER_LABELS[property.provider],
+      sourceUrl: property.sourceUrl,
+      syncedAt: property.syncedAt.toISOString(),
+      isActive: property.isActive,
+    };
+  }
+}
+
+function countConsecutiveFailures(
+  runs: { status: string }[],
+): number {
+  let count = 0;
+  for (const run of runs) {
+    if (run.status === 'failed') {
+      count += 1;
+    } else {
+      break;
+    }
+  }
+  return count;
+}
+
+function deriveHealthStatus(
+  consecutiveFailures: number,
+  lastSuccess: { finishedAt: Date | null } | null,
+): 'healthy' | 'degraded' | 'failed' {
+  if (consecutiveFailures >= 3) {
+    return 'failed';
+  }
+  if (consecutiveFailures > 0 || !lastSuccess) {
+    return 'degraded';
+  }
+  return 'healthy';
+}

@@ -1,4 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { generateSecureToken, hashToken } from '../../common/utils/token-hash';
 import { AuthUser } from '../../domain/auth/entities/auth-user.entity';
 import { OAuthProvider } from '../../domain/auth/enums/oauth-provider.enum';
@@ -53,7 +54,12 @@ export class AuthService {
     @Inject(PASSWORD_HASHER) private readonly passwords: PasswordHasherPort,
     @Inject(EMAIL_SENDER) private readonly emailSender: EmailSenderPort,
     @Inject(OAUTH_VERIFIER) private readonly oauthVerifier: OAuthVerifierPort,
+    private readonly config: ConfigService,
   ) {}
+
+  private get devAutoVerifyEmail(): boolean {
+    return this.config.get<boolean>('auth.devAutoVerifyEmail', false);
+  }
 
   async register(input: {
     email: string;
@@ -103,12 +109,42 @@ export class AuthService {
     );
     await this.emailSender.sendVerificationEmail(user.email, verifyToken);
 
+    if (this.devAutoVerifyEmail) {
+      await this.repo.markEmailVerified(user.id);
+      return {
+        userId: user.id,
+        email: user.email,
+        role: user.role,
+        emailVerified: true,
+      };
+    }
+
     return {
       userId: user.id,
       email: user.email,
       role: user.role,
       emailVerified: false,
     };
+  }
+
+  async resendVerificationEmail(emailRaw: string): Promise<void> {
+    const email = Email.create(emailRaw);
+    if (!email) {
+      return;
+    }
+
+    const user = await this.repo.findByEmail(email.value);
+    if (!user || user.emailVerified) {
+      return;
+    }
+
+    const verifyToken = generateSecureToken();
+    await this.repo.saveEmailVerificationToken(
+      user.id,
+      hashToken(verifyToken),
+      new Date(Date.now() + 24 * 60 * 60 * 1000),
+    );
+    await this.emailSender.sendVerificationEmail(user.email, verifyToken);
   }
 
   async verifyEmail(token: string): Promise<void> {
@@ -138,6 +174,13 @@ export class AuthService {
     }
 
     if (!user.emailVerified) {
+      if (this.devAutoVerifyEmail) {
+        await this.repo.markEmailVerified(user.id);
+        const verified = await this.repo.findById(user.id);
+        if (verified) {
+          return this.toAuthResponse(verified);
+        }
+      }
       throw new AuthDomainException(AuthErrorCode.EMAIL_NOT_VERIFIED);
     }
 

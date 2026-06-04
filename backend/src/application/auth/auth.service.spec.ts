@@ -17,6 +17,7 @@ import { PASSWORD_HASHER } from '../../domain/auth/ports/password-hasher.port';
 import { EMAIL_SENDER } from '../../domain/auth/ports/email-sender.port';
 import { OAUTH_VERIFIER } from '../../domain/auth/ports/oauth-verifier.port';
 import { UserRole } from '../../domain/auth/enums/user-role.enum';
+import { ConfigService } from '@nestjs/config';
 
 describe('AuthService', () => {
   const repo = {
@@ -50,6 +51,15 @@ describe('AuthService', () => {
   };
   const oauthVerifier = { verify: jest.fn() };
 
+  const config = {
+    get: jest.fn((key: string, defaultValue?: unknown) => {
+      if (key === 'auth.devAutoVerifyEmail') {
+        return false;
+      }
+      return defaultValue;
+    }),
+  };
+
   let service: AuthService;
 
   beforeEach(() => {
@@ -60,6 +70,7 @@ describe('AuthService', () => {
       passwords as never,
       emailSender as never,
       oauthVerifier as never,
+      config as unknown as ConfigService,
     );
   });
 

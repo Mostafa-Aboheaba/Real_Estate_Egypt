@@ -13,8 +13,9 @@ export class EmailService {
       'http://localhost:3000',
     );
     const link = `${baseUrl}/api/v1/auth/verify-email?token=${token}`;
-    this.logger.log(
-      `[EMAIL] Verification for ${email}: ${link}`,
+    this.logger.warn(
+      `Verification email (dev — not sent via SMTP). Open this link in a browser:\n` +
+        `  ${link}`,
     );
   }
 

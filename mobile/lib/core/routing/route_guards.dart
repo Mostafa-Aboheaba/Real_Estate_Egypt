@@ -8,21 +8,34 @@ class RouteGuards {
 
   final bool isAuthenticated;
 
-  static const _publicPaths = {
+  static const _authOnlyPaths = {
     RoutePaths.login,
     RoutePaths.register,
     RoutePaths.forgotPassword,
     RoutePaths.verifyEmailPending,
   };
 
+  /// Guest browse (FR-SEARCH-016): home, search, listing detail without login.
+  static bool isGuestAllowed(String location) {
+    if (_authOnlyPaths.contains(location)) {
+      return true;
+    }
+    if (location == RoutePaths.home || location == RoutePaths.search) {
+      return true;
+    }
+    if (location.startsWith('/properties/')) {
+      return true;
+    }
+    return false;
+  }
+
   String? redirect(BuildContext context, GoRouterState state) {
     final location = state.matchedLocation;
-    final isPublic = _publicPaths.contains(location);
 
-    if (!isAuthenticated && !isPublic) {
+    if (!isAuthenticated && !isGuestAllowed(location)) {
       return RoutePaths.login;
     }
-    if (isAuthenticated && isPublic) {
+    if (isAuthenticated && _authOnlyPaths.contains(location)) {
       return RoutePaths.home;
     }
     return null;

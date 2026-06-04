@@ -1,0 +1,230 @@
+[
+  {
+    "externalId": "mock-001",
+    "title": "3BR Apartment in Maadi — Degla",
+    "description": "Spacious apartment with garden view near metro.",
+    "priceEgp": 3500000,
+    "propertyType": "apartment",
+    "listingType": "sale",
+    "bedrooms": 3,
+    "bathrooms": 2,
+    "areaSqm": 180,
+    "location": {
+      "governorate": "Cairo",
+      "city": "Maadi",
+      "district": "Degla"
+    },
+    "amenities": ["parking", "elevator"],
+    "images": ["https://picsum.photos/seed/mock001/800/600"],
+    "sourceUrl": "https://shaety.example/listing/mock-001"
+  },
+  {
+    "externalId": "mock-002",
+    "title": "2BR Furnished Flat in Zamalek",
+    "description": "Fully furnished rental with Nile views.",
+    "priceEgp": 45000,
+    "propertyType": "apartment",
+    "listingType": "rent",
+    "bedrooms": 2,
+    "bathrooms": 2,
+    "areaSqm": 120,
+    "location": {
+      "governorate": "Cairo",
+      "city": "Zamalek",
+      "district": "Zamalek"
+    },
+    "amenities": ["furnished", "balcony"],
+    "images": ["https://picsum.photos/seed/mock002/800/600"],
+    "sourceUrl": "https://shaety.example/listing/mock-002"
+  },
+  {
+    "externalId": "mock-003",
+    "title": "Villa in New Cairo — Fifth Settlement",
+    "description": "Standalone villa with private garden and pool.",
+    "priceEgp": 12500000,
+    "propertyType": "villa",
+    "listingType": "sale",
+    "bedrooms": 5,
+    "bathrooms": 4,
+    "areaSqm": 420,
+    "location": {
+      "governorate": "Cairo",
+      "city": "New Cairo",
+      "district": "Fifth Settlement"
+    },
+    "amenities": ["pool", "parking", "garden"],
+    "images": ["https://picsum.photos/seed/mock003/800/600"],
+    "sourceUrl": "https://shaety.example/listing/mock-003"
+  },
+  {
+    "externalId": "mock-004",
+    "title": "Studio in Heliopolis",
+    "description": "Compact studio near Baron Palace.",
+    "priceEgp": 1800000,
+    "propertyType": "apartment",
+    "listingType": "sale",
+    "bedrooms": 1,
+    "bathrooms": 1,
+    "areaSqm": 65,
+    "location": {
+      "governorate": "Cairo",
+      "city": "Heliopolis",
+      "district": "El Korba"
+    },
+    "amenities": ["elevator"],
+    "images": ["https://picsum.photos/seed/mock004/800/600"],
+    "sourceUrl": "https://shaety.example/listing/mock-004"
+  },
+  {
+    "externalId": "mock-005",
+    "title": "Duplex in 6th October",
+    "description": "Modern duplex in gated community.",
+    "priceEgp": 5200000,
+    "propertyType": "duplex",
+    "listingType": "sale",
+    "bedrooms": 4,
+    "bathrooms": 3,
+    "areaSqm": 250,
+    "location": {
+      "governorate": "Giza",
+      "city": "6th October",
+      "district": "West Hills"
+    },
+    "amenities": ["parking", "security"],
+    "images": ["https://picsum.photos/seed/mock005/800/600"],
+    "sourceUrl": "https://shaety.example/listing/mock-005"
+  },
+  {
+    "externalId": "mock-006",
+    "title": "Commercial Office in Smart Village",
+    "description": "Grade A office space ready to move in.",
+    "priceEgp": 85000,
+    "propertyType": "commercial",
+    "listingType": "rent",
+    "bedrooms": null,
+    "bathrooms": 2,
+    "areaSqm": 200,
+    "location": {
+      "governorate": "Giza",
+      "city": "Smart Village",
+      "district": "Smart Village"
+    },
+    "amenities": ["parking", "elevator"],
+    "images": ["https://picsum.photos/seed/mock006/800/600"],
+    "sourceUrl": "https://shaety.example/listing/mock-006"
+  },
+  {
+    "externalId": "mock-007",
+    "title": "Townhouse in Sheikh Zayed",
+    "description": "Family townhouse with rooftop terrace.",
+    "priceEgp": 7800000,
+    "propertyType": "townhouse",
+    "listingType": "sale",
+    "bedrooms": 4,
+    "bathrooms": 3,
+    "areaSqm": 310,
+    "location": {
+      "governorate": "Giza",
+      "city": "Sheikh Zayed",
+      "district": "Beverly Hills"
+    },
+    "amenities": ["garden", "parking"],
+    "images": ["https://picsum.photos/seed/mock007/800/600"],
+    "sourceUrl": "https://shaety.example/listing/mock-007"
+  },
+  {
+    "externalId": "mock-008",
+    "title": "Land Plot in North Coast",
+    "description": "Sea-view land parcel with clear title.",
+    "priceEgp": 4200000,
+    "propertyType": "land",
+    "listingType": "sale",
+    "bedrooms": null,
+    "bathrooms": null,
+    "areaSqm": 600,
+    "location": {
+      "governorate": "Matrouh",
+      "city": "North Coast",
+      "district": "Sidi Abdel Rahman"
+    },
+    "amenities": [],
+    "images": ["https://picsum.photos/seed/mock008/800/600"],
+    "sourceUrl": "https://shaety.example/listing/mock-008"
+  },
+  {
+    "externalId": "mock-009",
+    "title": "3BR Apartment in Alexandria — Smouha",
+    "description": "Bright apartment close to schools.",
+    "priceEgp": 2900000,
+    "propertyType": "apartment",
+    "listingType": "sale",
+    "bedrooms": 3,
+    "bathrooms": 2,
+    "areaSqm": 165,
+    "location": {
+      "governorate": "Alexandria",
+      "city": "Alexandria",
+      "district": "Smouha"
+    },
+    "amenities": ["elevator", "parking"],
+    "images": ["https://picsum.photos/seed/mock009/800/600"],
+    "sourceUrl": "https://shaety.example/listing/mock-009"
+  },
+  {
+    "externalId": "mock-010",
+    "title": "2BR Rental in Dokki",
+    "description": "Affordable rental near Tahrir corridor.",
+    "priceEgp": 22000,
+    "propertyType": "apartment",
+    "listingType": "rent",
+    "bedrooms": 2,
+    "bathrooms": 1,
+    "areaSqm": 95,
+    "location": {
+      "governorate": "Cairo",
+      "city": "Dokki",
+      "district": "Dokki"
+    },
+    "amenities": ["balcony"],
+    "images": ["https://picsum.photos/seed/mock010/800/600"],
+    "sourceUrl": "https://shaety.example/listing/mock-010"
+  },
+  {
+    "externalId": "mock-011",
+    "title": "Penthouse in New Capital",
+    "description": "Luxury penthouse with panoramic views.",
+    "priceEgp": 18500000,
+    "propertyType": "apartment",
+    "listingType": "sale",
+    "bedrooms": 4,
+    "bathrooms": 4,
+    "areaSqm": 380,
+    "location": {
+      "governorate": "Cairo",
+      "city": "New Capital",
+      "district": "Downtown"
+    },
+    "amenities": ["pool", "gym", "concierge"],
+    "images": ["https://picsum.photos/seed/mock011/800/600"],
+    "sourceUrl": "https://shaety.example/listing/mock-011"
+  },
+  {
+    "externalId": "mock-012",
+    "title": "Chalet in Ain Sokhna",
+    "description": "Beach chalet with shared pool access.",
+    "priceEgp": 3100000,
+    "propertyType": "other",
+    "listingType": "sale",
+    "bedrooms": 2,
+    "bathrooms": 2,
+    "areaSqm": 110,
+    "location": {
+      "governorate": "Suez",
+      "city": "Ain Sokhna",
+      "district": "Galala"
+    },
+    "amenities": ["pool", "beach_access"],
+    "images": ["https://picsum.photos/seed/mock012/800/600"],
+    "sourceUrl": "https://shaety.example/listing/mock-012"
+  }
+]

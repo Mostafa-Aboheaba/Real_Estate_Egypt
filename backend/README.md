@@ -69,7 +69,9 @@ See [PROJECT_STRUCTURE.md](./PROJECT_STRUCTURE.md).
 ## API
 
 - Health: `GET /health`, `GET /health/ready` (no `/api/v1` prefix)
-- Feature routes: `/api/v1/*` (added in M3+)
+- Feature routes: `/api/v1/*` (auth M3, properties M4)
+- Properties: `GET /api/v1/properties`, `GET /api/v1/properties/:id` (guest page 1 OK)
+- Listing sync: auto on empty DB; `npm run worker:dev` for BullMQ worker
 
 ## Architecture docs
 

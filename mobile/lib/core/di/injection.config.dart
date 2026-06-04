@@ -21,6 +21,12 @@ import '../../features/authentication/data/repositories/auth_repository_impl.dar
     as _i317;
 import '../../features/authentication/domain/repositories/auth_repository.dart'
     as _i742;
+import '../../features/property_search/data/datasources/property_remote_datasource.dart'
+    as _i164;
+import '../../features/property_search/data/repositories/property_repository_impl.dart'
+    as _i2;
+import '../../features/property_search/domain/repositories/property_repository.dart'
+    as _i727;
 import '../auth/session_expired_notifier.dart' as _i45;
 import '../auth/token_storage.dart' as _i1002;
 import '../config/app_config.dart' as _i650;
@@ -83,6 +89,12 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i14.AuthRemoteDataSource>(
       () => _i14.AuthRemoteDataSource(gh<_i557.ApiClient>()),
+    );
+    gh.lazySingleton<_i164.PropertyRemoteDataSource>(
+      () => _i164.PropertyRemoteDataSource(gh<_i557.ApiClient>()),
+    );
+    gh.lazySingleton<_i727.PropertyRepository>(
+      () => _i2.PropertyRepositoryImpl(gh<_i164.PropertyRemoteDataSource>()),
     );
     gh.lazySingleton<_i742.AuthRepository>(
       () => _i317.AuthRepositoryImpl(

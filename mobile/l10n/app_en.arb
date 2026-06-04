@@ -5,5 +5,19 @@
     "description": "Application title"
   },
   "homeWelcome": "Welcome",
-  "homeSubtitle": "Discover properties in Egypt with AI assistance."
+  "homeSubtitle": "Discover properties in Egypt with AI assistance.",
+  "browseProperties": "Browse properties",
+  "searchTitle": "Search properties",
+  "searchHint": "Search by keyword, area…",
+  "searchResultsCount": "{count,plural, =0{No results} =1{1 result} other{{count} results}}",
+  "@searchResultsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "propertyDetailTitle": "Property details",
+  "propertyDescription": "Description",
+  "propertyAmenities": "Amenities"
 }
