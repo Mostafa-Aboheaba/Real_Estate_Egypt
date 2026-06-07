@@ -6,6 +6,7 @@ import { PrismaModule } from './infrastructure/persistence/prisma/prisma.module'
 import { QueueModule } from './infrastructure/queue/queue.module';
 import { PropertiesModule } from './presentation/properties/properties.module';
 import { RagModule } from './presentation/ai/rag.module';
+import { ChatModule } from './presentation/ai/chat.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { RagModule } from './presentation/ai/rag.module';
     PrismaModule,
     QueueModule,
     RagModule,
+    ChatModule,
     PropertiesModule,
   ],
 })

@@ -223,6 +223,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Sign in to view your profile.'**
   String get profileSignInRequired;
+
+  /// No description provided for @chatTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'AI Chat'**
+  String get chatTitle;
+
+  /// No description provided for @chatInputHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask about properties in Egypt…'**
+  String get chatInputHint;
+
+  /// No description provided for @chatAiDisclaimer.
+  ///
+  /// In en, this message translates to:
+  /// **'AI-generated guidance — not legal or financial advice.'**
+  String get chatAiDisclaimer;
+
+  /// No description provided for @chatSwitchAgent.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch AI agent'**
+  String get chatSwitchAgent;
+
+  /// No description provided for @chatRetry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get chatRetry;
 }
 
 class _AppLocalizationsDelegate

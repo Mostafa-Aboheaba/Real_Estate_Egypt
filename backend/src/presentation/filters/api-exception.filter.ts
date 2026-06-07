@@ -22,6 +22,10 @@ import {
   RagDomainException,
   RagErrorCode,
 } from '../../domain/rag/failures/rag.failures';
+import {
+  ChatDomainException,
+  ChatErrorCode,
+} from '../../domain/chat/failures/chat.failures';
 import { CORRELATION_ID_HEADER } from '../../common/middleware/correlation-id.middleware';
 
 const PROPERTY_STATUS: Record<PropertyErrorCode, number> = {
@@ -43,6 +47,16 @@ const RAG_STATUS: Record<RagErrorCode, number> = {
   [RagErrorCode.EMBEDDING_FAILED]: HttpStatus.BAD_GATEWAY,
   [RagErrorCode.RETRIEVAL_FAILED]: HttpStatus.INTERNAL_SERVER_ERROR,
   [RagErrorCode.VALIDATION_ERROR]: HttpStatus.BAD_REQUEST,
+};
+
+const CHAT_STATUS: Record<ChatErrorCode, number> = {
+  [ChatErrorCode.NOT_FOUND]: HttpStatus.NOT_FOUND,
+  [ChatErrorCode.VALIDATION_ERROR]: HttpStatus.BAD_REQUEST,
+  [ChatErrorCode.INVALID_AGENT_ID]: HttpStatus.BAD_REQUEST,
+  [ChatErrorCode.FORBIDDEN]: HttpStatus.FORBIDDEN,
+  [ChatErrorCode.AI_UNAVAILABLE]: HttpStatus.SERVICE_UNAVAILABLE,
+  [ChatErrorCode.AI_QUOTA_EXCEEDED]: HttpStatus.FORBIDDEN,
+  [ChatErrorCode.RATE_LIMITED]: HttpStatus.TOO_MANY_REQUESTS,
 };
 
 const AUTH_STATUS: Record<AuthErrorCode, number> = {
@@ -95,6 +109,19 @@ export class ApiExceptionFilter implements ExceptionFilter {
 
     if (exception instanceof RagDomainException) {
       const status = RAG_STATUS[exception.code] ?? HttpStatus.BAD_GATEWAY;
+      response.status(status).json({
+        error: {
+          code: exception.code,
+          message: exception.message,
+          details: [],
+          correlationId,
+        },
+      });
+      return;
+    }
+
+    if (exception instanceof ChatDomainException) {
+      const status = CHAT_STATUS[exception.code] ?? HttpStatus.BAD_REQUEST;
       response.status(status).json({
         error: {
           code: exception.code,

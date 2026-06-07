@@ -10,5 +10,6 @@ abstract final class RoutePaths {
   static const String profile = '/profile';
   static const String editProfile = '/profile/edit';
   static const String favorites = '/favorites';
+  static const String chat = '/chat';
   static String propertyDetail(String id) => '/properties/$id';
 }

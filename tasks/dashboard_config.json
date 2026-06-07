@@ -43,10 +43,10 @@
     "signoff_complete": true
   },
   "next_task": {
-    "id": "M5-PRO001",
-    "name": "Profile Domain + Repository Port",
-    "path": "tasks/m05-profile/m5-pro001.md",
-    "reason": "First task in M5 — domain layer unblocks all profile APIs."
+    "id": "M8-REC001",
+    "name": "Recommendation Domain + Scoring Port",
+    "path": "tasks/m08-recommendations/m8-rec001.md",
+    "reason": "First task in M8 — recommendation domain unblocks scoring APIs."
   },
   "risks": [
     {
@@ -65,7 +65,7 @@
       "id": "R4",
       "severity": "medium",
       "title": "Vertex AI & GCP not provisioned",
-      "impact": "M6–M7 blocked on cloud AI until staging (M11) or local mocks."
+      "impact": "M7 production chat needs Vertex/GCP (M11); M6 uses `GEMINI_MOCK_EMBEDDINGS` locally."
     },
     {
       "id": "R5",

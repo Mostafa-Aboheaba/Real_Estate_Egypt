@@ -8,7 +8,7 @@
 |------|--------|
 | **Shaety role** | Primary **listing provider** (FR-SEARCH-003, FR-SYNC-001) — data source ingested via `ShaetyAdapter`, not exposed to mobile clients |
 | **Our API** | NestJS `/api/v1/*` — authentication, search, profile, booking, AI chat are **platform-owned** |
-| **Base URL** | Postman uses `{{url}}` (Shaety backend); production URL and auth scheme must be confirmed with provider |
+| **Base URL** | `https://shaety.pountech.com` — `GET /properties` (Bearer token); configured via `SHAETY_API_URL` |
 | **Current adapter** | `backend/src/infrastructure/listing/shaety/shaety.adapter.ts` — mock fallback when `SHAETY_API_KEY` unset |
 
 ### Classification legend

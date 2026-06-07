@@ -20,5 +20,10 @@
   "profileFavoritesEmpty": "لا توجد عقارات محفوظة.",
   "profileSave": "حفظ",
   "profileSignOut": "تسجيل الخروج",
-  "profileSignInRequired": "سجّل الدخول لعرض ملفك."
+  "profileSignInRequired": "سجّل الدخول لعرض ملفك.",
+  "chatTitle": "محادثة الذكاء الاصطناعي",
+  "chatInputHint": "اسأل عن العقارات في مصر…",
+  "chatAiDisclaimer": "إرشادات مولّدة بالذكاء الاصطناعي — ليست استشارة قانونية أو مالية.",
+  "chatSwitchAgent": "تغيير الوكيل",
+  "chatRetry": "إعادة المحاولة"
 }

@@ -12,4 +12,6 @@ abstract final class ApiConstants {
   static const String usersMePreferences = '/users/me/preferences';
   static const String usersMeFavorites = '/users/me/favorites';
   static const String properties = '/properties';
+  static const String aiAgents = '/ai/agents';
+  static const String conversations = '/conversations';
 }

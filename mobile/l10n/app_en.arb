@@ -30,5 +30,10 @@
   "profileFavoritesEmpty": "No saved properties yet.",
   "profileSave": "Save",
   "profileSignOut": "Sign out",
-  "profileSignInRequired": "Sign in to view your profile."
+  "profileSignInRequired": "Sign in to view your profile.",
+  "chatTitle": "AI Chat",
+  "chatInputHint": "Ask about properties in Egypt…",
+  "chatAiDisclaimer": "AI-generated guidance — not legal or financial advice.",
+  "chatSwitchAgent": "Switch AI agent",
+  "chatRetry": "Retry"
 }

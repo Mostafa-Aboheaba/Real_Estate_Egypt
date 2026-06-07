@@ -8,12 +8,16 @@ import * as request from 'supertest';
 import { App } from 'supertest/types';
 import { AppModule } from '../src/app.module';
 import { EmbedListingService } from '../src/application/rag/embed-listing.service';
+import { PrismaService } from '../src/infrastructure/persistence/prisma/prisma.service';
 
 const hasDatabase = Boolean(process.env.DATABASE_URL);
 
 describe('RAG (e2e)', () => {
   let app: INestApplication<App>;
-  let adminToken = '';
+  let prisma: PrismaService;
+  let agentToken = '';
+  const agentEmail = `rag-agent-${randomUUID()}@example.com`;
+  const password = 'password1';
 
   beforeAll(async () => {
     if (!hasDatabase) {
@@ -40,34 +44,44 @@ describe('RAG (e2e)', () => {
       }),
     );
     await app.init();
+    prisma = app.get(PrismaService);
 
-    const email = `rag-admin-${randomUUID()}@example.com`;
     await request(app.getHttpServer())
       .post('/api/v1/auth/register')
       .send({
-        email,
-        password: 'password1',
-        role: 'admin',
+        email: agentEmail,
+        password,
+        role: 'agent',
         locale: 'en',
         consentAccepted: true,
         consentVersion: '2026-06-01',
-      });
+      })
+      .expect(201);
+
+    await prisma.user.updateMany({
+      where: { email: agentEmail },
+      data: { emailVerified: true },
+    });
 
     const login = await request(app.getHttpServer())
       .post('/api/v1/auth/login')
-      .send({ email, password: 'password1' })
+      .send({ email: agentEmail, password })
       .expect(200);
 
-    adminToken = login.body.data.accessToken;
+    agentToken = login.body.data.accessToken;
 
     const embed = app.get(EmbedListingService);
     await embed.embedMissingBatch(50);
   });
 
   afterAll(async () => {
-    if (app) {
-      await app.close();
+    if (!hasDatabase || !app) {
+      return;
     }
+    await prisma.user.deleteMany({
+      where: { email: { startsWith: 'rag-' } },
+    });
+    await app.close();
   });
 
   it('POST /ai/rag/retrieve returns listing IDs', async () => {
@@ -77,7 +91,7 @@ describe('RAG (e2e)', () => {
 
     const res = await request(app.getHttpServer())
       .post('/api/v1/ai/rag/retrieve')
-      .set('Authorization', `Bearer ${adminToken}`)
+      .set('Authorization', `Bearer ${agentToken}`)
       .send({ query: 'apartment Cairo rent', topK: 5 })
       .expect(201);
 
@@ -93,7 +107,7 @@ describe('RAG (e2e)', () => {
 
     await request(app.getHttpServer())
       .post('/api/v1/ai/rag/retrieve')
-      .set('Authorization', `Bearer ${adminToken}`)
+      .set('Authorization', `Bearer ${agentToken}`)
       .send({ query: 'villa New Cairo' })
       .expect(201);
 
@@ -109,21 +123,27 @@ describe('RAG (e2e)', () => {
       return;
     }
 
-    const email = `rag-buyer-${randomUUID()}@example.com`;
+    const buyerEmail = `rag-buyer-${randomUUID()}@example.com`;
     await request(app.getHttpServer())
       .post('/api/v1/auth/register')
       .send({
-        email,
-        password: 'password1',
+        email: buyerEmail,
+        password,
         role: 'buyer',
         locale: 'en',
         consentAccepted: true,
         consentVersion: '2026-06-01',
-      });
+      })
+      .expect(201);
+
+    await prisma.user.updateMany({
+      where: { email: buyerEmail },
+      data: { emailVerified: true },
+    });
 
     const login = await request(app.getHttpServer())
       .post('/api/v1/auth/login')
-      .send({ email, password: 'password1' })
+      .send({ email: buyerEmail, password })
       .expect(200);
 
     await request(app.getHttpServer())

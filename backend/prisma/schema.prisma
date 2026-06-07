@@ -211,6 +211,7 @@ model Conversation {
   title          String?   @db.VarChar(200)
   isArchived     Boolean   @default(false) @map("is_archived")
   lastMessageAt  DateTime? @map("last_message_at") @db.Timestamptz(6)
+  summary        Json?
   createdAt      DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt      DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
 

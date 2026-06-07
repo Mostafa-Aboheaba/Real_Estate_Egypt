@@ -201,6 +201,30 @@ def pick_current_milestone(
     return order[-1] if order else "M5"
 
 
+def implementation_slice_summary(
+    stats: dict[str, MilestoneStats], order: list[str]
+) -> str:
+    """Highest contiguous M2+ implementation milestones that are fully done."""
+    complete: list[str] = []
+    for mid in order:
+        if mid in ("M0", "M1"):
+            continue
+        s = stats.get(mid)
+        if not s or s.total == 0:
+            continue
+        if s.done < s.total:
+            break
+        complete.append(mid)
+    if not complete:
+        return "Not started (M2+)"
+    task_count = sum(stats[mid].done for mid in complete)
+    if len(complete) == 1:
+        label = complete[0]
+    else:
+        label = f"{complete[0]}–{complete[-1]}"
+    return f"{label} complete ({task_count} tasks)"
+
+
 def signoff_pending(config: dict) -> bool:
     path = REPO_ROOT / config.get("sdd", {}).get(
         "signoff_file", "tasks/m1_approval_signoff.md"
@@ -299,7 +323,7 @@ def render(
         f"| **Overall completion** | **{pct:.1f}%** ({done} / {total} tasks) |",
         f"| **Current milestone** | **{current}** — {current_name} |",
         f"| **Task breakdown** | Done {done} · Pending {pending} · In progress {in_prog} · Blocked {blocked} |",
-        f"| **Implementation slice** | M2–M4 complete ({stats['M2'].done + stats['M3'].done + stats['M4'].done} tasks) |",
+        f"| **Implementation slice** | {implementation_slice_summary(stats, order)} |",
         "",
         "---",
         "",
@@ -429,13 +453,15 @@ def render(
             "| M2 | [Platform bootstrap](tasks/m02_platform_bootstrap_completion_report.md) |",
             "| M3 | [Authentication](tasks/m03_authentication_completion_report.md) · [Review](tasks/m03_authentication_implementation_review.md) |",
             "| M4 | [Property search](tasks/m04_property_search_completion_report.md) · [Review](tasks/m04_property_search_implementation_review.md) |",
-            "| M5 | [Implementation plan](tasks/m05_profile_implementation_plan.md) |",
+            "| M5 | [Profile](tasks/m05_profile_completion_report.md) |",
+            "| M6 | [RAG & embeddings](tasks/m06_rag_completion_report.md) |",
+            "| M7 | [AI Chat](tasks/m07_chat_completion_report.md) |",
             "",
             "---",
             "",
             "## Maintenance",
             "",
-            "1. Mark done: `python3 tasks/complete_task.py M5-PRO001`",
+            "1. Mark done: `python3 tasks/complete_task.py M7-CHT001`",
             "   (or set `**Status**` to `done` in the task file, then step 2).",
             "2. Run `python3 tasks/build_project_status.py`.",
             "3. Commit the task file and `PROJECT_STATUS.md` together.",

@@ -17,6 +17,7 @@ import { UsersModule } from './presentation/users/users.module';
 import { PropertiesModule } from './presentation/properties/properties.module';
 import { AgentsModule } from './presentation/agents/agents.module';
 import { RagModule } from './presentation/ai/rag.module';
+import { ChatModule } from './presentation/ai/chat.module';
 
 @Module({
   imports: [
@@ -48,6 +49,7 @@ import { RagModule } from './presentation/ai/rag.module';
     AgentsModule,
     PropertiesModule,
     RagModule,
+    ChatModule,
   ],
   providers: [
     {

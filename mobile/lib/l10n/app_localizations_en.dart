@@ -79,4 +79,20 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get profileSignInRequired => 'Sign in to view your profile.';
+
+  @override
+  String get chatTitle => 'AI Chat';
+
+  @override
+  String get chatInputHint => 'Ask about properties in Egypt…';
+
+  @override
+  String get chatAiDisclaimer =>
+      'AI-generated guidance — not legal or financial advice.';
+
+  @override
+  String get chatSwitchAgent => 'Switch AI agent';
+
+  @override
+  String get chatRetry => 'Retry';
 }

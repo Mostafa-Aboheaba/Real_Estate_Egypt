@@ -21,6 +21,7 @@ import { RagController } from './rag.controller';
   imports: [
     QueueModule,
     AuthModule,
+    PropertiesModule,
     BullModule.registerQueue({ name: EMBED_LISTING_QUEUE }),
   ],
   controllers: [RagController, MetricsController],

@@ -14,6 +14,7 @@ import 'package:property_assistant/features/profile/presentation/pages/edit_prof
 import 'package:property_assistant/features/profile/presentation/pages/favorites_page.dart';
 import 'package:property_assistant/features/profile/presentation/pages/profile_page.dart';
 import 'package:property_assistant/features/property_search/presentation/pages/search_page.dart';
+import 'package:property_assistant/features/ai_chat/presentation/pages/chat_page.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 
@@ -83,6 +84,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: RoutePaths.favorites,
         name: 'favorites',
         builder: (context, state) => const FavoritesPage(),
+      ),
+      GoRoute(
+        path: RoutePaths.chat,
+        name: 'chat',
+        builder: (context, state) => const ChatPage(),
       ),
     ],
   );

@@ -31,8 +31,8 @@ servers:
     description: Shaety API base (trailing slash as in Postman `{{url}}`)
     variables:
       shaetyBaseUrl:
-        default: https://api.shaety.com/
-        description: Replace with provider-confirmed base URL
+        default: https://shaety.pountech.com/
+        description: Shaety production API (Postman `{{url}}`)
 
 tags:
   - name: Properties

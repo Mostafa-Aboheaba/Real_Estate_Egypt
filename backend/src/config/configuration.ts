@@ -36,12 +36,16 @@ export default () => ({
   },
   listing: {
     shaetyApiKey: process.env.SHAETY_API_KEY,
-    shaetyApiUrl: process.env.SHAETY_API_URL,
+    shaetyApiUrl:
+      process.env.SHAETY_API_URL ?? 'https://shaety.pountech.com',
   },
   gemini: {
     apiKey: process.env.GEMINI_API_KEY,
     mockEmbeddings:
       process.env.GEMINI_MOCK_EMBEDDINGS === 'true' ||
+      !process.env.GEMINI_API_KEY,
+    mockChat:
+      process.env.GEMINI_MOCK_CHAT === 'true' ||
       !process.env.GEMINI_API_KEY,
     embedMaxRetries: parseInt(process.env.GEMINI_EMBED_MAX_RETRIES ?? '3', 10),
   },

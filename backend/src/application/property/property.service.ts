@@ -58,6 +58,8 @@ export class PropertyService implements OnModuleInit {
     if ((count?.activeListingCount ?? 0) === 0) {
       this.logger.log('No active listings — enqueueing initial Shaety sync');
       await this.enqueueSync(ListingProvider.Shaety);
+    } else {
+      await this.enqueueEmbeddingBatch();
     }
   }
 
@@ -120,6 +122,7 @@ export class PropertyService implements OnModuleInit {
         `Sync ${provider}: fetched=${rawListings.length} upserted=${upserted} deactivated=${deactivated}`,
       );
 
+      // RAG/chat semantic_search reads embeddings built from these listings.
       await this.enqueueEmbeddingBatch();
     } catch (error) {
       const message =

@@ -79,4 +79,20 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get profileSignInRequired => 'سجّل الدخول لعرض ملفك.';
+
+  @override
+  String get chatTitle => 'محادثة الذكاء الاصطناعي';
+
+  @override
+  String get chatInputHint => 'اسأل عن العقارات في مصر…';
+
+  @override
+  String get chatAiDisclaimer =>
+      'إرشادات مولّدة بالذكاء الاصطناعي — ليست استشارة قانونية أو مالية.';
+
+  @override
+  String get chatSwitchAgent => 'تغيير الوكيل';
+
+  @override
+  String get chatRetry => 'إعادة المحاولة';
 }

@@ -15,6 +15,12 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart' as _i558;
 import 'package:get_it/get_it.dart' as _i174;
 import 'package:injectable/injectable.dart' as _i526;
 
+import '../../features/ai_chat/data/datasources/chat_remote_datasource.dart'
+    as _i696;
+import '../../features/ai_chat/data/repositories/chat_repository_impl.dart'
+    as _i203;
+import '../../features/ai_chat/domain/repositories/chat_repository.dart'
+    as _i203;
 import '../../features/authentication/data/datasources/auth_remote_datasource.dart'
     as _i14;
 import '../../features/authentication/data/repositories/auth_repository_impl.dart'
@@ -114,11 +120,17 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i428.ProfileApiService>(
       () => registerModule.profileApiService(gh<_i361.Dio>()),
     );
+    gh.lazySingleton<_i696.ChatRemoteDataSource>(
+      () => _i696.ChatRemoteDataSource(gh<_i361.Dio>()),
+    );
     gh.lazySingleton<_i993.PropertyRemoteDataSource>(
       () => _i993.PropertyRemoteDataSource(gh<_i787.PropertyApiService>()),
     );
     gh.lazySingleton<_i557.ApiClient>(
       () => _i557.ApiClient(gh<_i361.Dio>(), gh<_i932.NetworkInfo>()),
+    );
+    gh.lazySingleton<_i203.ChatRepository>(
+      () => _i203.ChatRepositoryImpl(gh<_i696.ChatRemoteDataSource>()),
     );
     gh.lazySingleton<_i727.PropertyRepository>(
       () => _i2.PropertyRepositoryImpl(gh<_i993.PropertyRemoteDataSource>()),

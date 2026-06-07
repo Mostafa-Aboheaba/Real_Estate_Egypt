@@ -52,6 +52,12 @@ class HomePage extends ConsumerWidget {
             ),
             if (session.valueOrNull != null) ...[
               const SizedBox(height: 12),
+              FilledButton.icon(
+                onPressed: () => context.push(RoutePaths.chat),
+                icon: const Icon(Icons.chat_bubble_outline),
+                label: Text(l10n.chatTitle),
+              ),
+              const SizedBox(height: 12),
               OutlinedButton.icon(
                 onPressed: () => context.push(RoutePaths.profile),
                 icon: const Icon(Icons.person_outline),

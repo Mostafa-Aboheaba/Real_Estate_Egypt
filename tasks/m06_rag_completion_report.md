@@ -40,3 +40,9 @@ DATABASE_URL=... GEMINI_MOCK_EMBEDDINGS=true npx ts-node scripts/rag-eval.ts
 ```
 
 Set `GEMINI_API_KEY` for real `text-embedding-004` vectors.
+
+## Fixes (2026-06-04)
+
+- `RagModule` imports `PropertiesModule` (DI for `EmbedListingService`).
+- API boot enqueues embed batch when active listings already exist.
+- `test/rag.e2e-spec.ts` uses `agent` role + explicit email verification.
