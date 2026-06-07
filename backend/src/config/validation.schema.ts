@@ -21,8 +21,6 @@ export const validationSchema = Joi.object({
   AUTH_DEV_AUTO_VERIFY_EMAIL: Joi.boolean().optional(),
   SHAETY_API_KEY: Joi.string().allow('').optional(),
   SHAETY_API_URL: Joi.string().uri().optional(),
-  SHAETY_PLATFORM: Joi.string().optional(),
-  SHAETY_APP_VERSION: Joi.string().optional(),
   GEMINI_API_KEY: Joi.string().allow('').optional(),
   GEMINI_MOCK_EMBEDDINGS: Joi.boolean().optional(),
   GEMINI_EMBED_MAX_RETRIES: Joi.number().optional(),

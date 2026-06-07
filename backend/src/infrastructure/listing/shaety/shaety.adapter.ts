@@ -8,12 +8,9 @@ import {
   RawListing,
 } from '../../../domain/property/ports/listing-provider.port';
 import {
-  SHAETY_DEFAULT_APP_VERSION,
   SHAETY_DEFAULT_BASE_URL,
   SHAETY_DEFAULT_PER_PAGE,
-  SHAETY_DEFAULT_PLATFORM,
   SHAETY_MAX_SYNC_PAGES,
-  SHAETY_PROPERTIES_PATH,
   SHAETY_PROPERTIES_SEGMENT,
   normalizeShaetyApiRoot,
 } from './shaety.constants';
@@ -65,15 +62,11 @@ export class ShaetyAdapter implements ListingProviderPort {
     return JSON.parse(raw) as RawListing[];
   }
 
+  /** Mirrors Shaety mobile `ApiClient.get()` headers (guest: no Bearer). */
   private buildRequestHeaders(apiKey?: string): Record<string, string> {
     const headers: Record<string, string> = {
       Accept: 'application/json',
-      Platform:
-        this.config.get<string>('listing.shaetyPlatform') ??
-        SHAETY_DEFAULT_PLATFORM,
-      Version:
-        this.config.get<string>('listing.shaetyAppVersion') ??
-        SHAETY_DEFAULT_APP_VERSION,
+      'Content-Type': 'application/json',
     };
     if (apiKey) {
       headers.Authorization = `Bearer ${apiKey}`;
@@ -147,13 +140,21 @@ export class ShaetyAdapter implements ListingProviderPort {
       try {
         const response = await fetch(url.toString(), {
           headers: this.buildRequestHeaders(apiKey),
+          redirect: 'manual',
         });
+
+        if (response.status >= 300 && response.status < 400) {
+          const location = response.headers.get('location') ?? 'unknown';
+          throw new Error(
+            `Shaety API redirect ${response.status} → ${location}`,
+          );
+        }
 
         if (response.status === 429 || response.status >= 500) {
           throw new Error(`Shaety API ${response.status}`);
         }
 
-        if (!response.ok) {
+        if (response.status < 200 || response.status >= 300) {
           throw new Error(
             `Shaety API ${response.status} ${response.statusText}`,
           );

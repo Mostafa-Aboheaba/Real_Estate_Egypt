@@ -25,6 +25,3 @@ export const SHAETY_DEFAULT_PER_PAGE = 15;
 /** Safety cap for full-catalog sync pagination. */
 export const SHAETY_MAX_SYNC_PAGES = 200;
 
-/** Guest/mobile client headers (CORS-allowed on Shaety API). */
-export const SHAETY_DEFAULT_PLATFORM = 'android';
-export const SHAETY_DEFAULT_APP_VERSION = '1.0.0';

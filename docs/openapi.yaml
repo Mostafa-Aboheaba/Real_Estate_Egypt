@@ -57,9 +57,9 @@ paths:
         Paginated property catalog with optional filters. Primary ingest endpoint
         for scheduled sync (FR-SEARCH-002).
 
-        **Guest access:** `Accept: application/json` plus `Platform` / `Version`
-        headers (no Bearer required). Optional `SHAETY_API_KEY` for authenticated
-        Sanctum token.
+        **Guest access:** `Accept` + `Content-Type: application/json`, no Bearer
+        (mirrors Shaety mobile `ApiClient`). Do not follow redirects. Optional
+        `SHAETY_API_KEY` for authenticated Sanctum token.
 
         Postman samples use numeric `city` IDs (e.g. `12` = Alexandria). The platform
         adapter must map IDs to governorate/city names for the canonical model.

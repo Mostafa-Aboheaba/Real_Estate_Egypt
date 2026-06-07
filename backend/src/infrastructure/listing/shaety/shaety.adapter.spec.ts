@@ -1,3 +1,5 @@
+import { readFileSync } from 'fs';
+import { join } from 'path';
 import { ConfigService } from '@nestjs/config';
 import { ShaetyAdapter } from './shaety.adapter';
 
@@ -14,7 +16,7 @@ describe('ShaetyAdapter', () => {
     jest.restoreAllMocks();
   });
 
-  it('fetches listings via guest API without Authorization header', async () => {
+  it('fetches listings via guest API matching mobile ApiClient', async () => {
     const fetchMock = jest.spyOn(global, 'fetch').mockResolvedValue({
       ok: true,
       status: 200,
@@ -47,10 +49,12 @@ describe('ShaetyAdapter', () => {
     expect(fetchMock).toHaveBeenCalled();
     const [requestUrl, init] = fetchMock.mock.calls[0] as [string, RequestInit];
     expect(requestUrl).toContain('/api/properties');
+    expect(init.redirect).toBe('manual');
     const headers = init.headers as Record<string, string>;
     expect(headers.Accept).toBe('application/json');
-    expect(headers.Platform).toBe('android');
+    expect(headers['Content-Type']).toBe('application/json');
     expect(headers.Authorization).toBeUndefined();
+    expect(headers.Platform).toBeUndefined();
   });
 
   it('adds Bearer token when SHAETY_API_KEY is set', async () => {
@@ -87,5 +91,32 @@ describe('ShaetyAdapter', () => {
     ];
     const headers = init.headers as Record<string, string>;
     expect(headers.Authorization).toBe('Bearer test-token');
+  });
+
+  it('falls back to mock listings on redirect (followRedirects: false)', async () => {
+    jest.spyOn(global, 'fetch').mockResolvedValue({
+      ok: false,
+      status: 302,
+      statusText: 'Found',
+      headers: new Headers({
+        location: 'https://shaety.pountech.com/users/sign_in',
+      }),
+      json: async () => ({}),
+    } as Response);
+
+    const config = {
+      get: (key: string) => undefined,
+    } as unknown as ConfigService;
+
+    const adapter = new ShaetyAdapter(config);
+    const listings = await adapter.fetchListings();
+
+    const mockPath = join(__dirname, 'mock-listings.json');
+    const expected = JSON.parse(readFileSync(mockPath, 'utf-8')) as {
+      externalId: string;
+    }[];
+
+    expect(listings).toHaveLength(expected.length);
+    expect(listings[0]?.externalId).toBe(expected[0]?.externalId);
   });
 });
