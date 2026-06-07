@@ -8,10 +8,14 @@ import {
   RawListing,
 } from '../../../domain/property/ports/listing-provider.port';
 import {
+  SHAETY_DEFAULT_APP_VERSION,
   SHAETY_DEFAULT_BASE_URL,
   SHAETY_DEFAULT_PER_PAGE,
+  SHAETY_DEFAULT_PLATFORM,
   SHAETY_MAX_SYNC_PAGES,
   SHAETY_PROPERTIES_PATH,
+  SHAETY_PROPERTIES_SEGMENT,
+  normalizeShaetyApiRoot,
 } from './shaety.constants';
 import {
   mapShaetyPropertyToRawListing,
@@ -39,21 +43,13 @@ export class ShaetyAdapter implements ListingProviderPort {
   constructor(private readonly config: ConfigService) {}
 
   async fetchListings(_since?: Date): Promise<RawListing[]> {
-    const apiKey = this.config.get<string>('listing.shaetyApiKey');
+    const apiKey = this.config.get<string>('listing.shaetyApiKey')?.trim();
     const baseUrl =
       this.config.get<string>('listing.shaetyApiUrl') ??
       SHAETY_DEFAULT_BASE_URL;
 
-    if (!apiKey?.trim()) {
-      this.logger.log(
-        'SHAETY_API_KEY not set — using mock listings (set key + ' +
-          `SHAETY_API_URL=${SHAETY_DEFAULT_BASE_URL} for live RAG ingest)`,
-      );
-      return this.loadMockListings();
-    }
-
     try {
-      return await this.fetchAllProperties(baseUrl, apiKey);
+      return await this.fetchAllProperties(baseUrl, apiKey || undefined);
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       this.logger.warn(
@@ -69,27 +65,44 @@ export class ShaetyAdapter implements ListingProviderPort {
     return JSON.parse(raw) as RawListing[];
   }
 
+  private buildRequestHeaders(apiKey?: string): Record<string, string> {
+    const headers: Record<string, string> = {
+      Accept: 'application/json',
+      Platform:
+        this.config.get<string>('listing.shaetyPlatform') ??
+        SHAETY_DEFAULT_PLATFORM,
+      Version:
+        this.config.get<string>('listing.shaetyAppVersion') ??
+        SHAETY_DEFAULT_APP_VERSION,
+    };
+    if (apiKey) {
+      headers.Authorization = `Bearer ${apiKey}`;
+    }
+    return headers;
+  }
+
   private async fetchAllProperties(
     baseUrl: string,
-    apiKey: string,
+    apiKey?: string,
   ): Promise<RawListing[]> {
-    const normalizedBase = baseUrl.replace(/\/$/, '');
+    const apiRoot = normalizeShaetyApiRoot(baseUrl);
     const listings: RawListing[] = [];
     let page = 1;
     let total = Number.POSITIVE_INFINITY;
 
+    const mode = apiKey ? 'authenticated' : 'guest';
+    this.logger.log(
+      `Shaety ${mode} sync starting — ${apiRoot}/${SHAETY_PROPERTIES_SEGMENT}`,
+    );
+
     while (page <= SHAETY_MAX_SYNC_PAGES && listings.length < total) {
-      const batch = await this.fetchPropertiesPage(
-        normalizedBase,
-        apiKey,
-        page,
-      );
+      const batch = await this.fetchPropertiesPage(apiRoot, apiKey, page);
       if (batch.items.length === 0) {
         break;
       }
 
       for (const record of batch.items) {
-        const mapped = mapShaetyPropertyToRawListing(record, normalizedBase);
+        const mapped = mapShaetyPropertyToRawListing(record, apiRoot);
         if (mapped) {
           listings.push(mapped);
         }
@@ -105,27 +118,27 @@ export class ShaetyAdapter implements ListingProviderPort {
 
     if (listings.length === 0) {
       this.logger.warn(
-        `Shaety ${normalizedBase}${SHAETY_PROPERTIES_PATH} returned no mappable listings — mock fallback`,
+        `Shaety ${apiRoot}/${SHAETY_PROPERTIES_SEGMENT} returned no mappable listings — mock fallback`,
       );
       return this.loadMockListings();
     }
 
     this.logger.log(
-      `Shaety sync: fetched ${listings.length} listings from ${normalizedBase}`,
+      `Shaety sync: fetched ${listings.length} listings (${mode}) from ${apiRoot}`,
     );
     return listings;
   }
 
   private async fetchPropertiesPage(
     baseUrl: string,
-    apiKey: string,
+    apiKey: string | undefined,
     page: number,
   ): Promise<{
     items: ShaetyPropertyRecord[];
     total: number;
     perPage: number;
   }> {
-    const url = new URL(`${baseUrl}${SHAETY_PROPERTIES_PATH}`);
+    const url = new URL(`${baseUrl}/${SHAETY_PROPERTIES_SEGMENT}`);
     url.searchParams.set('page', String(page));
 
     let lastError: Error | null = null;
@@ -133,10 +146,7 @@ export class ShaetyAdapter implements ListingProviderPort {
     for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
       try {
         const response = await fetch(url.toString(), {
-          headers: {
-            Authorization: `Bearer ${apiKey}`,
-            Accept: 'application/json',
-          },
+          headers: this.buildRequestHeaders(apiKey),
         });
 
         if (response.status === 429 || response.status >= 500) {
@@ -150,6 +160,10 @@ export class ShaetyAdapter implements ListingProviderPort {
         }
 
         const body = (await response.json()) as ShaetyPropertiesResponse;
+        if (body.status === false) {
+          throw new Error(body.message ?? 'Shaety API returned status false');
+        }
+
         const items = Array.isArray(body.data) ? body.data : [];
         const total = Number(body.total ?? items.length);
         const perPage = Number(body.per_page ?? SHAETY_DEFAULT_PER_PAGE);

@@ -8,8 +8,8 @@
 |------|--------|
 | **Shaety role** | Primary **listing provider** (FR-SEARCH-003, FR-SYNC-001) — data source ingested via `ShaetyAdapter`, not exposed to mobile clients |
 | **Our API** | NestJS `/api/v1/*` — authentication, search, profile, booking, AI chat are **platform-owned** |
-| **Base URL** | `https://shaety.pountech.com` — `GET /properties` (Bearer token); configured via `SHAETY_API_URL` |
-| **Current adapter** | `backend/src/infrastructure/listing/shaety/shaety.adapter.ts` — mock fallback when `SHAETY_API_KEY` unset |
+| **Base URL** | `https://shaety.pountech.com/api/` — `GET properties` (guest/mobile headers; optional Bearer via `SHAETY_API_KEY`) |
+| **Current adapter** | `backend/src/infrastructure/listing/shaety/shaety.adapter.ts` — guest sync; mock fallback on failure |
 
 ### Classification legend
 

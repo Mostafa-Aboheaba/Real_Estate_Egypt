@@ -31,7 +31,7 @@ servers:
     description: Shaety API base (trailing slash as in Postman `{{url}}`)
     variables:
       shaetyBaseUrl:
-        default: https://shaety.pountech.com/
+        default: https://shaety.pountech.com/api/
         description: Shaety production API (Postman `{{url}}`)
 
 tags:
@@ -46,8 +46,7 @@ tags:
       - property_search
       - listing_sync
 
-security:
-  - bearerAuth: []
+security: []
 
 paths:
   /properties:
@@ -58,10 +57,15 @@ paths:
         Paginated property catalog with optional filters. Primary ingest endpoint
         for scheduled sync (FR-SEARCH-002).
 
+        **Guest access:** `Accept: application/json` plus `Platform` / `Version`
+        headers (no Bearer required). Optional `SHAETY_API_KEY` for authenticated
+        Sanctum token.
+
         Postman samples use numeric `city` IDs (e.g. `12` = Alexandria). The platform
         adapter must map IDs to governorate/city names for the canonical model.
 
         Canonical output shape: see `CanonicalListingMapping` schema.
+      security: []
       tags: [Properties]
       x-platform-canonical-mapping:
         $ref: '#/components/schemas/CanonicalListingMapping'

@@ -38,6 +38,8 @@ export default () => ({
     shaetyApiKey: process.env.SHAETY_API_KEY,
     shaetyApiUrl:
       process.env.SHAETY_API_URL ?? 'https://shaety.pountech.com',
+    shaetyPlatform: process.env.SHAETY_PLATFORM ?? 'android',
+    shaetyAppVersion: process.env.SHAETY_APP_VERSION ?? '1.0.0',
   },
   gemini: {
     apiKey: process.env.GEMINI_API_KEY,
