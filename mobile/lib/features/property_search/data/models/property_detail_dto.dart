@@ -43,6 +43,38 @@ class PropertyDetailDto {
   final String syncedAt;
   final bool isActive;
 
-  factory PropertyDetailDto.fromJson(Map<String, dynamic> json) =>
-      _$PropertyDetailDtoFromJson(json);
+  factory PropertyDetailDto.fromJson(Map<String, dynamic> json) {
+    final locationJson = json['location'];
+    return PropertyDetailDto(
+      id: json['id'] as String,
+      title: json['title'] as String? ?? '',
+      description: json['description'] as String?,
+      priceEgp: json['priceEgp'] as num? ?? 0,
+      listingType: json['listingType'] as String? ?? 'sale',
+      propertyType: json['propertyType'] as String? ?? 'other',
+      bedrooms: (json['bedrooms'] as num?)?.toInt(),
+      bathrooms: (json['bathrooms'] as num?)?.toInt(),
+      areaSqm: json['areaSqm'] as num?,
+      location: locationJson is Map<String, dynamic>
+          ? PropertyLocationDto.fromJson(locationJson)
+          : const PropertyLocationDto(
+              governorate: '',
+              city: '',
+              district: '',
+            ),
+      amenities: (json['amenities'] as List<dynamic>?)
+              ?.map((e) => e.toString())
+              .toList() ??
+          const [],
+      images: (json['images'] as List<dynamic>?)
+              ?.map((e) => e.toString())
+              .toList() ??
+          const [],
+      provider: json['provider'] as String? ?? 'shaety',
+      providerLabel: json['providerLabel'] as String? ?? 'Shaety',
+      sourceUrl: json['sourceUrl'] as String?,
+      syncedAt: json['syncedAt'] as String? ?? '',
+      isActive: json['isActive'] as bool? ?? true,
+    );
+  }
 }

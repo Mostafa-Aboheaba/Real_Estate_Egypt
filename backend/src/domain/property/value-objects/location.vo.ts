@@ -22,10 +22,13 @@ export class Location {
   }
 
   static create(props: LocationProps): Location {
-    if (!props.governorate?.trim() || !props.city?.trim() || !props.district?.trim()) {
-      throw new Error('Location requires governorate, city, and district');
+    if (!props.governorate?.trim() || !props.city?.trim()) {
+      throw new Error('Location requires governorate and city');
     }
-    return new Location(props);
+    return new Location({
+      ...props,
+      district: props.district?.trim() || props.city.trim(),
+    });
   }
 
   toJSON(): LocationProps {

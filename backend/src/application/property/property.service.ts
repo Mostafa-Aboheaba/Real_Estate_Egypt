@@ -84,6 +84,47 @@ export class PropertyService implements OnModuleInit {
     }
   }
 
+  async getFilterOptions() {
+    const cities = await this.properties.listDistinctCities(20);
+    return {
+      listingTypes: [
+        { value: null, label: 'Any' },
+        { value: 'sale', label: 'Sale' },
+        { value: 'rent', label: 'Rent' },
+      ],
+      propertyTypes: [
+        { value: 'apartment', label: 'Apartment' },
+        { value: 'villa', label: 'Villa' },
+        { value: 'duplex', label: 'Duplex' },
+        { value: 'townhouse', label: 'Townhouse' },
+        { value: 'commercial', label: 'Commercial' },
+        { value: 'land', label: 'Land' },
+        { value: 'other', label: 'Other' },
+      ],
+      sortOptions: [
+        { value: 'newest', label: 'Newest' },
+        { value: 'price_asc', label: 'Price: Low to High' },
+        { value: 'price_desc', label: 'Price: High to Low' },
+        { value: 'relevance', label: 'Relevance' },
+      ],
+      bedroomOptions: [
+        { value: null, label: 'Any' },
+        { value: '1', label: '1+' },
+        { value: '2', label: '2+' },
+        { value: '3', label: '3+' },
+        { value: '4', label: '4+' },
+        { value: '5', label: '5+' },
+      ],
+      cities: cities.map((city) => ({ value: city, label: city })),
+      pricePresets: [
+        { value: '500000', label: 'Up to 500K' },
+        { value: '1000000', label: 'Up to 1M' },
+        { value: '2000000', label: 'Up to 2M' },
+        { value: '5000000', label: 'Up to 5M' },
+      ],
+    };
+  }
+
   async search(filters: PropertySearchFilters) {
     const result = await this.properties.search(filters);
     return {

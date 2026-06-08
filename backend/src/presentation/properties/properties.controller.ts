@@ -17,6 +17,11 @@ export class PropertiesController {
     return { data: result.items, meta: result.meta };
   }
 
+  @Get('filters/options')
+  async filterOptions() {
+    return this.propertyService.getFilterOptions();
+  }
+
   @Get(':id')
   async getById(@Param('id', ParseUUIDPipe) id: string) {
     return this.propertyService.getDetail(id);

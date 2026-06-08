@@ -71,4 +71,5 @@ export interface PropertyRepositoryPort {
   search(filters: PropertySearchFilters): Promise<PaginatedProperties>;
   countByProvider(): Promise<ProviderSyncStats[]>;
   countMockActiveByProvider(provider: ListingProvider): Promise<number>;
+  listDistinctCities(limit?: number): Promise<string[]>;
 }

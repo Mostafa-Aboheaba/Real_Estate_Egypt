@@ -147,6 +147,11 @@ export class PrismaEmbeddingRepository implements EmbeddingRepositoryPort {
         Prisma.sql`p.listing_type = ${filters.listingType}::listing_type`,
       );
     }
+    if (filters.propertyType) {
+      conditions.push(
+        Prisma.sql`p.property_type = ${filters.propertyType}::property_type`,
+      );
+    }
     if (filters.minPriceEgp != null) {
       conditions.push(Prisma.sql`p.price_egp >= ${filters.minPriceEgp}`);
     }

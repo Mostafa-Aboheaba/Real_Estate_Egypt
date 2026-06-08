@@ -74,6 +74,19 @@ export class PrismaPropertyRepository implements PropertyRepositoryPort {
     return this.searchPrisma(normalized);
   }
 
+  async listDistinctCities(limit = 20): Promise<string[]> {
+    const rows = await this.prisma.$queryRaw<Array<{ city: string }>>`
+      SELECT DISTINCT location->>'city' AS city
+      FROM properties
+      WHERE is_active = true
+        AND location->>'city' IS NOT NULL
+        AND location->>'city' <> ''
+      ORDER BY city
+      LIMIT ${limit}
+    `;
+    return rows.map((r) => r.city).filter(Boolean);
+  }
+
   async countMockActiveByProvider(provider: ListingProvider): Promise<number> {
     return this.prisma.property.count({
       where: {

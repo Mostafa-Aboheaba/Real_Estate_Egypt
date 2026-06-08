@@ -7,10 +7,14 @@ class PropertyFilterOptions {
     required this.propertyTypes,
     required this.sortOptions,
     required this.bedroomOptions,
+    this.cities = const [],
+    this.pricePresets = const [],
   });
 
   final List<FilterOption> listingTypes;
   final List<FilterOption> propertyTypes;
   final List<FilterOption> sortOptions;
   final List<FilterOption> bedroomOptions;
+  final List<FilterOption> cities;
+  final List<FilterOption> pricePresets;
 }

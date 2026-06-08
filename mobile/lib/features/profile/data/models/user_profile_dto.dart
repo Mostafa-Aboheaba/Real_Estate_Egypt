@@ -30,6 +30,19 @@ class UserProfileDto {
   final Map<String, dynamic>? searchPreferences;
   final String? createdAt;
 
-  factory UserProfileDto.fromJson(Map<String, dynamic> json) =>
-      _$UserProfileDtoFromJson(json);
+  factory UserProfileDto.fromJson(Map<String, dynamic> json) {
+    return UserProfileDto(
+      id: json['id'] as String,
+      email: json['email'] as String,
+      role: json['role'] as String,
+      emailVerified: json['emailVerified'] as bool? ?? false,
+      locale: json['locale'] as String? ?? 'ar-EG',
+      name: json['name'] as String?,
+      phone: json['phone'] as String?,
+      avatarUrl: json['avatarUrl'] as String?,
+      preferredAgentId: json['preferredAgentId'] as String?,
+      searchPreferences: json['searchPreferences'] as Map<String, dynamic>?,
+      createdAt: json['createdAt'] as String?,
+    );
+  }
 }

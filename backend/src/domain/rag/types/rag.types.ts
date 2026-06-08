@@ -7,6 +7,7 @@ export interface RagRetrieveRequest {
     city?: string;
     governorate?: string;
     listingType?: string;
+    propertyType?: string;
     minPriceEgp?: number;
     maxPriceEgp?: number;
     includeFaq?: boolean;

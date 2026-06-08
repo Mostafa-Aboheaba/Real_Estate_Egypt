@@ -16,6 +16,7 @@ export interface RagRetrievalFilters {
   city?: string;
   governorate?: string;
   listingType?: string;
+  propertyType?: string;
   minPriceEgp?: number;
   maxPriceEgp?: number;
   sourceTypes?: EmbeddingEntityType[];

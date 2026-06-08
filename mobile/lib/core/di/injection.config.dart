@@ -39,6 +39,8 @@ import '../../features/property_search/data/datasources/local/property_filter_lo
     as _i37;
 import '../../features/property_search/data/datasources/remote/property_api_service.dart'
     as _i787;
+import '../../features/property_search/data/datasources/remote/property_filter_remote_datasource.dart'
+    as _i610;
 import '../../features/property_search/data/datasources/remote/property_remote_datasource.dart'
     as _i993;
 import '../../features/property_search/data/repositories/property_filter_repository_impl.dart'
@@ -88,11 +90,6 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i551.LoggingInterceptor>(
       () => dioModule.loggingInterceptor(gh<_i650.AppConfig>()),
     );
-    gh.lazySingleton<_i209.PropertyFilterRepository>(
-      () => _i720.PropertyFilterRepositoryImpl(
-        gh<_i37.PropertyFilterLocalDataSource>(),
-      ),
-    );
     gh.lazySingleton<_i361.Dio>(
       () => dioModule.refreshDio(
         gh<_i650.AppConfig>(),
@@ -123,11 +120,20 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i696.ChatRemoteDataSource>(
       () => _i696.ChatRemoteDataSource(gh<_i361.Dio>()),
     );
+    gh.lazySingleton<_i610.PropertyFilterRemoteDataSource>(
+      () => _i610.PropertyFilterRemoteDataSource(gh<_i361.Dio>()),
+    );
     gh.lazySingleton<_i993.PropertyRemoteDataSource>(
       () => _i993.PropertyRemoteDataSource(gh<_i787.PropertyApiService>()),
     );
     gh.lazySingleton<_i557.ApiClient>(
       () => _i557.ApiClient(gh<_i361.Dio>(), gh<_i932.NetworkInfo>()),
+    );
+    gh.lazySingleton<_i209.PropertyFilterRepository>(
+      () => _i720.PropertyFilterRepositoryImpl(
+        gh<_i610.PropertyFilterRemoteDataSource>(),
+        gh<_i37.PropertyFilterLocalDataSource>(),
+      ),
     );
     gh.lazySingleton<_i203.ChatRepository>(
       () => _i203.ChatRepositoryImpl(gh<_i696.ChatRemoteDataSource>()),

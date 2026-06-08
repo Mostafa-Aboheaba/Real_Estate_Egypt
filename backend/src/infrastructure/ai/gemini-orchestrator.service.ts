@@ -102,7 +102,9 @@ export class GeminiOrchestratorService implements LlmCompletionPort {
       toolSummary: '',
     };
 
-    if (this.tools.shouldInvokeTools(pre.sanitizedContent)) {
+    const invokeTools = this.tools.shouldInvokeTools(pre.sanitizedContent);
+
+    if (invokeTools) {
       onChunk({
         type: 'tool_call',
         name: 'semantic_search',
@@ -123,12 +125,15 @@ export class GeminiOrchestratorService implements LlmCompletionPort {
       toolResult.listingRefs.map((r) => r.propertyId),
     );
 
+    const toolsInvoked = invokeTools;
+
     let content: string;
     if (this.mockMode) {
       content = this.mockReply(
         request.agentId,
         pre.sanitizedContent,
         toolResult,
+        toolsInvoked,
       );
     } else {
       content = await this.callGemini(request, pre.sanitizedContent, signal);
@@ -180,13 +185,27 @@ export class GeminiOrchestratorService implements LlmCompletionPort {
       listingRefs: LlmCompletionResult['listingRefs'];
       toolSummary: string;
     },
+    toolsInvoked: boolean,
   ): string {
+    if (!toolsInvoked) {
+      const greeting = /morning|صباح/i.test(query)
+        ? 'Good morning! '
+        : /hello|hi|مرحبا|أهلا|اهلا|السلام/i.test(query)
+          ? 'Hello! '
+          : '';
+      return (
+        `${greeting}I'm your property assistant. Ask me about apartments, villas, ` +
+        `budget, or area in Egypt and I'll search listings for you. ` +
+        `AI-generated guidance — not legal or financial advice.`
+      );
+    }
+
     const cards =
       tool.listingRefs.length > 0
         ? ` I found ${tool.listingRefs.length} matching listings.`
-        : ' Try adjusting location or budget.';
+        : ' I could not find listings matching those filters — try adjusting budget or area.';
     return (
-      `[${agentId}] Here are options for your search: "${query.slice(0, 80)}".` +
+      `Here are options for your search: "${query.slice(0, 80)}".` +
       cards +
       ' AI-generated guidance — not legal or financial advice.'
     );

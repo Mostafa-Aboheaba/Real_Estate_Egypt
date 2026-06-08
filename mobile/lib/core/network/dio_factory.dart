@@ -3,6 +3,7 @@ import 'package:injectable/injectable.dart';
 import 'package:property_assistant/core/config/app_config.dart';
 import 'package:property_assistant/core/constants/app_constants.dart';
 import 'package:property_assistant/core/network/auth_interceptor.dart';
+import 'package:property_assistant/core/network/envelope_unwrap_interceptor.dart';
 import 'package:property_assistant/core/network/logging_interceptor.dart';
 
 @module
@@ -22,6 +23,7 @@ abstract class DioModule {
       ),
     );
     dio.interceptors.addAll([
+      EnvelopeUnwrapInterceptor(),
       authInterceptor,
       loggingInterceptor,
     ]);
