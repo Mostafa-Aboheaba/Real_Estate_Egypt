@@ -10,7 +10,7 @@
 | Collection name | Shaety |
 | Schema | Postman Collection v2.1.0 |
 | Total documented requests | 25 |
-| Base URL variable | `{{url}}` (environment-specific; examples served via `shaety.pountech.com`) |
+| Base URL variable | `{{url}}` → `https://app.shaety.com/api/` (was `shaety.pountech.com`) |
 | Primary market | Egypt — Alexandria & North Coast real estate (Arabic content) |
 | Backend stack (inferred) | Laravel (Sanctum-style tokens, `laravel_session` / `shaety_session` cookies) |
 | Rate limit | 60 requests/minute (`X-RateLimit-Limit: 60`) |

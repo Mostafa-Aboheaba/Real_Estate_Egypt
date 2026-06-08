@@ -74,6 +74,16 @@ export class PrismaPropertyRepository implements PropertyRepositoryPort {
     return this.searchPrisma(normalized);
   }
 
+  async countMockActiveByProvider(provider: ListingProvider): Promise<number> {
+    return this.prisma.property.count({
+      where: {
+        provider,
+        isActive: true,
+        externalId: { startsWith: 'mock-' },
+      },
+    });
+  }
+
   async countByProvider(): Promise<ProviderSyncStats[]> {
     const providers = Object.values(ListingProvider);
     const stats: ProviderSyncStats[] = [];

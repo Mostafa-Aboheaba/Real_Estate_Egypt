@@ -70,4 +70,5 @@ export interface PropertyRepositoryPort {
   findById(id: string): Promise<Property | null>;
   search(filters: PropertySearchFilters): Promise<PaginatedProperties>;
   countByProvider(): Promise<ProviderSyncStats[]>;
+  countMockActiveByProvider(provider: ListingProvider): Promise<number>;
 }

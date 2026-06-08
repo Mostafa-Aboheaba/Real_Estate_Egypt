@@ -1,11 +1,17 @@
 /** Production Shaety API host (matches mobile `EndPoints.baseUrl`). */
-export const SHAETY_DEFAULT_BASE_URL = 'https://shaety.pountech.com';
+export const SHAETY_DEFAULT_BASE_URL = 'https://app.shaety.com';
 
 /** Laravel API prefix (`EndPoints.api` → `{baseUrl}/api/`). */
 export const SHAETY_API_PREFIX = '/api';
 
 /** Relative to API root (`EndPoints.properties`). */
 export const SHAETY_PROPERTIES_SEGMENT = 'properties';
+
+/** Guest token bootstrap (`EndPoints.fcmGuest`). */
+export const SHAETY_FCM_HASH_SEGMENT = 'fcm-hash';
+
+/** Default `os_type` for `POST /fcm-hash` (ios | android). */
+export const SHAETY_DEFAULT_OS_TYPE = 'android';
 
 /** Full path from host root for logging. */
 export const SHAETY_PROPERTIES_PATH = `${SHAETY_API_PREFIX}/${SHAETY_PROPERTIES_SEGMENT}`;

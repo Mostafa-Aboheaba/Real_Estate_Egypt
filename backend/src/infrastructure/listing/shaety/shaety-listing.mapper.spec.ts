@@ -4,7 +4,7 @@ import {
 } from './shaety-listing.mapper';
 
 describe('shaety-listing.mapper', () => {
-  const baseUrl = 'https://shaety.pountech.com/api';
+  const baseUrl = 'https://app.shaety.com/api';
 
   it('maps a Shaety property record to RawListing', () => {
     const raw = mapShaetyPropertyToRawListing(
@@ -32,7 +32,7 @@ describe('shaety-listing.mapper', () => {
     expect(raw?.propertyType).toBe('apartment');
     expect(raw?.location.city).toBe('الإسكندرية');
     expect(raw?.sourceUrl).toContain(
-      'shaety.pountech.com/api/properties/65008',
+      'app.shaety.com/api/properties/65008',
     );
   });
 

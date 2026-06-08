@@ -37,7 +37,8 @@ export default () => ({
   listing: {
     shaetyApiKey: process.env.SHAETY_API_KEY,
     shaetyApiUrl:
-      process.env.SHAETY_API_URL ?? 'https://shaety.pountech.com',
+      process.env.SHAETY_API_URL ?? 'https://app.shaety.com',
+    shaetyOsType: process.env.SHAETY_OS_TYPE ?? 'android',
   },
   gemini: {
     apiKey: process.env.GEMINI_API_KEY,

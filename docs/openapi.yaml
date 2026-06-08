@@ -31,7 +31,7 @@ servers:
     description: Shaety API base (trailing slash as in Postman `{{url}}`)
     variables:
       shaetyBaseUrl:
-        default: https://shaety.pountech.com/api/
+        default: https://app.shaety.com/api/
         description: Shaety production API (Postman `{{url}}`)
 
 tags:
@@ -57,9 +57,9 @@ paths:
         Paginated property catalog with optional filters. Primary ingest endpoint
         for scheduled sync (FR-SEARCH-002).
 
-        **Guest access:** `Accept` + `Content-Type: application/json`, no Bearer
-        (mirrors Shaety mobile `ApiClient`). Do not follow redirects. Optional
-        `SHAETY_API_KEY` for authenticated Sanctum token.
+        **Guest access:** obtain Bearer via `POST /fcm-hash` (`os_type=ios|android`),
+        then call with `Authorization`. Token cached until expiry (401 → refresh).
+        Optional `SHAETY_API_KEY` skips guest bootstrap.
 
         Postman samples use numeric `city` IDs (e.g. `12` = Alexandria). The platform
         adapter must map IDs to governorate/city names for the canonical model.

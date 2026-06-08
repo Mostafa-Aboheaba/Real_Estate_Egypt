@@ -8,8 +8,8 @@
 |------|--------|
 | **Shaety role** | Primary **listing provider** (FR-SEARCH-003, FR-SYNC-001) — data source ingested via `ShaetyAdapter`, not exposed to mobile clients |
 | **Our API** | NestJS `/api/v1/*` — authentication, search, profile, booking, AI chat are **platform-owned** |
-| **Base URL** | `https://shaety.pountech.com/api/` — `GET properties` (guest/mobile headers; optional Bearer via `SHAETY_API_KEY`) |
-| **Current adapter** | `backend/src/infrastructure/listing/shaety/shaety.adapter.ts` — guest sync; mock fallback on failure |
+| **Base URL** | `https://app.shaety.com/api/` — guest: `POST fcm-hash` (`os_type`) → token, then `GET properties` |
+| **Current adapter** | `shaety.adapter.ts` + `shaety-guest-auth.service.ts` — optional `SHAETY_API_KEY`; mock fallback on failure |
 
 ### Classification legend
 
@@ -88,7 +88,7 @@
 |------------------|-----------------|------------|------|------------------|----------------|
 | `GET /notification` | List in-app notifications (property-related) | No | **IGNORE** | Booking/status notifications are platform events (FR-NOTIF-001–003), not Shaety feed | **Notifications** · **Booking** |
 | `PUT /notification/{id}` | Mark notification read (`read_at`) | No | **IGNORE** | Own read-state model if needed P1 | **Notifications** |
-| `POST /fcm-hash` | Register FCM device hash | Partial | **MODIFY** | **Pattern only** — store FCM token on platform user for Firebase push (FR-NOTIF-001); do not call Shaety from mobile | **Notifications** |
+| `POST /fcm-hash` | Guest Sanctum token (`os_type=ios\|android`) | Yes | **REUSE** | `ShaetyGuestAuthService` — bootstrap listing sync without user login; token cached until 401 | **Listing Sync** |
 | `POST /profile/fcm` (sample in response) | Alternate FCM registration path | Partial | **MODIFY** | Consolidate to single platform device-token endpoint | **Notifications** |
 
 ---

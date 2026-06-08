@@ -5,6 +5,7 @@ import { LISTING_PROVIDER } from '../../domain/property/ports/listing-provider.p
 import { PROPERTY_REPOSITORY } from '../../domain/property/ports/property.repository.port';
 import { SYNC_RUN_REPOSITORY } from '../../domain/property/ports/sync-run.repository.port';
 import { ShaetyAdapter } from '../../infrastructure/listing/shaety/shaety.adapter';
+import { ShaetyGuestAuthService } from '../../infrastructure/listing/shaety/shaety-guest-auth.service';
 import { PrismaPropertyRepository } from '../../infrastructure/persistence/property/prisma-property.repository';
 import { PrismaSyncRunRepository } from '../../infrastructure/persistence/property/prisma-sync-run.repository';
 import { ListingSyncProcessor } from '../../infrastructure/queue/listing-sync.processor';
@@ -29,6 +30,7 @@ import { PropertiesController } from './properties.controller';
   controllers: [PropertiesController, AdminSyncController],
   providers: [
     PropertyService,
+    ShaetyGuestAuthService,
     ShaetyAdapter,
     ListingSyncProcessor,
     OptionalJwtAuthGuard,

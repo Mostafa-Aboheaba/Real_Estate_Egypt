@@ -25,7 +25,17 @@ export interface RawListing {
   sourceUrl?: string | null;
 }
 
+export type ListingBatchHandler = (
+  listings: RawListing[],
+  page: number,
+) => Promise<void>;
+
 export interface ListingProviderPort {
   readonly provider: ListingProvider;
   fetchListings(since?: Date): Promise<RawListing[]>;
+  /** Incremental ingest — persist each API page before fetching the next. */
+  fetchListingsInBatches?(
+    onBatch: ListingBatchHandler,
+    since?: Date,
+  ): Promise<number>;
 }

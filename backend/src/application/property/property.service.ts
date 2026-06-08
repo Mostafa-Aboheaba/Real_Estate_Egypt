@@ -49,15 +49,36 @@ export class PropertyService implements OnModuleInit {
   ) {}
 
   async onModuleInit(): Promise<void> {
-    const count = await this.properties
+    const shaetyStats = await this.properties
       .countByProvider()
       .then((stats) =>
         stats.find((s) => s.provider === ListingProvider.Shaety),
       );
+    const activeCount = shaetyStats?.activeListingCount ?? 0;
+    const mockCount = await this.properties.countMockActiveByProvider(
+      ListingProvider.Shaety,
+    );
+    const needsShaetySync =
+      activeCount === 0 || (mockCount > 0 && mockCount === activeCount);
 
-    if ((count?.activeListingCount ?? 0) === 0) {
-      this.logger.log('No active listings — enqueueing initial Shaety sync');
-      await this.enqueueSync(ListingProvider.Shaety);
+    if (needsShaetySync) {
+      this.logger.log(
+        activeCount === 0
+          ? 'No active listings — enqueueing initial Shaety sync'
+          : 'Only mock Shaety listings in DB — enqueueing live Shaety sync',
+      );
+      try {
+        await this.enqueueSync(ListingProvider.Shaety);
+      } catch (error) {
+        if (
+          error instanceof PropertyDomainException &&
+          error.code === PropertyErrorCode.INVALID_FILTERS
+        ) {
+          this.logger.log('Shaety sync already queued or running — skipping');
+        } else {
+          throw error;
+        }
+      }
     } else {
       await this.enqueueEmbeddingBatch();
     }
@@ -98,12 +119,32 @@ export class PropertyService implements OnModuleInit {
     const run = await this.syncRuns.create({ provider, attemptNumber });
 
     try {
-      const rawListings = await this.listingProvider.fetchListings();
-      const domainListings = rawListings.map((raw) =>
-        mapRawListingToProperty(raw, provider),
-      );
+      let rawListings: Awaited<
+        ReturnType<ListingProviderPort['fetchListings']>
+      > = [];
+      let upserted = 0;
 
-      const upserted = await this.properties.upsertMany(domainListings);
+      if (this.listingProvider.fetchListingsInBatches) {
+        rawListings = [];
+        const fetched = await this.listingProvider.fetchListingsInBatches(
+          async (batch) => {
+            rawListings.push(...batch);
+            const domainListings = batch.map((raw) =>
+              mapRawListingToProperty(raw, provider),
+            );
+            upserted += await this.properties.upsertMany(domainListings);
+          },
+        );
+        if (fetched === 0) {
+          throw new Error('Listing provider returned no listings');
+        }
+      } else {
+        rawListings = await this.listingProvider.fetchListings();
+        const domainListings = rawListings.map((raw) =>
+          mapRawListingToProperty(raw, provider),
+        );
+        upserted = await this.properties.upsertMany(domainListings);
+      }
       const staleBefore = new Date(Date.now() - STALE_HOURS * 60 * 60 * 1000);
       const deactivated = await this.properties.deactivateStale(
         provider,
