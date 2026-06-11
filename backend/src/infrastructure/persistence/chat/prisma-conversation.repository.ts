@@ -199,10 +199,20 @@ export class PrismaConversationRepository implements ConversationRepositoryPort 
   }
 
   async getUserPreferredAgentId(userId: string): Promise<string | null> {
+    const ctx = await this.getUserChatContext(userId);
+    return ctx.preferredAgentId;
+  }
+
+  async getUserChatContext(
+    userId: string,
+  ): Promise<{ preferredAgentId: string | null; name: string | null }> {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
-      select: { preferredAgentId: true },
+      select: { preferredAgentId: true, name: true },
     });
-    return user?.preferredAgentId ?? null;
+    return {
+      preferredAgentId: user?.preferredAgentId ?? null,
+      name: user?.name ?? null,
+    };
   }
 }

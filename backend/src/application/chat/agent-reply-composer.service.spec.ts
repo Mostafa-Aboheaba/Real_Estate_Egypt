@@ -4,6 +4,16 @@ import { PropertyType } from '../../domain/property/enums/property-type.enum';
 describe('AgentReplyComposerService', () => {
   const composer = new AgentReplyComposerService();
 
+  it('composes a proactive welcome when conversation starts', () => {
+    const welcome = composer.composeWelcome({
+      locale: 'en',
+      agentId: 'search-agent',
+      userName: 'Sara',
+    });
+    expect(welcome).toContain('Hi Sara');
+    expect(welcome).toContain('Nadia');
+  });
+
   it('composes a warm greeting without search', () => {
     const reply = composer.compose({
       locale: 'en',

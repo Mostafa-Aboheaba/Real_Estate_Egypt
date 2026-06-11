@@ -87,10 +87,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get chatInputHint => 'اسأل عن العقارات في مصر…';
 
   @override
-  String get chatAiDisclaimer =>
-      'إرشادات مولّدة بالذكاء الاصطناعي — ليست استشارة قانونية أو مالية.';
-
-  @override
   String get chatSwitchAgent => 'تغيير الوكيل';
 
   @override

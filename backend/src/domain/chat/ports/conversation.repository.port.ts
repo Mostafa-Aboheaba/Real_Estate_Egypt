@@ -73,4 +73,7 @@ export interface ConversationRepositoryPort {
   ): Promise<StoredMessage[]>;
   countMessages(conversationId: string): Promise<number>;
   getUserPreferredAgentId(userId: string): Promise<string | null>;
+  getUserChatContext(
+    userId: string,
+  ): Promise<{ preferredAgentId: string | null; name: string | null }>;
 }

@@ -87,10 +87,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get chatInputHint => 'Ask about properties in Egypt…';
 
   @override
-  String get chatAiDisclaimer =>
-      'AI-generated guidance — not legal or financial advice.';
-
-  @override
   String get chatSwitchAgent => 'Switch AI agent';
 
   @override

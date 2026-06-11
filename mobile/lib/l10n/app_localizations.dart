@@ -236,12 +236,6 @@ abstract class AppLocalizations {
   /// **'Ask about properties in Egypt…'**
   String get chatInputHint;
 
-  /// No description provided for @chatAiDisclaimer.
-  ///
-  /// In en, this message translates to:
-  /// **'AI-generated guidance — not legal or financial advice.'**
-  String get chatAiDisclaimer;
-
   /// No description provided for @chatSwitchAgent.
   ///
   /// In en, this message translates to:

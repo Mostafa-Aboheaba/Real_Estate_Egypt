@@ -27,13 +27,49 @@ const AGENT_NAMES: Record<string, { en: string; ar: string }> = {
   'followup-agent': { en: 'Karim', ar: 'كريم' },
 };
 
-const DISCLAIMER_EN =
-  'AI-generated guidance — not legal or financial advice.';
-const DISCLAIMER_AR =
-  'إرشادات مولّدة بالذكاء الاصطناعي — ليست استشارة قانونية أو مالية.';
+export interface ComposeWelcomeInput {
+  locale: string;
+  agentId: string;
+  userName?: string | null;
+}
 
 @Injectable()
 export class AgentReplyComposerService {
+  composeWelcome(input: ComposeWelcomeInput): string {
+    const ar = input.locale.startsWith('ar');
+    const agent = this.agentName(input.agentId, ar);
+    const user = input.userName?.trim();
+    const hi = user
+      ? ar
+        ? `أهلاً ${user}! `
+        : `Hi ${user}! `
+      : ar
+        ? 'أهلاً بيك! '
+        : 'Hello! ';
+
+    const intros: Record<string, { en: string; ar: string }> = {
+      'search-agent': {
+        en: `${hi}I'm ${agent}, your real estate agent in Egypt. Are you looking to rent or buy—and which area and budget do you have in mind?`,
+        ar: `${hi}أنا ${agent}، وكيلتك العقارية في مصر. تدور على إيجار ولا شراء؟ وأي منطقة وميزانية تقريباً عندك؟`,
+      },
+      'recommendation-agent': {
+        en: `${hi}I'm ${agent}. Tell me what you're looking for and I'll suggest properties that fit.`,
+        ar: `${hi}أنا ${agent}. احكيلي عن اللي بتدور عليه وأقترح عليك عقارات تناسبك.`,
+      },
+      'booking-agent': {
+        en: `${hi}I'm ${agent}, your viewing coordinator. Share a listing or area and we can schedule a visit.`,
+        ar: `${hi}أنا ${agent}، منسقة المعاينات. شاركني العقار أو المنطقة ونحجز معاينة.`,
+      },
+      'followup-agent': {
+        en: `${hi}I'm ${agent}—here to help you keep your property search on track. What would you like to follow up on?`,
+        ar: `${hi}أنا ${agent}—هنا عشان أساعدك تكمّل بحثك العقاري. تحب نتابع إيه؟`,
+      },
+    };
+
+    const entry = intros[input.agentId] ?? intros['search-agent'];
+    return ar ? entry.ar : entry.en;
+  }
+
   compose(input: ComposeReplyInput): string {
     const ar = input.locale.startsWith('ar');
     if (!input.toolsInvoked) {
@@ -84,25 +120,25 @@ export class AgentReplyComposerService {
 
     if (this.isGreeting(text)) {
       return ar
-        ? `${this.greetingAr(text)}أنا ${name}، وكيلتك العقارية في مصر. تدور على إيجار ولا شراء؟ وأي منطقة و budget تقريباً عندك؟\n\n${DISCLAIMER_AR}`
-        : `${this.greetingEn(text)}I'm ${name}, your real estate agent in Egypt. Are you looking to rent or buy—and which area and budget do you have in mind?\n\n${DISCLAIMER_EN}`;
+        ? `${this.greetingAr(text)}أنا ${name}، وكيلتك العقارية في مصر. تدور على إيجار ولا شراء؟ وأي منطقة و budget تقريباً عندك؟`
+        : `${this.greetingEn(text)}I'm ${name}, your real estate agent in Egypt. Are you looking to rent or buy—and which area and budget do you have in mind?`;
     }
 
     if (this.isThanks(text)) {
       return ar
-        ? `العفو! لو حابب نكمّل البحث أو نحجز معاينة، قولي.\n\n${DISCLAIMER_AR}`
-        : `You're welcome! If you'd like to keep searching or book a viewing, just let me know.\n\n${DISCLAIMER_EN}`;
+        ? `العفو! لو حابب نكمّل البحث أو نحجز معاينة، قولي.`
+        : `You're welcome! If you'd like to keep searching or book a viewing, just let me know.`;
     }
 
     if (this.isVagueRealEstate(text)) {
       return ar
-        ? `تمام، خليني أساعدك. قولي: شراء ولا إيجار؟ نوع العقار (شقة، فيلا…)؟ والميزانية التقريبية والمنطقة اللي تفضّلها.\n\n${DISCLAIMER_AR}`
-        : `Happy to help. Tell me: rent or buy? What type of home (apartment, villa…)? Rough budget and preferred area?\n\n${DISCLAIMER_EN}`;
+        ? `تمام، خليني أساعدك. قولي: شراء ولا إيجار؟ نوع العقار (شقة، فيلا…)؟ والميزانية التقريبية والمنطقة اللي تفضّلها.`
+        : `Happy to help. Tell me: rent or buy? What type of home (apartment, villa…)? Rough budget and preferred area?`;
     }
 
     return ar
-      ? `أنا ${name} هنا عشان أساعدك تلاقي العقار المناسب في مصر. احكيلي عن المنطقة، الميزانية، ونوع العقار اللي بتدور عليه.\n\n${DISCLAIMER_AR}`
-      : `I'm ${name}—here to help you find the right place in Egypt. Share the area, budget, and type of home you're after.\n\n${DISCLAIMER_EN}`;
+      ? `أنا ${name} هنا عشان أساعدك تلاقي العقار المناسب في مصر. احكيلي عن المنطقة، الميزانية، ونوع العقار اللي بتدور عليه.`
+      : `I'm ${name}—here to help you find the right place in Egypt. Share the area, budget, and type of home you're after.`;
   }
 
   private composeSearchResults(
@@ -138,8 +174,7 @@ export class AgentReplyComposerService {
       return (
         `بناءً على طلبك${typeNote}${budgetNote}، لقيت ${count} خيار يناسبك:\n\n` +
         `${highlights}\n\n` +
-        `شوف البطاقات تحت للتفاصيل. ${followUp}\n\n` +
-        `${DISCLAIMER_AR}`
+        `شوف البطاقات تحت للتفاصيل. ${followUp}`
       );
     }
 
@@ -168,8 +203,7 @@ export class AgentReplyComposerService {
       `Based on what you asked${typeNote}${budgetNote}, I pulled ${count} ` +
       `options that could work:\n\n` +
       `${highlights}\n\n` +
-      `Tap the cards below for full details.${followUp}\n\n` +
-      `${DISCLAIMER_EN}`
+      `Tap the cards below for full details.${followUp}`
     );
   }
 
@@ -181,13 +215,13 @@ export class AgentReplyComposerService {
     if (ar) {
       return (
         `دورت على اللي طلبته بس للأسف مفيش نتائج مطابقة دلوقتي. ${suggestions}\n\n` +
-        `قولي تحب أعدّل إيه في البحث.\n\n${DISCLAIMER_AR}`
+        `قولي تحب أعدّل إيه في البحث.`
       );
     }
 
     return (
       `I searched for what you described but nothing matched right now. ${suggestions}\n\n` +
-      `Tell me what you'd like to adjust.\n\n${DISCLAIMER_EN}`
+      `Tell me what you'd like to adjust.`
     );
   }
 

@@ -25,6 +25,7 @@ import {
   LlmMessage,
 } from '../../domain/chat/ports/llm-completion.port';
 import { PromptVersionResolver } from '../../infrastructure/ai/prompt-version.resolver';
+import { AgentReplyComposerService } from './agent-reply-composer.service';
 import {
   CHAT_COMPACTION_JOB,
   CHAT_COMPACTION_QUEUE,
@@ -32,9 +33,6 @@ import {
 
 const CONTEXT_LIMIT = 20;
 const COMPACTION_THRESHOLD = 30;
-const AI_DISCLAIMER =
-  'AI-generated guidance — not legal or financial advice.';
-
 @Injectable()
 export class ChatService {
   private readonly logger = new Logger(ChatService.name);
@@ -47,6 +45,7 @@ export class ChatService {
     @Inject(LLM_COMPLETION)
     private readonly llm: LlmCompletionPort,
     private readonly prompts: PromptVersionResolver,
+    private readonly replyComposer: AgentReplyComposerService,
     @Optional()
     @InjectQueue(CHAT_COMPACTION_QUEUE)
     private readonly compactionQueue?: Queue,
@@ -62,16 +61,48 @@ export class ChatService {
     title: string | undefined,
     locale: string,
   ) {
-    const preferred =
-      await this.conversations.getUserPreferredAgentId(userId);
-    const resolved = await this.agents.resolveAgentId(agentId, preferred);
+    const userCtx = await this.conversations.getUserChatContext(userId);
+    const resolved = await this.agents.resolveAgentId(
+      agentId,
+      userCtx.preferredAgentId,
+    );
     const conv = Conversation.create(userId, resolved.agentId, title);
     const saved = await this.conversations.create(conv);
+    if (!saved.id) {
+      throw new ChatDomainException(
+        ChatErrorCode.VALIDATION_ERROR,
+        'Conversation id missing after create',
+      );
+    }
+    await this.seedWelcomeMessage(saved.id, saved.agentId, locale, userCtx.name);
     return {
       conversation: this.toConversationDto(saved),
       agentSwitchedNotice: resolved.notice,
       locale,
     };
+  }
+
+  private async seedWelcomeMessage(
+    conversationId: string,
+    agentId: string,
+    locale: string,
+    userName: string | null,
+  ): Promise<void> {
+    const content = this.replyComposer.composeWelcome({
+      locale,
+      agentId,
+      userName,
+    });
+    const welcome = Message.createAssistant(
+      conversationId,
+      content,
+      agentId,
+      [],
+      { promptVersion: 'welcome-v1' },
+    );
+    if (welcome) {
+      await this.conversations.saveMessage(welcome);
+    }
   }
 
   async listConversations(
@@ -170,10 +201,7 @@ export class ChatService {
 
     return {
       userMessageId: savedUser.id,
-      assistantMessage: {
-        ...assistant,
-        disclaimer: AI_DISCLAIMER,
-      },
+      assistantMessage: assistant,
       agentSwitchedNotice: null,
     };
   }

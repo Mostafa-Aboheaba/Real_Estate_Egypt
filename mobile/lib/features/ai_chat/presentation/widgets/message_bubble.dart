@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:property_assistant/features/ai_chat/domain/entities/chat_message.dart';
 import 'package:property_assistant/features/ai_chat/genui/a2ui_surface_view.dart';
 import 'package:property_assistant/features/ai_chat/presentation/widgets/listing_card_tile.dart';
-import 'package:property_assistant/l10n/app_localizations.dart';
-
 class MessageBubble extends StatelessWidget {
   const MessageBubble({super.key, required this.message});
 
@@ -11,7 +9,6 @@ class MessageBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final isUser = message.isUser;
     final align = isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start;
@@ -42,15 +39,6 @@ class MessageBubble extends StatelessWidget {
             children: [
               if (message.content.isNotEmpty)
                 Text(message.content + (message.isStreaming ? '▌' : '')),
-              if (message.isAssistant) ...[
-                const SizedBox(height: 8),
-                Text(
-                  l10n.chatAiDisclaimer,
-                  style: theme.textTheme.labelSmall?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                ),
-              ],
             ],
           ),
         ),
