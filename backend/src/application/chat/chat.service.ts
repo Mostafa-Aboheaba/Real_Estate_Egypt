@@ -6,7 +6,10 @@ import {
   ChatErrorCode,
 } from '../../domain/chat/failures/chat.failures';
 import { Conversation } from '../../domain/chat/entities/conversation.entity';
-import { Message } from '../../domain/chat/entities/message.entity';
+import {
+  Message,
+  UiSurfacePayload,
+} from '../../domain/chat/entities/message.entity';
 import {
   CHAT_AGENT_CATALOG,
   ChatAgentCatalogPort,
@@ -200,6 +203,7 @@ export class ChatService {
       title: string;
       priceEgp: number;
     }> = [];
+    let uiSurface: UiSurfacePayload | null = null;
 
     try {
       const result = await this.llm.stream(
@@ -222,11 +226,19 @@ export class ChatService {
             listingRefs = chunk.cards;
             onEvent('listing_cards', { cards: chunk.cards });
           }
+          if (chunk.type === 'a2ui_surface' && chunk.a2ui) {
+            uiSurface = chunk.a2ui;
+            onEvent('a2ui_surface', {
+              surfaceId: chunk.surfaceId ?? chunk.a2ui.surfaceId,
+              a2ui: chunk.a2ui,
+            });
+          }
         },
         signal,
       );
       fullText = result.content;
       listingRefs = result.listingRefs;
+      uiSurface = result.uiSurface ?? uiSurface;
 
       const assistant = Message.createAssistant(
         conversationId,
@@ -234,6 +246,7 @@ export class ChatService {
         conv.agentId,
         listingRefs,
         result.metadata,
+        uiSurface,
       );
       if (!assistant) {
         throw new ChatDomainException(
@@ -290,6 +303,7 @@ export class ChatService {
       conv.agentId,
       result.listingRefs,
       result.metadata,
+      result.uiSurface,
     );
     if (!assistant) {
       throw new ChatDomainException(
@@ -303,6 +317,7 @@ export class ChatService {
       content: saved.content,
       agentId: saved.agentId,
       listingRefs: saved.listingRefs,
+      uiSurface: saved.uiSurface,
       metadata: saved.metadata,
     };
   }

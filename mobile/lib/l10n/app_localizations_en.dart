@@ -95,4 +95,20 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get chatRetry => 'Retry';
+
+  @override
+  String get recommendationsPersonalizedTitle => 'Properties you might like';
+
+  @override
+  String get recommendationsPopularTitle => 'Popular in Cairo';
+
+  @override
+  String get recommendationsGuestCta =>
+      'Sign in for personalized recommendations.';
+
+  @override
+  String get recommendationsSignIn => 'Sign in';
+
+  @override
+  String get recommendationsRefresh => 'Refresh recommendations';
 }

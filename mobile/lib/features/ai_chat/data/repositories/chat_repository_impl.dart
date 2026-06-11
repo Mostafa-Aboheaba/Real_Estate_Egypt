@@ -2,6 +2,7 @@ import 'package:injectable/injectable.dart';
 import 'package:property_assistant/features/ai_chat/data/datasources/chat_remote_datasource.dart';
 import 'package:property_assistant/features/ai_chat/domain/entities/ai_agent.dart';
 import 'package:property_assistant/features/ai_chat/domain/entities/chat_message.dart';
+import 'package:property_assistant/features/ai_chat/domain/entities/chat_stream_chunk.dart';
 import 'package:property_assistant/features/ai_chat/domain/repositories/chat_repository.dart';
 import 'package:uuid/uuid.dart';
 
@@ -39,16 +40,26 @@ class ChatRepositoryImpl implements ChatRepository {
       content: assistant['content'] as String,
       agentId: assistant['agentId'] as String?,
       listingRefs: _refs(assistant['listingRefs']),
+      uiSurface: _uiSurface(assistant['uiSurface']),
     );
   }
 
   @override
-  Stream<String> streamMessage(String conversationId, String content) async* {
+  Stream<ChatStreamChunk> streamMessage(
+    String conversationId,
+    String content,
+  ) async* {
     await for (final event in _remote.streamMessage(conversationId, content)) {
       if (event.name == 'text_delta') {
         final text = event.data['text'];
         if (text is String && text.isNotEmpty) {
-          yield text;
+          yield ChatStreamChunk.text(text);
+        }
+      }
+      if (event.name == 'a2ui_surface') {
+        final a2ui = event.data['a2ui'];
+        if (a2ui is Map<String, dynamic>) {
+          yield ChatStreamChunk.surface(a2ui);
         }
       }
     }
@@ -72,6 +83,13 @@ class ChatRepositoryImpl implements ChatRepository {
           ),
         )
         .toList();
+  }
+
+  Map<String, dynamic>? _uiSurface(dynamic raw) {
+    if (raw is Map<String, dynamic>) {
+      return raw;
+    }
+    return null;
   }
 
   @override

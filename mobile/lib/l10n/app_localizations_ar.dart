@@ -95,4 +95,19 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get chatRetry => 'إعادة المحاولة';
+
+  @override
+  String get recommendationsPersonalizedTitle => 'عقارات قد تعجبك';
+
+  @override
+  String get recommendationsPopularTitle => 'الأكثر شعبية في القاهرة';
+
+  @override
+  String get recommendationsGuestCta => 'سجّل الدخول للحصول على توصيات مخصصة.';
+
+  @override
+  String get recommendationsSignIn => 'تسجيل الدخول';
+
+  @override
+  String get recommendationsRefresh => 'تحديث التوصيات';
 }

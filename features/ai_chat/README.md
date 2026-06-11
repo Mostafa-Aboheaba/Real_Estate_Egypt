@@ -29,6 +29,7 @@ Natural-language assistant for property discovery, recommendations, booking guid
 | 6 | API Design | [api_design.md](./api_design.md) | ✅ Done |
 | 7 | Implementation Tasks | [implementation_tasks.md](./implementation_tasks.md) | ✅ Done |
 | 8 | Tests | [tests.md](./tests.md) | ✅ Done |
+| 9 | GenUI Design | [genui_design.md](./genui_design.md) | 🔄 M7.5 planning |
 
 ## Traceability
 

@@ -33,6 +33,7 @@ flowchart LR
     M4 --> M7[M7 AI Chat]
     M6 --> M7
     M3 --> M7
+    M7 --> M75[M7.5 GenUI]
     M4 --> M8[M8 Recs]
     M5 --> M8
     M3 --> M9[M9 Booking]
@@ -83,7 +84,8 @@ flowchart LR
 | **M4** | Property Search & Listing Sync | Browse/search listings (guest OK) | Complete |
 | **M5** | User Profile & Preferences | Favorites + prefs with auth | **Current** — 1–2 weeks |
 | **M6** | Embeddings, RAG & Knowledge | RAG API returns grounded chunks | 2 weeks |
-| **M7** | AI Chat | Full chat with agents + streaming | 2–3 weeks |
+| **M7** | AI Chat | Full chat with agents + streaming | Complete |
+| **M75** | Generative Chat UI (GenUI) | A2UI surfaces in chat | 1–2 weeks |
 | **M8** | Recommendations | Home feed personalized | 1–2 weeks |
 | **M9** | Booking & Notifications | End-to-end viewing request | 2 weeks |
 | **M10** | Quality, Security & E2E | Test suite green + monitoring live | 1–2 weeks |
@@ -531,6 +533,52 @@ Authenticated users chat with four agents (Search, Recommendation, Booking, Foll
 
 ---
 
+### M7.5 (M75) — Generative Chat UI (GenUI)
+
+#### Goal
+
+Make chat feel like a **human real estate agent** by rendering interactive Flutter surfaces (property carousels, filter chips, budget presets) via [Flutter GenUI](https://docs.flutter.dev/ai/genui) and the A2UI protocol—while keeping server-side Gemini orchestration and fair-housing guardrails.
+
+#### Dependencies
+
+- M7 (chat, SSE, tools, listing cards baseline)
+- M4 (listing data for surfaces)
+
+#### Deliverables
+
+| Layer | Deliverable |
+|-------|-------------|
+| Docs | [genui_design.md](../features/ai_chat/genui_design.md), updated chat + Flutter architecture |
+| Mobile | Widget catalog, `Surface` in chat, `genui` integration |
+| Backend | `a2ui_surface` SSE event, `A2uiSurfaceBuilder`, safety allowlist |
+| Flag | `GENUI_ENABLED` for gradual rollout |
+
+**SRS coverage:** Extends FR-CHAT-* UX; no new P0 functional reqs without product sign-off.
+
+#### Test Requirements
+
+| Test | Type | Pass criteria |
+|------|------|---------------|
+| Stream emits `a2ui_surface` after search | E2E | Property carousel in payload |
+| Unknown A2UI component blocked | Unit | Safe fallback |
+| Fair housing on filter surfaces | Unit | Discriminatory props rejected |
+| Legacy `listing_cards` when flag off | E2E | Backward compatible |
+| Catalog widget tests | Widget | ar/en labels render |
+
+#### Definition of Done
+
+- [ ] Search agent turn shows conversational text + GenUI property carousel
+- [ ] User can tap carousel card → M4 property detail
+- [ ] `GENUI_ENABLED=false` preserves M7 behavior
+
+#### Independently Runnable Verification
+
+> **Run:** Enable `GENUI_ENABLED` → chat search query → assistant text + interactive carousel (not duplicate static cards). M8/M9 not required.
+
+**Tasks:** [tasks/m075-genui/](./m075-genui/)
+
+---
+
 ### M8 — Recommendations
 
 #### Goal
@@ -542,6 +590,7 @@ Personalized **"Properties you might like"** feed using embeddings, favorites, s
 - M4 (listings + embeddings), M5 (preferences, favorites), M3 (auth)
 - M1: `features/recommendation/*` approved
 - M7 optional (chat signals P1 — can stub)
+- M75 optional (GenUI recommendation carousel in chat — can use static cards)
 
 #### Deliverables
 
@@ -784,6 +833,7 @@ Release MVP to production GCP and public app stores; enable monitoring and on-ca
 | M5 | FR-PROF-* | `profile/` |
 | M6 | FR-CHAT-007, FR-SYNC-002 | `ai_chat/` + architecture |
 | M7 | FR-CHAT-* | `ai_chat/` |
+| M75 | FR-CHAT-* (UX) | `ai_chat/genui_design.md` |
 | M8 | FR-REC-* | `recommendation/` |
 | M9 | FR-BOOK-*, FR-NOTIF-* | `booking/` |
 

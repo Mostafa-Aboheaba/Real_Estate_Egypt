@@ -16,6 +16,11 @@
     "M5": { "name": "User Profile & Preferences", "type": "implementation" },
     "M6": { "name": "Embeddings, RAG & Knowledge", "type": "implementation" },
     "M7": { "name": "AI Chat", "type": "implementation" },
+    "M75": {
+      "name": "Generative Chat UI (GenUI)",
+      "type": "implementation",
+      "notes": "Flutter GenUI + A2UI surfaces in chat (M7.5). Parallel-friendly with M8."
+    },
     "M8": { "name": "Recommendations", "type": "implementation" },
     "M9": { "name": "Booking & Notifications", "type": "implementation" },
     "M10": { "name": "Quality, Security & E2E", "type": "implementation" },
@@ -30,6 +35,7 @@
     "M5",
     "M6",
     "M7",
+    "M75",
     "M8",
     "M9",
     "M10",
@@ -46,7 +52,7 @@
     "id": "M8-REC001",
     "name": "Recommendation Domain + Scoring Port",
     "path": "tasks/m08-recommendations/m8-rec001.md",
-    "reason": "First task in M8 — recommendation domain unblocks scoring APIs."
+    "reason": "M75 complete — start M8 recommendations."
   },
   "risks": [
     {
@@ -72,6 +78,12 @@
       "severity": "low",
       "title": "Docker dependency for local stack",
       "impact": "Postgres/Redis via docker compose; fails if Docker daemon is down."
+    },
+    {
+      "id": "R6",
+      "severity": "medium",
+      "title": "Flutter GenUI alpha API",
+      "impact": "genui package is experimental (A2UI v0.9); pin versions and use adapter layer in mobile."
     }
   ],
   "technical_debt": [

@@ -1,5 +1,9 @@
 import { Conversation, ConversationSummary } from '../entities/conversation.entity';
-import { Message, MessageMetadata } from '../entities/message.entity';
+import {
+  Message,
+  MessageMetadata,
+  UiSurfacePayload,
+} from '../entities/message.entity';
 import { ListingRefProps } from '../value-objects/listing-ref.vo';
 
 export const CONVERSATION_REPOSITORY = Symbol('CONVERSATION_REPOSITORY');
@@ -26,6 +30,7 @@ export interface StoredMessage {
   content: string;
   agentId: string | null;
   listingRefs: ListingRefProps[];
+  uiSurface: UiSurfacePayload | null;
   metadata: MessageMetadata | null;
   createdAt: string;
 }

@@ -23,9 +23,12 @@ The platform uses **four specialized AI agents**, each with distinct responsibil
 flowchart TB
     subgraph client [Flutter Client]
         Chat[Chat UI]
+        GenUI[GenUI Surfaces — M7.5]
         Picker[Agent Picker]
         Home[Home Feed]
     end
+
+    Chat --> GenUI
 
     subgraph orchestration [Agent Orchestration — NestJS]
         Router[Agent Router]

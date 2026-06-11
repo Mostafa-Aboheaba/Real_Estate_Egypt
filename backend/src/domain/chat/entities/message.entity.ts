@@ -9,6 +9,12 @@ export interface MessageMetadata {
   safetyBlocked?: boolean;
 }
 
+export interface UiSurfacePayload {
+  surfaceId: string;
+  catalogId: string;
+  messages: Array<Record<string, unknown>>;
+}
+
 export interface MessageProps {
   id?: string;
   conversationId: string;
@@ -16,6 +22,7 @@ export interface MessageProps {
   content: string;
   agentId?: string | null;
   listingRefs?: ListingRefProps[];
+  uiSurface?: UiSurfacePayload | null;
   metadata?: MessageMetadata | null;
   tokenCount?: number | null;
   createdAt?: Date;
@@ -28,6 +35,7 @@ export class Message {
   readonly content: string;
   readonly agentId: string | null;
   readonly listingRefs: ListingRef[];
+  readonly uiSurface: UiSurfacePayload | null;
   readonly metadata: MessageMetadata | null;
   readonly tokenCount: number | null;
   readonly createdAt: Date;
@@ -41,6 +49,7 @@ export class Message {
     this.listingRefs = (props.listingRefs ?? [])
       .map((r) => ListingRef.create(r))
       .filter((r): r is ListingRef => r != null);
+    this.uiSurface = props.uiSurface ?? null;
     this.metadata = props.metadata ?? null;
     this.tokenCount = props.tokenCount ?? null;
     this.createdAt = props.createdAt ?? new Date();
@@ -70,6 +79,7 @@ export class Message {
     agentId: string,
     listingRefs: ListingRefProps[],
     metadata?: MessageMetadata,
+    uiSurface?: UiSurfacePayload | null,
   ): Message | null {
     const trimmed = content.trim();
     if (trimmed.length === 0 || trimmed.length > 8000) {
@@ -85,6 +95,7 @@ export class Message {
         content: trimmed,
         agentId,
         listingRefs,
+        uiSurface,
         metadata,
       },
       MessageRole.assistant(),

@@ -157,12 +157,24 @@ mobile/lib/features/ai_chat/
 
 | Concern | Implementation |
 |---------|----------------|
-| Streaming | SSE parser (`text_delta`, `listing_cards`, `done`, `error`) |
+| Streaming | SSE parser (`text_delta`, `a2ui_surface`, `listing_cards`, `done`, `error`) |
 | Auth guard | `go_router` redirect guests (AC-CHAT-014) |
 | Agent picker | Loads `GET /api/v1/agents`; mid-session switch |
 | Listing cards | Navigate to property detail (M4) |
+| GenUI surfaces | **M7.5** — `genui` `Surface` + widget catalog; see [genui_design.md](./genui_design.md) |
 | Disclaimer | Footer on every assistant bubble |
 | Degradation | Localized banner when `AI_UNAVAILABLE` |
+
+### 4.1 GenUI layer (M7.5)
+
+```
+mobile/lib/features/ai_chat/genui/
+├── catalog.dart              # A2UI allowlist → Flutter widgets
+├── components/               # PropertyCarousel, FilterChipRow, …
+└── genui_chat_controller.dart  # SurfaceController + SSE bridge
+```
+
+Server emits `a2ui_surface` events with catalog-aligned JSON. Legacy `listing_cards` remain until `GENUI_ENABLED` rollout ([genui_design.md](./genui_design.md)).
 
 ---
 
@@ -184,3 +196,4 @@ mobile/lib/features/ai_chat/
 - [gemini_integration_layer.md](../../architecture/gemini_integration_layer.md)
 - [rag_architecture.md](../../architecture/rag_architecture.md)
 - [ai_agent_architecture.md](../../architecture/ai_agent_architecture.md)
+- [genui_design.md](./genui_design.md)

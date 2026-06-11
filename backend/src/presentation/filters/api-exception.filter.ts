@@ -26,6 +26,10 @@ import {
   ChatDomainException,
   ChatErrorCode,
 } from '../../domain/chat/failures/chat.failures';
+import {
+  RecommendationDomainException,
+  RecommendationErrorCode,
+} from '../../domain/recommendation/failures/recommendation.failures';
 import { CORRELATION_ID_HEADER } from '../../common/middleware/correlation-id.middleware';
 
 const PROPERTY_STATUS: Record<PropertyErrorCode, number> = {
@@ -57,6 +61,14 @@ const CHAT_STATUS: Record<ChatErrorCode, number> = {
   [ChatErrorCode.AI_UNAVAILABLE]: HttpStatus.SERVICE_UNAVAILABLE,
   [ChatErrorCode.AI_QUOTA_EXCEEDED]: HttpStatus.FORBIDDEN,
   [ChatErrorCode.RATE_LIMITED]: HttpStatus.TOO_MANY_REQUESTS,
+};
+
+const RECOMMENDATION_STATUS: Record<RecommendationErrorCode, number> = {
+  [RecommendationErrorCode.VALIDATION_ERROR]: HttpStatus.BAD_REQUEST,
+  [RecommendationErrorCode.PROPERTY_NOT_FOUND]: HttpStatus.NOT_FOUND,
+  [RecommendationErrorCode.RECOMMENDATIONS_UNAVAILABLE]:
+    HttpStatus.SERVICE_UNAVAILABLE,
+  [RecommendationErrorCode.BLOCKED_FILTER_KEY]: HttpStatus.BAD_REQUEST,
 };
 
 const AUTH_STATUS: Record<AuthErrorCode, number> = {
@@ -122,6 +134,20 @@ export class ApiExceptionFilter implements ExceptionFilter {
 
     if (exception instanceof ChatDomainException) {
       const status = CHAT_STATUS[exception.code] ?? HttpStatus.BAD_REQUEST;
+      response.status(status).json({
+        error: {
+          code: exception.code,
+          message: exception.message,
+          details: [],
+          correlationId,
+        },
+      });
+      return;
+    }
+
+    if (exception instanceof RecommendationDomainException) {
+      const status =
+        RECOMMENDATION_STATUS[exception.code] ?? HttpStatus.BAD_REQUEST;
       response.status(status).json({
         error: {
           code: exception.code,

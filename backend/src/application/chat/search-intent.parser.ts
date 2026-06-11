@@ -43,6 +43,12 @@ export function isPropertySearchIntent(text: string): boolean {
     'budget',
     'price',
     'egp',
+    'looking for',
+    'need a',
+    'want a',
+    'help me find',
+    'show me',
+    'find me',
     'جنيه',
     'شقة',
     'فيلا',
@@ -65,8 +71,42 @@ export function isPropertySearchIntent(text: string): boolean {
     'القاهرة',
     'compound',
     'كومباوند',
+    'دور على',
+    'محتاج',
+    'عايز',
   ];
   return triggers.some((t) => lower.includes(t)) || extractPriceEgp(text) != null;
+}
+
+const FOLLOW_UP_PHRASES = [
+  'cheaper',
+  'more options',
+  'another',
+  'anything else',
+  'similar',
+  'what about',
+  'show me more',
+  'lower price',
+  'higher price',
+  'bigger',
+  'smaller',
+  'أرخص',
+  'أغلى',
+  'خيارات تانية',
+  'خيارات أخرى',
+  'المزيد',
+  'غير كده',
+];
+
+export function isSearchFollowUp(
+  text: string,
+  recentContext: string,
+): boolean {
+  const lower = text.toLowerCase();
+  if (!FOLLOW_UP_PHRASES.some((phrase) => lower.includes(phrase))) {
+    return false;
+  }
+  return isPropertySearchIntent(recentContext);
 }
 
 export function parseSearchIntent(text: string): ParsedSearchIntent {

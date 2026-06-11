@@ -253,6 +253,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Retry'**
   String get chatRetry;
+
+  /// No description provided for @recommendationsPersonalizedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Properties you might like'**
+  String get recommendationsPersonalizedTitle;
+
+  /// No description provided for @recommendationsPopularTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Popular in Cairo'**
+  String get recommendationsPopularTitle;
+
+  /// No description provided for @recommendationsGuestCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in for personalized recommendations.'**
+  String get recommendationsGuestCta;
+
+  /// No description provided for @recommendationsSignIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in'**
+  String get recommendationsSignIn;
+
+  /// No description provided for @recommendationsRefresh.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh recommendations'**
+  String get recommendationsRefresh;
 }
 
 class _AppLocalizationsDelegate

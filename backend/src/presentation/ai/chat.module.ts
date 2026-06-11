@@ -2,6 +2,9 @@ import { BullModule } from '@nestjs/bullmq';
 import { Module } from '@nestjs/common';
 import { ChatService } from '../../application/chat/chat.service';
 import { SafetyPipelineService } from '../../application/chat/safety-pipeline.service';
+import { A2uiSafetyValidator } from '../../application/chat/a2ui-safety.validator';
+import { A2uiSurfaceBuilderService } from '../../application/chat/a2ui-surface-builder.service';
+import { AgentReplyComposerService } from '../../application/chat/agent-reply-composer.service';
 import { ToolExecutionLoopService } from '../../application/chat/tool-execution-loop.service';
 import { CHAT_AGENT_CATALOG } from '../../domain/chat/ports/chat-agent-catalog.port';
 import { CONVERSATION_REPOSITORY } from '../../domain/chat/ports/conversation.repository.port';
@@ -40,6 +43,9 @@ import { ConversationsController } from './conversations.controller';
   providers: [
     ChatService,
     SafetyPipelineService,
+    AgentReplyComposerService,
+    A2uiSurfaceBuilderService,
+    A2uiSafetyValidator,
     ToolExecutionLoopService,
     PromptVersionResolver,
     GeminiOrchestratorService,

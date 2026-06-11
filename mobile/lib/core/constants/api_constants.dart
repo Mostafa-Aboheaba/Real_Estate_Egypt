@@ -14,4 +14,6 @@ abstract final class ApiConstants {
   static const String properties = '/properties';
   static const String aiAgents = '/ai/agents';
   static const String conversations = '/conversations';
+  static const String recommendations = '/recommendations';
+  static const String recommendationsFeedback = '/recommendations/feedback';
 }

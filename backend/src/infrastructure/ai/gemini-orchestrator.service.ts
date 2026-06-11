@@ -10,9 +10,20 @@ import {
   LlmCompletionResult,
   LlmStreamChunk,
 } from '../../domain/chat/ports/llm-completion.port';
+import { UiSurfacePayload } from '../../domain/chat/entities/message.entity';
 import { PromptVersionResolver } from './prompt-version.resolver';
 import { SafetyPipelineService } from '../../application/chat/safety-pipeline.service';
-import { ToolExecutionLoopService } from '../../application/chat/tool-execution-loop.service';
+import {
+  ToolExecutionLoopService,
+  ToolRunResult,
+} from '../../application/chat/tool-execution-loop.service';
+import {
+  AgentReplyComposerService,
+  ComposeReplyInput,
+} from '../../application/chat/agent-reply-composer.service';
+import { parseSearchIntent } from '../../application/chat/search-intent.parser';
+import { A2uiSurfaceBuilderService } from '../../application/chat/a2ui-surface-builder.service';
+import { A2uiSafetyValidator } from '../../application/chat/a2ui-safety.validator';
 
 const GEMINI_URL =
   'https://generativelanguage.googleapis.com/v1beta/models';
@@ -22,17 +33,22 @@ export class GeminiOrchestratorService implements LlmCompletionPort {
   private readonly logger = new Logger(GeminiOrchestratorService.name);
   private readonly apiKey: string | undefined;
   private readonly mockMode: boolean;
+  private readonly genuiEnabled: boolean;
 
   constructor(
     private readonly config: ConfigService,
     private readonly prompts: PromptVersionResolver,
     private readonly safety: SafetyPipelineService,
     private readonly tools: ToolExecutionLoopService,
+    private readonly composer: AgentReplyComposerService,
+    private readonly surfaceBuilder: A2uiSurfaceBuilderService,
+    private readonly a2uiSafety: A2uiSafetyValidator,
   ) {
     this.apiKey = this.config.get<string>('gemini.apiKey');
     this.mockMode =
       this.config.get<boolean>('gemini.mockChat') ??
       !this.config.get<string>('gemini.apiKey');
+    this.genuiEnabled = this.config.get<boolean>('genui.enabled', true);
   }
 
   async complete(request: LlmCompletionRequest): Promise<LlmCompletionResult> {
@@ -46,6 +62,7 @@ export class GeminiOrchestratorService implements LlmCompletionPort {
         result = {
           content: chunks.join(''),
           listingRefs: chunk.cards ?? [],
+          uiSurface: chunk.a2ui ?? null,
           metadata: {
             toolsCalled: [],
             latencyMs: 0,
@@ -87,6 +104,7 @@ export class GeminiOrchestratorService implements LlmCompletionPort {
       return {
         content: refusal,
         listingRefs: [],
+        uiSurface: null,
         metadata: {
           safetyBlocked: true,
           latencyMs: Date.now() - started,
@@ -96,13 +114,18 @@ export class GeminiOrchestratorService implements LlmCompletionPort {
       };
     }
 
-    let toolResult = {
-      toolsCalled: [] as string[],
-      listingRefs: [] as LlmCompletionResult['listingRefs'],
+    let toolResult: ToolRunResult = {
+      toolsCalled: [],
+      listingRefs: [],
+      listingNarrations: [],
+      intent: parseSearchIntent(pre.sanitizedContent),
       toolSummary: '',
     };
 
-    const invokeTools = this.tools.shouldInvokeTools(pre.sanitizedContent);
+    const invokeTools = this.tools.shouldInvokeTools(
+      pre.sanitizedContent,
+      request.messages,
+    );
 
     if (invokeTools) {
       onChunk({
@@ -116,27 +139,46 @@ export class GeminiOrchestratorService implements LlmCompletionPort {
         name: 'semantic_search',
         summary: toolResult.toolSummary,
       });
-      if (toolResult.listingRefs.length > 0) {
-        onChunk({ type: 'listing_cards', cards: toolResult.listingRefs });
-      }
     }
 
     const allowedIds = new Set(
       toolResult.listingRefs.map((r) => r.propertyId),
     );
 
-    const toolsInvoked = invokeTools;
+    let uiSurface: UiSurfacePayload | null = null;
+    if (this.genuiEnabled && toolResult.listingNarrations.length > 0) {
+      uiSurface = this.a2uiSafety.validate(
+        this.surfaceBuilder.buildPropertyCarousel(toolResult.listingNarrations),
+        allowedIds,
+      );
+      if (uiSurface) {
+        onChunk({
+          type: 'a2ui_surface',
+          surfaceId: uiSurface.surfaceId,
+          a2ui: uiSurface,
+        });
+      }
+    }
+
+    if (!this.genuiEnabled && toolResult.listingRefs.length > 0) {
+      onChunk({ type: 'listing_cards', cards: toolResult.listingRefs });
+    }
+
+    const composeInput = {
+      locale: request.locale,
+      agentId: request.agentId,
+      userMessage: pre.sanitizedContent,
+      toolsInvoked: invokeTools,
+      listings: toolResult.listingNarrations,
+      intent: toolResult.intent,
+      recentMessages: request.messages,
+    };
 
     let content: string;
     if (this.mockMode) {
-      content = this.mockReply(
-        request.agentId,
-        pre.sanitizedContent,
-        toolResult,
-        toolsInvoked,
-      );
+      content = this.composer.compose(composeInput);
     } else {
-      content = await this.callGemini(request, pre.sanitizedContent, signal);
+      content = await this.callGemini(request, composeInput, signal);
     }
 
     const post = this.safety.postCheckAssistant({
@@ -167,53 +209,22 @@ export class GeminiOrchestratorService implements LlmCompletionPort {
     onChunk({
       type: 'done',
       agentId: request.agentId,
-      cards: post.listingRefs,
+      cards: this.genuiEnabled ? [] : post.listingRefs,
+      a2ui: uiSurface ?? undefined,
       usage: { promptTokens: 0, completionTokens: 0 },
     });
 
     return {
       content: post.content,
-      listingRefs: post.listingRefs,
+      listingRefs: this.genuiEnabled ? [] : post.listingRefs,
+      uiSurface,
       metadata,
     };
   }
 
-  private mockReply(
-    agentId: string,
-    query: string,
-    tool: {
-      listingRefs: LlmCompletionResult['listingRefs'];
-      toolSummary: string;
-    },
-    toolsInvoked: boolean,
-  ): string {
-    if (!toolsInvoked) {
-      const greeting = /morning|صباح/i.test(query)
-        ? 'Good morning! '
-        : /hello|hi|مرحبا|أهلا|اهلا|السلام/i.test(query)
-          ? 'Hello! '
-          : '';
-      return (
-        `${greeting}I'm your property assistant. Ask me about apartments, villas, ` +
-        `budget, or area in Egypt and I'll search listings for you. ` +
-        `AI-generated guidance — not legal or financial advice.`
-      );
-    }
-
-    const cards =
-      tool.listingRefs.length > 0
-        ? ` I found ${tool.listingRefs.length} matching listings.`
-        : ' I could not find listings matching those filters — try adjusting budget or area.';
-    return (
-      `Here are options for your search: "${query.slice(0, 80)}".` +
-      cards +
-      ' AI-generated guidance — not legal or financial advice.'
-    );
-  }
-
   private async callGemini(
     request: LlmCompletionRequest,
-    userContent: string,
+    composeInput: ComposeReplyInput,
     signal?: AbortSignal,
   ): Promise<string> {
     if (!this.apiKey) {
@@ -223,17 +234,24 @@ export class GeminiOrchestratorService implements LlmCompletionPort {
       );
     }
 
+    const toolContext = this.composer.buildGeminiContextBlock(composeInput);
+    const summaryMessage = request.messages.find((m) => m.role === 'system');
+    const systemText = [
+      request.systemPrompt,
+      summaryMessage ? `\n\n${summaryMessage.content}` : '',
+      toolContext,
+    ].join('');
+
     const url =
       `${GEMINI_URL}/${request.modelId}:generateContent?key=${this.apiKey}`;
     const body = {
-      systemInstruction: { parts: [{ text: request.systemPrompt }] },
-      contents: [
-        ...request.messages.map((m) => ({
+      systemInstruction: { parts: [{ text: systemText }] },
+      contents: request.messages
+        .filter((m) => m.role === 'user' || m.role === 'assistant')
+        .map((m) => ({
           role: m.role === 'assistant' ? 'model' : 'user',
           parts: [{ text: m.content }],
         })),
-        { role: 'user', parts: [{ text: userContent }] },
-      ],
     };
 
     const res = await fetch(url, {

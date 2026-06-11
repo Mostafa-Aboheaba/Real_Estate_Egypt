@@ -25,5 +25,10 @@
   "chatInputHint": "اسأل عن العقارات في مصر…",
   "chatAiDisclaimer": "إرشادات مولّدة بالذكاء الاصطناعي — ليست استشارة قانونية أو مالية.",
   "chatSwitchAgent": "تغيير الوكيل",
-  "chatRetry": "إعادة المحاولة"
+  "chatRetry": "إعادة المحاولة",
+  "recommendationsPersonalizedTitle": "عقارات قد تعجبك",
+  "recommendationsPopularTitle": "الأكثر شعبية في القاهرة",
+  "recommendationsGuestCta": "سجّل الدخول للحصول على توصيات مخصصة.",
+  "recommendationsSignIn": "تسجيل الدخول",
+  "recommendationsRefresh": "تحديث التوصيات"
 }

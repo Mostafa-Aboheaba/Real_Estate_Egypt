@@ -1,5 +1,5 @@
 import { ListingRefProps } from '../value-objects/listing-ref.vo';
-import { MessageMetadata } from '../entities/message.entity';
+import { MessageMetadata, UiSurfacePayload } from '../entities/message.entity';
 
 export const LLM_COMPLETION = Symbol('LLM_COMPLETION');
 
@@ -23,16 +23,26 @@ export interface LlmCompletionRequest {
 export interface LlmCompletionResult {
   content: string;
   listingRefs: ListingRefProps[];
+  uiSurface?: UiSurfacePayload | null;
   metadata: MessageMetadata;
 }
 
 export interface LlmStreamChunk {
-  type: 'text_delta' | 'tool_call' | 'tool_result' | 'listing_cards' | 'done' | 'error';
+  type:
+    | 'text_delta'
+    | 'tool_call'
+    | 'tool_result'
+    | 'listing_cards'
+    | 'a2ui_surface'
+    | 'done'
+    | 'error';
   text?: string;
   name?: string;
   args?: Record<string, unknown>;
   summary?: string;
   cards?: ListingRefProps[];
+  surfaceId?: string;
+  a2ui?: UiSurfacePayload;
   messageId?: string;
   agentId?: string;
   usage?: { promptTokens: number; completionTokens: number };

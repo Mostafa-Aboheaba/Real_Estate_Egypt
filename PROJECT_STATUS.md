@@ -3,8 +3,8 @@
 > **Auto-generated** — do not edit by hand. Regenerate after completing a task:
 > `python3 tasks/build_project_status.py`
 
-**Last updated:** 2026-06-04 10:38 UTC  
-**Source:** 133 tasks under `tasks/m*/` + [`tasks/dashboard_config.json`](tasks/dashboard_config.json)
+**Last updated:** 2026-06-11 13:33 UTC  
+**Source:** 141 tasks under `tasks/m*/` + [`tasks/dashboard_config.json`](tasks/dashboard_config.json)
 
 ---
 
@@ -12,10 +12,10 @@
 
 | Metric | Value |
 |--------|-------|
-| **Overall completion** | **68.4%** (91 / 133 tasks) |
-| **Current milestone** | **M8** — Recommendations |
-| **Task breakdown** | Done 91 · Pending 42 · In progress 0 · Blocked 0 |
-| **Implementation slice** | M2–M7 complete (61 tasks) |
+| **Overall completion** | **74.5%** (105 / 141 tasks) |
+| **Current milestone** | **M9** — Booking & Notifications |
+| **Task breakdown** | Done 105 · Pending 36 · In progress 0 · Blocked 0 |
+| **Implementation slice** | M2–M8 complete (75 tasks) |
 
 ---
 
@@ -31,7 +31,8 @@
 | M5 | User Profile & Preferences | 10/10 (100%) | 100% | Complete |
 | M6 | Embeddings, RAG & Knowledge | 9/9 (100%) | 100% | Complete |
 | M7 | AI Chat | 11/11 (100%) | 100% | Complete |
-| M8 | Recommendations | 0/6 (0%) | 0% | Not started |
+| M75 | Generative Chat UI (GenUI) | 8/8 (100%) | 100% | Complete |
+| M8 | Recommendations | 6/6 (100%) | 100% | Complete |
 | M9 | Booking & Notifications | 0/10 (0%) | 0% | Not started |
 | M10 | Quality, Security & E2E | 0/10 (0%) | 0% | Not started |
 | M11 | Staging on GCP | 0/9 (0%) | 0% | Not started |
@@ -47,18 +48,19 @@
 - M5 — User Profile & Preferences
 - M6 — Embeddings, RAG & Knowledge
 - M7 — AI Chat
+- M75 — Generative Chat UI (GenUI)
+- M8 — Recommendations
 
 ### Current milestone
 
-**M8 — Recommendations**
+**M9 — Booking & Notifications**
 
-**Next recommended task:** [M8-REC001](tasks/m08-recommendations/m8-rec001.md) — Recommendation Domain + Scoring Port  
+**Next recommended task:** [M9-BOK001](tasks/m09-booking/m9-bok001.md) — Booking Domain + Repository  
   
-*First pending task in M8.*
+*First pending task in M9.*
 
 ### Remaining milestones
 
-- M8 — Recommendations (0/6 tasks)
 - M9 — Booking & Notifications (0/10 tasks)
 - M10 — Quality, Security & E2E (0/10 tasks)
 - M11 — Staging on GCP (0/9 tasks)
@@ -77,15 +79,11 @@
 - **M5** (10): M5-PRO001, M5-PRO002, M5-PRO003, M5-PRO004, M5-PRO005, M5-PRO006, M5-PRO007, M5-PRO008, M5-PRO009, M5-PRO010
 - **M6** (9): M6-RAG001, M6-RAG002, M6-RAG003, M6-RAG004, M6-RAG005, M6-RAG006, M6-RAG007, M6-RAG008, M6-RAG009
 - **M7** (11): M7-CHT001, M7-CHT002, M7-CHT003, M7-CHT004, M7-CHT005, M7-CHT006, M7-CHT007, M7-CHT008, M7-CHT009, M7-CHT010, M7-CHT011
+- **M75** (8): M75-GUI001, M75-GUI002, M75-GUI003, M75-GUI004, M75-GUI005, M75-GUI006, M75-GUI007, M75-GUI008
+- **M8** (6): M8-REC001, M8-REC002, M8-REC003, M8-REC004, M8-REC005, M8-REC006
 
 ### Pending — implementation path (next 15)
 
-- [M8-REC001](tasks/m08-recommendations/m8-rec001.md) — Recommendation Domain + Scoring Port
-- [M8-REC002](tasks/m08-recommendations/m8-rec002.md) — User Preference Vector Builder
-- [M8-REC003](tasks/m08-recommendations/m8-rec003.md) — GET /api/v1/recommendations
-- [M8-REC004](tasks/m08-recommendations/m8-rec004.md) — POST /recommendations/feedback
-- [M8-REC005](tasks/m08-recommendations/m8-rec005.md) — Mobile Home Recommendations Section
-- [M8-REC006](tasks/m08-recommendations/m8-rec006.md) — Recommendation P0 Test Pack
 - [M9-BOK001](tasks/m09-booking/m9-bok001.md) — Booking Domain + Repository
 - [M9-BOK002](tasks/m09-booking/m9-bok002.md) — POST /api/v1/bookings (buyer request)
 - [M9-BOK003](tasks/m09-booking/m9-bok003.md) — Agent Confirm / Decline / Cancel APIs
@@ -95,7 +93,13 @@
 - [M9-BOK007](tasks/m09-booking/m9-bok007.md) — Bilingual Email Templates (ar/en)
 - [M9-BOK008](tasks/m09-booking/m9-bok008.md) — Mobile Booking Request from Listing Detail
 - [M9-BOK009](tasks/m09-booking/m9-bok009.md) — Mobile Agent Booking Inbox
-- *…and 27 more (excl. M1 registry)*
+- [M9-BOK010](tasks/m09-booking/m9-bok010.md) — Booking E2E Lifecycle Test
+- [M10-QLT001](tasks/m10-quality/m10-qlt001.md) — MVP Launch Checklist Document
+- [M10-QLT002](tasks/m10-quality/m10-qlt002.md) — Flutter integration_test P0 Journey
+- [M10-QLT003](tasks/m10-quality/m10-qlt003.md) — API E2E Suite (supertest)
+- [M10-QLT004](tasks/m10-quality/m10-qlt004.md) — Domain Coverage Gate ≥80%
+- [M10-QLT005](tasks/m10-quality/m10-qlt005.md) — Prometheus Metrics + Grafana Dashboards
+- *…and 21 more (excl. M1 registry)*
 
 ### In progress
 
@@ -117,6 +121,7 @@
 - **[LOW] OAuth / device configuration** — Google/Apple sign-in requires platform keys and `.env` for real devices.
 - **[MEDIUM] Vertex AI & GCP not provisioned** — M7 production chat needs Vertex/GCP (M11); M6 uses `GEMINI_MOCK_EMBEDDINGS` locally.
 - **[LOW] Docker dependency for local stack** — Postgres/Redis via docker compose; fails if Docker daemon is down.
+- **[MEDIUM] Flutter GenUI alpha API** — genui package is experimental (A2UI v0.9); pin versions and use adapter layer in mobile.
 
 ---
 

@@ -6,6 +6,7 @@ import 'package:property_assistant/core/config/app_config.dart';
 import 'package:property_assistant/core/config/flavor.dart';
 import 'package:property_assistant/features/profile/data/datasources/remote/profile_api_service.dart';
 import 'package:property_assistant/features/property_search/data/datasources/remote/property_api_service.dart';
+import 'package:property_assistant/features/recommendation/data/datasources/remote/recommendation_api_service.dart';
 
 @module
 abstract class RegisterModule {
@@ -23,6 +24,10 @@ abstract class RegisterModule {
 
   @lazySingleton
   ProfileApiService profileApiService(Dio dio) => ProfileApiService(dio);
+
+  @lazySingleton
+  RecommendationApiService recommendationApiService(Dio dio) =>
+      RecommendationApiService(dio);
 }
 
 /// Set in flavor entry points before [configureDependencies].

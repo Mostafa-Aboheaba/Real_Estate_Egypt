@@ -17,6 +17,7 @@ class ChatMessage {
     required this.content,
     this.agentId,
     this.listingRefs = const [],
+    this.uiSurface,
     this.isStreaming = false,
   });
 
@@ -25,6 +26,7 @@ class ChatMessage {
   final String content;
   final String? agentId;
   final List<ListingCard> listingRefs;
+  final Map<String, dynamic>? uiSurface;
   final bool isStreaming;
 
   bool get isUser => role == 'user';

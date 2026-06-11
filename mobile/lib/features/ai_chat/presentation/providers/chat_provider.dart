@@ -110,8 +110,14 @@ class ChatSessionNotifier extends Notifier<ChatSessionState> {
 
     try {
       var buffer = '';
-      await for (final delta in _repo.streamMessage(convId, content)) {
-        buffer += delta;
+      Map<String, dynamic>? surface;
+      await for (final chunk in _repo.streamMessage(convId, content)) {
+        if (chunk.isText) {
+          buffer += chunk.text!;
+        }
+        if (chunk.isSurface) {
+          surface = chunk.uiSurface;
+        }
         state = state.copyWith(
           messages: state.messages.map((m) {
             if (m.id == streamingId) {
@@ -119,6 +125,7 @@ class ChatSessionNotifier extends Notifier<ChatSessionState> {
                 id: streamingId,
                 role: 'assistant',
                 content: buffer,
+                uiSurface: surface,
                 isStreaming: true,
               );
             }

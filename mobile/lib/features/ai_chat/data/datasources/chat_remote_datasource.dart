@@ -66,6 +66,7 @@ class ChatRemoteDataSource {
             content: row['content'] as String,
             agentId: row['agentId'] as String?,
             listingRefs: _mapListingRefs(row['listingRefs']),
+            uiSurface: row['uiSurface'] as Map<String, dynamic>?,
           ),
         )
         .toList();

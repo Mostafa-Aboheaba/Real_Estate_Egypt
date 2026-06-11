@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:property_assistant/features/ai_chat/domain/entities/chat_message.dart';
+import 'package:property_assistant/features/ai_chat/genui/a2ui_surface_view.dart';
 import 'package:property_assistant/features/ai_chat/presentation/widgets/listing_card_tile.dart';
 import 'package:property_assistant/l10n/app_localizations.dart';
 
@@ -18,6 +19,11 @@ class MessageBubble extends StatelessWidget {
         ? theme.colorScheme.primaryContainer
         : theme.colorScheme.surfaceContainerHighest;
 
+    final showLegacyCards =
+        message.isAssistant &&
+        message.uiSurface == null &&
+        message.listingRefs.isNotEmpty;
+
     return Column(
       crossAxisAlignment: align,
       children: [
@@ -34,7 +40,8 @@ class MessageBubble extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(message.content + (message.isStreaming ? '▌' : '')),
+              if (message.content.isNotEmpty)
+                Text(message.content + (message.isStreaming ? '▌' : '')),
               if (message.isAssistant) ...[
                 const SizedBox(height: 8),
                 Text(
@@ -47,7 +54,12 @@ class MessageBubble extends StatelessWidget {
             ],
           ),
         ),
-        if (message.listingRefs.isNotEmpty)
+        if (message.uiSurface != null)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: A2uiSurfaceView(uiSurface: message.uiSurface!),
+          ),
+        if (showLegacyCards)
           ...message.listingRefs.map(
             (card) => ListingCardTile(card: card),
           ),

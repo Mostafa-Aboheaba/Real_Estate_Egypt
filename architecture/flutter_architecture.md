@@ -471,6 +471,18 @@ flowchart TB
 | `json_annotation` | DTO serialization |
 | `intl` | EGP formatting, dates |
 | `cached_network_image` | Listing photos |
+| `genui` | **M7.5** — Generative UI surfaces in AI chat (A2UI renderer) |
+| `genai_primitives` | Shared GenAI message primitives for GenUI |
+
+### 10.1 GenUI in AI Chat (M7.5)
+
+The chat feature adopts [Flutter GenUI](https://docs.flutter.dev/ai/genui) behind a thin adapter in `features/ai_chat/genui/`:
+
+- **Catalog** — maps A2UI component names to existing widgets (`ListingCardTile`, filter chips).
+- **Surface** — renders agent-generated layouts inside `ChatPage` below assistant text.
+- **Transport** — SSE `a2ui_surface` events from NestJS (server-side generation); not client-direct Gemini.
+
+See [features/ai_chat/genui_design.md](../features/ai_chat/genui_design.md).
 
 ---
 

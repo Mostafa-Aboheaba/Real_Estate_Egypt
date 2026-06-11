@@ -51,6 +51,14 @@ import '../../features/property_search/domain/repositories/property_filter_repos
     as _i209;
 import '../../features/property_search/domain/repositories/property_repository.dart'
     as _i727;
+import '../../features/recommendation/data/datasources/remote/recommendation_api_service.dart'
+    as _i71;
+import '../../features/recommendation/data/datasources/remote/recommendation_remote_datasource.dart'
+    as _i318;
+import '../../features/recommendation/data/repositories/recommendation_repository_impl.dart'
+    as _i1070;
+import '../../features/recommendation/domain/repositories/recommendation_repository.dart'
+    as _i321;
 import '../auth/session_expired_notifier.dart' as _i45;
 import '../auth/token_storage.dart' as _i1002;
 import '../config/app_config.dart' as _i650;
@@ -117,11 +125,14 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i428.ProfileApiService>(
       () => registerModule.profileApiService(gh<_i361.Dio>()),
     );
-    gh.lazySingleton<_i696.ChatRemoteDataSource>(
-      () => _i696.ChatRemoteDataSource(gh<_i361.Dio>()),
+    gh.lazySingleton<_i71.RecommendationApiService>(
+      () => registerModule.recommendationApiService(gh<_i361.Dio>()),
     );
     gh.lazySingleton<_i610.PropertyFilterRemoteDataSource>(
       () => _i610.PropertyFilterRemoteDataSource(gh<_i361.Dio>()),
+    );
+    gh.lazySingleton<_i696.ChatRemoteDataSource>(
+      () => _i696.ChatRemoteDataSource(gh<_i361.Dio>()),
     );
     gh.lazySingleton<_i993.PropertyRemoteDataSource>(
       () => _i993.PropertyRemoteDataSource(gh<_i787.PropertyApiService>()),
@@ -138,6 +149,11 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i203.ChatRepository>(
       () => _i203.ChatRepositoryImpl(gh<_i696.ChatRemoteDataSource>()),
     );
+    gh.lazySingleton<_i318.RecommendationRemoteDataSource>(
+      () => _i318.RecommendationRemoteDataSource(
+        gh<_i71.RecommendationApiService>(),
+      ),
+    );
     gh.lazySingleton<_i727.PropertyRepository>(
       () => _i2.PropertyRepositoryImpl(gh<_i993.PropertyRemoteDataSource>()),
     );
@@ -151,6 +167,11 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i317.AuthRepositoryImpl(
         gh<_i14.AuthRemoteDataSource>(),
         gh<_i1002.TokenStorage>(),
+      ),
+    );
+    gh.lazySingleton<_i321.RecommendationRepository>(
+      () => _i1070.RecommendationRepositoryImpl(
+        gh<_i318.RecommendationRemoteDataSource>(),
       ),
     );
     gh.lazySingleton<_i894.ProfileRepository>(

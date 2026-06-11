@@ -6,15 +6,20 @@ import {
   PropertyRepositoryPort,
 } from '../../domain/property/ports/property.repository.port';
 import { ListingRefProps } from '../../domain/chat/value-objects/listing-ref.vo';
+import { LlmMessage } from '../../domain/chat/ports/llm-completion.port';
 import {
   isGreetingOrChitchat,
   isPropertySearchIntent,
+  isSearchFollowUp,
   parseSearchIntent,
 } from './search-intent.parser';
+import { ListingNarration } from './agent-reply-composer.service';
 
 export interface ToolRunResult {
   toolsCalled: string[];
   listingRefs: ListingRefProps[];
+  listingNarrations: ListingNarration[];
+  intent: ReturnType<typeof parseSearchIntent>;
   toolSummary: string;
 }
 
@@ -51,16 +56,12 @@ export class ToolExecutionLoopService {
         sort: 'newest',
       });
 
-      let listingRefs = structured.items
+      let narrations = structured.items
         .filter((item) => this.matchesIntent(item, intent))
         .slice(0, 5)
-        .map((item) => ({
-          propertyId: item.id,
-          title: item.title,
-          priceEgp: item.priceEgp,
-        }));
+        .map((item) => this.toNarration(item));
 
-      if (listingRefs.length === 0) {
+      if (narrations.length === 0) {
         const result = await this.rag.retrieve({
           query: intent.textQuery,
           topK: 8,
@@ -74,7 +75,7 @@ export class ToolExecutionLoopService {
           },
         });
 
-        listingRefs = [];
+        narrations = [];
         for (const id of result.listingIds) {
           const property = await this.properties.findById(id);
           if (!property?.isActive) {
@@ -83,37 +84,79 @@ export class ToolExecutionLoopService {
           if (!this.matchesPropertyIntent(property, intent)) {
             continue;
           }
-          listingRefs.push({
+          narrations.push({
             propertyId: property.id!,
             title: property.title,
             priceEgp: property.priceEgp,
+            city: property.location.city,
+            propertyType: property.propertyType,
+            bedrooms: property.bedrooms,
+            listingType: property.listingType,
           });
-          if (listingRefs.length >= 5) {
+          if (narrations.length >= 5) {
             break;
           }
         }
       }
 
+      const listingRefs = narrations.map((item) => ({
+        propertyId: item.propertyId,
+        title: item.title,
+        priceEgp: item.priceEgp,
+      }));
+
       return {
         toolsCalled: ['semantic_search'],
         listingRefs,
+        listingNarrations: narrations,
+        intent,
         toolSummary: `${listingRefs.length} listings found`,
       };
     } catch (err) {
       this.logger.warn(`semantic_search failed: ${String(err)}`);
+      const intent = parseSearchIntent(query);
       return {
         toolsCalled: ['semantic_search'],
         listingRefs: [],
+        listingNarrations: [],
+        intent,
         toolSummary: 'Search temporarily unavailable',
       };
     }
   }
 
-  shouldInvokeTools(userContent: string): boolean {
+  shouldInvokeTools(userContent: string, history: LlmMessage[] = []): boolean {
     if (isGreetingOrChitchat(userContent)) {
       return false;
     }
-    return isPropertySearchIntent(userContent);
+    if (isPropertySearchIntent(userContent)) {
+      return true;
+    }
+    const recentContext = history
+      .slice(-8)
+      .map((message) => message.content)
+      .join('\n');
+    return isSearchFollowUp(userContent, recentContext);
+  }
+
+  private toNarration(item: {
+    id: string;
+    title: string;
+    priceEgp: number;
+    propertyType: string;
+    listingType: string;
+    bedrooms: number | null;
+    location: { city: string };
+  }): ListingNarration {
+    return {
+      propertyId: item.id,
+      title: item.title,
+      priceEgp: item.priceEgp,
+      city: item.location.city,
+      propertyType: item.propertyType,
+      bedrooms: item.bedrooms,
+      listingType: item.listingType,
+    };
   }
 
   private matchesIntent(

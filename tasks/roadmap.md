@@ -6,9 +6,9 @@
 
 | Field | Value |
 |-------|-------|
-| Version | 0.4.0 |
+| Version | 0.5.0 |
 | Status | Active |
-| Last Updated | 2026-06-04 |
+| Last Updated | 2026-06-08 |
 | Master plan | [master_execution_plan.md](./master_execution_plan.md) |
 
 ## Delivery Philosophy
@@ -33,8 +33,9 @@ gantt
     Property Search                  :done, p2, after p1, 14d
     Profile                          :active, p3, after p2, 7d
     section Intelligence
-    AI Chat                          :p4, after p3, 14d
-    Recommendations                  :p5, after p4, 14d
+    AI Chat                          :done, p4, after p3, 14d
+    GenUI Chat Surfaces              :p4b, after p4, 10d
+    Recommendations                  :p5, after p4b, 14d
     section Conversion
     Booking                          :p6, after p5, 14d
     section Polish
@@ -118,17 +119,31 @@ gantt
 **Plan:** [m05_profile_implementation_plan.md](./m05_profile_implementation_plan.md)  
 **First task:** [M5-PRO001](./m05-profile/m5-pro001.md)
 
-## Phase 4 — AI Chat
+## Phase 4 — AI Chat ✅ Complete
 
 **Goal:** Conversational property discovery with grounded responses.
 
 | Deliverable | Spec Status | Implementation |
 |-------------|-------------|----------------|
-| Feature specs (full SDD cycle) | ✅ Approved (M1) | Blocked on M6 RAG |
-| Chat API + AI adapter | — | Not started (M7) |
-| Mobile chat UI | — | Not started (M7) |
+| Feature specs (full SDD cycle) | ✅ Approved (M1) | Done |
+| Chat API + AI adapter | — | Done (M7) |
+| Mobile chat UI | — | Done (M7) |
 
-**Dependencies:** Phase 2 (listing data for RAG), M6 embeddings
+**Report:** [m07_chat_completion_report.md](./m07_chat_completion_report.md)
+
+## Phase 4.5 — Generative Chat UI (GenUI) 🔄 Current
+
+**Goal:** Interactive chat surfaces (property carousels, filters, CTAs) via Flutter GenUI + A2UI—human agent feel.
+
+| Deliverable | Spec Status | Implementation |
+|-------------|-------------|----------------|
+| GenUI design | [genui_design.md](../features/ai_chat/genui_design.md) | Draft |
+| Widget catalog + Surface in chat | — | Not started (M75) |
+| Backend `a2ui_surface` SSE | — | Not started (M75) |
+
+**Dependencies:** M7 (chat baseline). Can overlap M8 recommendations.
+
+**First task:** [M75-GUI001](./m075-genui/m75-gui001.md)
 
 ## Phase 5 — Recommendations
 
@@ -189,15 +204,16 @@ Each feature completed in M1:
 | Fair housing compliance | Legal exposure | Spec review with compliance checklist (M1 done) |
 | Scope creep | Delayed MVP | Strict phase gates; defer out-of-scope items |
 | Vertex AI not provisioned | M6–M7 local dev | AI Studio / mocks until M11 staging |
+| Flutter GenUI alpha | M75 API churn | Pin `genui`; adapter layer in mobile |
 
 ## Next Action
 
-**M1 closed (2026-06-04)** — all feature SDDs approved; see [m1_sdd_completion_report.md](./m1_sdd_completion_report.md).
+**M7 closed** — AI chat complete; see [m07_chat_completion_report.md](./m07_chat_completion_report.md).
 
-**Current focus: M5 — User Profile & Preferences**
+**Current focus: M7.5 (M75) — Generative Chat UI (GenUI)**
 
-1. Complete [M5-PRO001](./m05-profile/m5-pro001.md) (domain + repository port; partial scaffold exists)
-2. Follow [m05_profile_implementation_plan.md](./m05_profile_implementation_plan.md)
+1. Complete [M75-GUI001](./m075-genui/m75-gui001.md) (SDD + architecture — partially drafted in `genui_design.md`)
+2. Follow tasks in [m075-genui/](./m075-genui/) then proceed to M8 (can overlap)
 
 **Dashboard:** [PROJECT_STATUS.md](../PROJECT_STATUS.md) (regenerate via `python3 tasks/build_project_status.py`)
 

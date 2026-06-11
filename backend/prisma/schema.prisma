@@ -97,6 +97,13 @@ enum OAuthProvider {
   apple
 }
 
+enum FeedbackSentiment {
+  like
+  dislike
+
+  @@map("feedback_sentiment")
+}
+
 // ─── Core tables ───────────────────────────────────────────────────────────
 
 model User {
@@ -121,8 +128,10 @@ model User {
   oauthAccounts    OauthAccount[]
   passwordResets         PasswordResetToken[]
   emailVerificationTokens EmailVerificationToken[]
-  favorites        Favorite[]
-  buyerBookings    Booking[]      @relation("BuyerBookings")
+  favorites              Favorite[]
+  listingFeedback        ListingFeedback[]
+  preferenceVector       UserPreferenceVector?
+  buyerBookings          Booking[]      @relation("BuyerBookings")
   agentBookings    Booking[]      @relation("AgentBookings")
   agentProperties  Property[]     @relation("AgentProperties")
   conversations    Conversation[]
@@ -175,7 +184,8 @@ model Property {
   project   Project?   @relation(fields: [projectId], references: [id], onDelete: SetNull)
   agent     User?      @relation("AgentProperties", fields: [agentId], references: [id], onDelete: SetNull)
   bookings  Booking[]
-  favorites Favorite[]
+  favorites       Favorite[]
+  listingFeedback ListingFeedback[]
 
   @@unique([provider, externalId])
   @@index([isActive, priceEgp])
@@ -229,6 +239,7 @@ model Message {
   content        String      @db.Text
   agentId        String?     @map("agent_id") @db.VarChar(50)
   listingRefs    Json        @default("[]") @map("listing_refs")
+  uiSurface      Json?       @map("ui_surface")
   metadata       Json?
   tokenCount     Int?        @map("token_count")
   createdAt      DateTime    @default(now()) @map("created_at") @db.Timestamptz(6)
@@ -337,6 +348,33 @@ model SyncRun {
 
   @@index([provider, startedAt(sort: Desc)])
   @@map("sync_runs")
+}
+
+model ListingFeedback {
+  id         String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId     String            @map("user_id") @db.Uuid
+  propertyId String            @map("property_id") @db.Uuid
+  sentiment  FeedbackSentiment
+  createdAt  DateTime          @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt  DateTime          @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, propertyId])
+  @@map("listing_feedback")
+}
+
+model UserPreferenceVector {
+  userId       String   @id @map("user_id") @db.Uuid
+  embedding    Unsupported("vector(768)")
+  signalCount  Int      @default(0) @map("signal_count")
+  modelVersion String   @map("model_version") @db.VarChar(40)
+  computedAt   DateTime @map("computed_at") @db.Timestamptz(6)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_preference_vectors")
 }
 
 model AiAgent {

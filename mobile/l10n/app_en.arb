@@ -35,5 +35,10 @@
   "chatInputHint": "Ask about properties in Egypt…",
   "chatAiDisclaimer": "AI-generated guidance — not legal or financial advice.",
   "chatSwitchAgent": "Switch AI agent",
-  "chatRetry": "Retry"
+  "chatRetry": "Retry",
+  "recommendationsPersonalizedTitle": "Properties you might like",
+  "recommendationsPopularTitle": "Popular in Cairo",
+  "recommendationsGuestCta": "Sign in for personalized recommendations.",
+  "recommendationsSignIn": "Sign in",
+  "recommendationsRefresh": "Refresh recommendations"
 }

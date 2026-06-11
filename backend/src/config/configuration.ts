@@ -50,6 +50,17 @@ export default () => ({
       !process.env.GEMINI_API_KEY,
     embedMaxRetries: parseInt(process.env.GEMINI_EMBED_MAX_RETRIES ?? '3', 10),
   },
+  genui: {
+    enabled: (() => {
+      if (process.env.GENUI_ENABLED === 'false') {
+        return false;
+      }
+      if (process.env.GENUI_ENABLED === 'true') {
+        return true;
+      }
+      return process.env.NODE_ENV !== 'production';
+    })(),
+  },
   rag: {
     cacheTtlSec: parseInt(process.env.RAG_CACHE_TTL_SEC ?? '900', 10),
   },

@@ -1,5 +1,9 @@
 import { Conversation, ConversationSummary } from '../../../domain/chat/entities/conversation.entity';
-import { Message, MessageMetadata } from '../../../domain/chat/entities/message.entity';
+import {
+  Message,
+  MessageMetadata,
+  UiSurfacePayload,
+} from '../../../domain/chat/entities/message.entity';
 import { ListingRefProps } from '../../../domain/chat/value-objects/listing-ref.vo';
 import { StoredMessage } from '../../../domain/chat/ports/conversation.repository.port';
 import { MessageRole, Prisma } from '@prisma/client';
@@ -53,6 +57,7 @@ export function toStoredMessage(row: {
   content: string;
   agentId: string | null;
   listingRefs: Prisma.JsonValue;
+  uiSurface: Prisma.JsonValue;
   metadata: Prisma.JsonValue;
   createdAt: Date;
 }): StoredMessage {
@@ -62,6 +67,7 @@ export function toStoredMessage(row: {
     content: row.content,
     agentId: row.agentId,
     listingRefs: (row.listingRefs as unknown as ListingRefProps[]) ?? [],
+    uiSurface: (row.uiSurface as UiSurfacePayload | null) ?? null,
     metadata: (row.metadata as MessageMetadata) ?? null,
     createdAt: row.createdAt.toISOString(),
   };
@@ -78,6 +84,9 @@ export function messageToCreateInput(
     listingRefs: message.listingRefs.map((r) =>
       r.toJSON(),
     ) as unknown as Prisma.InputJsonValue,
+    uiSurface: (message.uiSurface ?? undefined) as unknown as
+      | Prisma.InputJsonValue
+      | undefined,
     metadata: (message.metadata ?? undefined) as unknown as
       | Prisma.InputJsonValue
       | undefined,

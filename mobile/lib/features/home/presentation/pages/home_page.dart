@@ -7,6 +7,7 @@ import 'package:property_assistant/core/routing/route_paths.dart';
 import 'package:property_assistant/core/widgets/app_scaffold.dart';
 import 'package:property_assistant/features/authentication/presentation/providers/auth_provider.dart';
 import 'package:property_assistant/features/home/presentation/providers/home_provider.dart';
+import 'package:property_assistant/features/recommendation/presentation/widgets/home_recommendations_section.dart';
 
 class HomePage extends ConsumerWidget {
   const HomePage({super.key});
@@ -20,7 +21,7 @@ class HomePage extends ConsumerWidget {
 
     return AppScaffold(
       title: l10n.appTitle,
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -31,6 +32,8 @@ class HomePage extends ConsumerWidget {
             ),
             const SizedBox(height: 8),
             Text(l10n.homeSubtitle),
+            const SizedBox(height: 24),
+            const HomeRecommendationsSection(),
             const SizedBox(height: 24),
             session.when(
               data: (s) => s == null
@@ -64,7 +67,7 @@ class HomePage extends ConsumerWidget {
                 label: Text(l10n.profileTitle),
               ),
             ],
-            const Spacer(),
+            const SizedBox(height: 24),
             Text(
               'Flavor: ${config.flavor.name}',
               style: Theme.of(context).textTheme.labelSmall,
