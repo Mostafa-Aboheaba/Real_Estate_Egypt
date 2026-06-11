@@ -205,14 +205,19 @@ export class PrismaConversationRepository implements ConversationRepositoryPort 
 
   async getUserChatContext(
     userId: string,
-  ): Promise<{ preferredAgentId: string | null; name: string | null }> {
+  ): Promise<{
+    preferredAgentId: string | null;
+    name: string | null;
+    locale: string;
+  }> {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
-      select: { preferredAgentId: true, name: true },
+      select: { preferredAgentId: true, name: true, locale: true },
     });
     return {
       preferredAgentId: user?.preferredAgentId ?? null,
       name: user?.name ?? null,
+      locale: user?.locale ?? 'ar-EG',
     };
   }
 }

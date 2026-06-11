@@ -35,7 +35,6 @@ export class ChatStreamController {
     @Req() req: Request,
     @Res() res: Response,
   ): Promise<void> {
-    const locale = acceptLanguage?.startsWith('ar') ? 'ar-EG' : 'en';
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Connection', 'keep-alive');
@@ -55,7 +54,7 @@ export class ChatStreamController {
         user.sub,
         id,
         dto.content,
-        locale,
+        acceptLanguage,
         write,
         controller.signal,
       );

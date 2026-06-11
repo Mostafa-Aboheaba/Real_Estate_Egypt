@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:property_assistant/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:property_assistant/core/di/injection.dart';
+import 'package:property_assistant/core/network/locale_header_holder.dart';
 import 'package:property_assistant/core/providers/app_providers.dart';
 import 'package:property_assistant/core/providers/locale_provider.dart';
 import 'package:property_assistant/core/routing/app_router.dart';
@@ -14,6 +16,7 @@ class App extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final config = ref.watch(appConfigProvider);
     final locale = ref.watch(localeProvider);
+    getIt<LocaleHeaderHolder>().setFromLocale(locale);
     ref.watch(sessionExpiryListenerProvider);
     final router = ref.watch(appRouterProvider);
 

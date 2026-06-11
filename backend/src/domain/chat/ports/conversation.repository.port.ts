@@ -75,5 +75,9 @@ export interface ConversationRepositoryPort {
   getUserPreferredAgentId(userId: string): Promise<string | null>;
   getUserChatContext(
     userId: string,
-  ): Promise<{ preferredAgentId: string | null; name: string | null }>;
+  ): Promise<{
+    preferredAgentId: string | null;
+    name: string | null;
+    locale: string;
+  }>;
 }

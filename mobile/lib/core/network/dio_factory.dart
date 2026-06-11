@@ -4,6 +4,7 @@ import 'package:property_assistant/core/config/app_config.dart';
 import 'package:property_assistant/core/constants/app_constants.dart';
 import 'package:property_assistant/core/network/auth_interceptor.dart';
 import 'package:property_assistant/core/network/envelope_unwrap_interceptor.dart';
+import 'package:property_assistant/core/network/locale_interceptor.dart';
 import 'package:property_assistant/core/network/logging_interceptor.dart';
 
 @module
@@ -12,6 +13,7 @@ abstract class DioModule {
   Dio dio(
     AppConfig config,
     AuthInterceptor authInterceptor,
+    LocaleInterceptor localeInterceptor,
     LoggingInterceptor loggingInterceptor,
   ) {
     final dio = Dio(
@@ -24,6 +26,7 @@ abstract class DioModule {
     );
     dio.interceptors.addAll([
       EnvelopeUnwrapInterceptor(),
+      localeInterceptor,
       authInterceptor,
       loggingInterceptor,
     ]);

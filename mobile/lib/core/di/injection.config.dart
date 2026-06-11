@@ -73,6 +73,8 @@ import '../config/app_config.dart' as _i650;
 import '../network/api_client.dart' as _i557;
 import '../network/auth_interceptor.dart' as _i908;
 import '../network/dio_factory.dart' as _i798;
+import '../network/locale_header_holder.dart' as _i16;
+import '../network/locale_interceptor.dart' as _i963;
 import '../network/logging_interceptor.dart' as _i551;
 import '../network/network_info.dart' as _i932;
 import 'register_module.dart' as _i291;
@@ -96,6 +98,10 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i37.PropertyFilterLocalDataSource>(
       () => _i37.PropertyFilterLocalDataSource(),
+    );
+    gh.lazySingleton<_i16.LocaleHeaderHolder>(() => _i16.LocaleHeaderHolder());
+    gh.lazySingleton<_i963.LocaleInterceptor>(
+      () => _i963.LocaleInterceptor(gh<_i16.LocaleHeaderHolder>()),
     );
     gh.lazySingleton<_i932.NetworkInfo>(
       () => _i932.NetworkInfoImpl(gh<_i895.Connectivity>()),
@@ -124,6 +130,7 @@ extension GetItInjectableX on _i174.GetIt {
       () => dioModule.dio(
         gh<_i650.AppConfig>(),
         gh<_i908.AuthInterceptor>(),
+        gh<_i963.LocaleInterceptor>(),
         gh<_i551.LoggingInterceptor>(),
       ),
     );

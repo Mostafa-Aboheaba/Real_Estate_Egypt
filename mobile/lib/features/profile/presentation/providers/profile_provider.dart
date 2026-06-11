@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:property_assistant/core/di/injection.dart';
+import 'package:property_assistant/core/network/locale_header_holder.dart';
 import 'package:property_assistant/core/providers/locale_provider.dart';
 import 'package:property_assistant/features/profile/domain/entities/favorite_item.dart';
 import 'package:property_assistant/features/profile/domain/entities/user_profile.dart';
@@ -17,7 +18,9 @@ final userProfileProvider = AsyncNotifierProvider<UserProfileNotifier, UserProfi
 class UserProfileNotifier extends AsyncNotifier<UserProfile?> {
   @override
   Future<UserProfile?> build() async {
-    return ref.read(profileRepositoryProvider).getMe();
+    final profile = await ref.read(profileRepositoryProvider).getMe();
+    _applyLocale(ref, profile.locale);
+    return profile;
   }
 
   Future<void> refresh() async {
@@ -51,6 +54,7 @@ class UserProfileNotifier extends AsyncNotifier<UserProfile?> {
         ? const Locale('ar', 'EG')
         : const Locale('en');
     ref.read(localeProvider.notifier).state = locale;
+    getIt<LocaleHeaderHolder>().setFromApiLocale(apiLocale);
   }
 }
 

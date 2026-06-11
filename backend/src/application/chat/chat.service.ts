@@ -26,6 +26,7 @@ import {
 } from '../../domain/chat/ports/llm-completion.port';
 import { PromptVersionResolver } from '../../infrastructure/ai/prompt-version.resolver';
 import { AgentReplyComposerService } from './agent-reply-composer.service';
+import { resolveChatLocale } from './chat-locale';
 import {
   CHAT_COMPACTION_JOB,
   CHAT_COMPACTION_QUEUE,
@@ -59,9 +60,10 @@ export class ChatService {
     userId: string,
     agentId: string | undefined,
     title: string | undefined,
-    locale: string,
+    acceptLanguage?: string,
   ) {
     const userCtx = await this.conversations.getUserChatContext(userId);
+    const locale = resolveChatLocale(acceptLanguage, userCtx.locale);
     const resolved = await this.agents.resolveAgentId(
       agentId,
       userCtx.preferredAgentId,
@@ -172,8 +174,10 @@ export class ChatService {
     userId: string,
     conversationId: string,
     content: string,
-    locale: string,
+    acceptLanguage?: string,
   ) {
+    const userCtx = await this.conversations.getUserChatContext(userId);
+    const locale = resolveChatLocale(acceptLanguage, userCtx.locale);
     const conv = await this.requireConversation(userId, conversationId);
     const userMsg = Message.createUser(conversationId, content);
     if (!userMsg) {
@@ -210,10 +214,12 @@ export class ChatService {
     userId: string,
     conversationId: string,
     content: string,
-    locale: string,
+    acceptLanguage: string | undefined,
     onEvent: (event: string, data: Record<string, unknown>) => void,
     signal?: AbortSignal,
   ): Promise<void> {
+    const userCtx = await this.conversations.getUserChatContext(userId);
+    const locale = resolveChatLocale(acceptLanguage, userCtx.locale);
     const conv = await this.requireConversation(userId, conversationId);
     const userMsg = Message.createUser(conversationId, content);
     if (!userMsg) {

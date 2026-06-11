@@ -40,12 +40,11 @@ export class ConversationsController {
     @Body() dto: CreateConversationDto,
     @Headers('accept-language') acceptLanguage?: string,
   ) {
-    const locale = acceptLanguage?.startsWith('ar') ? 'ar-EG' : 'en';
     const result = await this.chat.createConversation(
       user.sub,
       dto.agentId,
       dto.title,
-      locale,
+      acceptLanguage,
     );
     return result.conversation;
   }
@@ -119,7 +118,6 @@ export class ConversationsController {
     @Body() dto: SendMessageDto,
     @Headers('accept-language') acceptLanguage?: string,
   ) {
-    const locale = acceptLanguage?.startsWith('ar') ? 'ar-EG' : 'en';
-    return this.chat.sendMessage(user.sub, id, dto.content, locale);
+    return this.chat.sendMessage(user.sub, id, dto.content, acceptLanguage);
   }
 }
