@@ -111,4 +111,43 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get recommendationsRefresh => 'Refresh recommendations';
+
+  @override
+  String get bookingRequestCta => 'Request a viewing';
+
+  @override
+  String get bookingRequestTitle => 'Request a viewing';
+
+  @override
+  String get bookingPickDateTime => 'Pick date and time';
+
+  @override
+  String get bookingNotesLabel => 'Notes for the agent (optional)';
+
+  @override
+  String get bookingSubmit => 'Send request';
+
+  @override
+  String get bookingRequestSent => 'Viewing request sent';
+
+  @override
+  String get bookingSignInToRequest => 'Sign in to request a viewing';
+
+  @override
+  String get bookingValidationRequired => 'Please pick a date and time';
+
+  @override
+  String get bookingValidationFuture => 'Please choose a future time';
+
+  @override
+  String get agentBookingsTitle => 'Viewing requests';
+
+  @override
+  String get agentBookingsEmpty => 'No pending viewing requests.';
+
+  @override
+  String get agentBookingConfirm => 'Confirm';
+
+  @override
+  String get agentBookingDecline => 'Decline';
 }

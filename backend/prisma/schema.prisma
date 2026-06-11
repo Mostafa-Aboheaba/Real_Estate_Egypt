@@ -68,6 +68,23 @@ enum BookingStatus {
   @@map("booking_status")
 }
 
+enum NotificationChannel {
+  push
+  email
+
+  @@map("notification_channel")
+}
+
+enum NotificationJobStatus {
+  pending
+  processing
+  sent
+  failed
+  skipped
+
+  @@map("notification_job_status")
+}
+
 enum MessageRole {
   user
   assistant
@@ -131,10 +148,12 @@ model User {
   favorites              Favorite[]
   listingFeedback        ListingFeedback[]
   preferenceVector       UserPreferenceVector?
-  buyerBookings          Booking[]      @relation("BuyerBookings")
-  agentBookings    Booking[]      @relation("AgentBookings")
-  agentProperties  Property[]     @relation("AgentProperties")
-  conversations    Conversation[]
+  buyerBookings          Booking[]          @relation("BuyerBookings")
+  agentBookings          Booking[]          @relation("AgentBookings")
+  agentProperties        Property[]         @relation("AgentProperties")
+  conversations          Conversation[]
+  deviceTokens           DeviceToken[]
+  notificationJobs       NotificationJob[]
 
   @@index([role])
   @@map("users")
@@ -207,11 +226,62 @@ model Booking {
   createdAt     DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt     DateTime      @updatedAt @map("updated_at") @db.Timestamptz(6)
 
-  buyer    User     @relation("BuyerBookings", fields: [buyerId], references: [id])
-  agent    User     @relation("AgentBookings", fields: [agentId], references: [id])
-  property Property @relation(fields: [propertyId], references: [id])
+  buyer            User              @relation("BuyerBookings", fields: [buyerId], references: [id])
+  agent            User              @relation("AgentBookings", fields: [agentId], references: [id])
+  property         Property          @relation(fields: [propertyId], references: [id])
+  notificationJobs NotificationJob[]
 
+  @@index([buyerId])
+  @@index([agentId])
+  @@index([status])
   @@map("bookings")
+}
+
+model BookingIdempotencyKey {
+  idempotencyKey String   @id @map("idempotency_key") @db.VarChar(64)
+  bookingId      String   @map("booking_id") @db.Uuid
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@map("booking_idempotency_keys")
+}
+
+model DeviceToken {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  token     String   @db.VarChar(512)
+  platform  String   @db.VarChar(20)
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, token])
+  @@map("device_tokens")
+}
+
+model NotificationJob {
+  id          String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId      String                @map("user_id") @db.Uuid
+  bookingId   String?               @map("booking_id") @db.Uuid
+  channel     NotificationChannel
+  eventType   String                @map("event_type") @db.VarChar(50)
+  payload     Json
+  status      NotificationJobStatus @default(pending)
+  attempts    Int                   @default(0)
+  lastError   String?               @map("last_error") @db.Text
+  bullJobId   String?               @map("bull_job_id") @db.VarChar(100)
+  scheduledAt DateTime              @map("scheduled_at") @db.Timestamptz(6)
+  sentAt      DateTime?             @map("sent_at") @db.Timestamptz(6)
+  createdAt   DateTime              @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  user    User     @relation(fields: [userId], references: [id])
+  booking Booking? @relation(fields: [bookingId], references: [id], onDelete: SetNull)
+
+  @@index([status, scheduledAt])
+  @@index([userId])
+  @@index([bookingId])
+  @@map("notification_jobs")
 }
 
 model Conversation {

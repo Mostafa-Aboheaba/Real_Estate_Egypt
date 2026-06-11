@@ -110,4 +110,43 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get recommendationsRefresh => 'تحديث التوصيات';
+
+  @override
+  String get bookingRequestCta => 'طلب معاينة';
+
+  @override
+  String get bookingRequestTitle => 'طلب معاينة';
+
+  @override
+  String get bookingPickDateTime => 'اختر التاريخ والوقت';
+
+  @override
+  String get bookingNotesLabel => 'ملاحظات للوكيل (اختياري)';
+
+  @override
+  String get bookingSubmit => 'إرسال الطلب';
+
+  @override
+  String get bookingRequestSent => 'تم إرسال طلب المعاينة';
+
+  @override
+  String get bookingSignInToRequest => 'سجّل الدخول لطلب معاينة';
+
+  @override
+  String get bookingValidationRequired => 'يرجى اختيار التاريخ والوقت';
+
+  @override
+  String get bookingValidationFuture => 'يرجى اختيار وقت في المستقبل';
+
+  @override
+  String get agentBookingsTitle => 'طلبات المعاينة';
+
+  @override
+  String get agentBookingsEmpty => 'لا توجد طلبات معاينة معلّقة.';
+
+  @override
+  String get agentBookingConfirm => 'تأكيد';
+
+  @override
+  String get agentBookingDecline => 'رفض';
 }

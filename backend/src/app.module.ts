@@ -19,6 +19,7 @@ import { AgentsModule } from './presentation/agents/agents.module';
 import { RagModule } from './presentation/ai/rag.module';
 import { ChatModule } from './presentation/ai/chat.module';
 import { RecommendationsModule } from './presentation/recommendations/recommendations.module';
+import { BookingsModule } from './presentation/booking/bookings.module';
 
 @Module({
   imports: [
@@ -52,6 +53,7 @@ import { RecommendationsModule } from './presentation/recommendations/recommenda
     RagModule,
     ChatModule,
     RecommendationsModule,
+    BookingsModule,
   ],
   providers: [
     {

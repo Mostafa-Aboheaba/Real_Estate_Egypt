@@ -3,7 +3,7 @@
 > **Auto-generated** — do not edit by hand. Regenerate after completing a task:
 > `python3 tasks/build_project_status.py`
 
-**Last updated:** 2026-06-11 13:33 UTC  
+**Last updated:** 2026-06-11 13:55 UTC  
 **Source:** 141 tasks under `tasks/m*/` + [`tasks/dashboard_config.json`](tasks/dashboard_config.json)
 
 ---
@@ -12,10 +12,10 @@
 
 | Metric | Value |
 |--------|-------|
-| **Overall completion** | **74.5%** (105 / 141 tasks) |
-| **Current milestone** | **M9** — Booking & Notifications |
-| **Task breakdown** | Done 105 · Pending 36 · In progress 0 · Blocked 0 |
-| **Implementation slice** | M2–M8 complete (75 tasks) |
+| **Overall completion** | **81.6%** (115 / 141 tasks) |
+| **Current milestone** | **M10** — Quality, Security & E2E |
+| **Task breakdown** | Done 115 · Pending 26 · In progress 0 · Blocked 0 |
+| **Implementation slice** | M2–M9 complete (85 tasks) |
 
 ---
 
@@ -33,7 +33,7 @@
 | M7 | AI Chat | 11/11 (100%) | 100% | Complete |
 | M75 | Generative Chat UI (GenUI) | 8/8 (100%) | 100% | Complete |
 | M8 | Recommendations | 6/6 (100%) | 100% | Complete |
-| M9 | Booking & Notifications | 0/10 (0%) | 0% | Not started |
+| M9 | Booking & Notifications | 10/10 (100%) | 100% | Complete |
 | M10 | Quality, Security & E2E | 0/10 (0%) | 0% | Not started |
 | M11 | Staging on GCP | 0/9 (0%) | 0% | Not started |
 | M12 | Production Release | 0/7 (0%) | 0% | Not started |
@@ -50,18 +50,18 @@
 - M7 — AI Chat
 - M75 — Generative Chat UI (GenUI)
 - M8 — Recommendations
+- M9 — Booking & Notifications
 
 ### Current milestone
 
-**M9 — Booking & Notifications**
+**M10 — Quality, Security & E2E**
 
-**Next recommended task:** [M9-BOK001](tasks/m09-booking/m9-bok001.md) — Booking Domain + Repository  
+**Next recommended task:** [M10-QLT001](tasks/m10-quality/m10-qlt001.md) — MVP Launch Checklist Document  
   
-*First pending task in M9.*
+*First pending task in M10.*
 
 ### Remaining milestones
 
-- M9 — Booking & Notifications (0/10 tasks)
 - M10 — Quality, Security & E2E (0/10 tasks)
 - M11 — Staging on GCP (0/9 tasks)
 - M12 — Production Release (0/7 tasks)
@@ -81,25 +81,26 @@
 - **M7** (11): M7-CHT001, M7-CHT002, M7-CHT003, M7-CHT004, M7-CHT005, M7-CHT006, M7-CHT007, M7-CHT008, M7-CHT009, M7-CHT010, M7-CHT011
 - **M75** (8): M75-GUI001, M75-GUI002, M75-GUI003, M75-GUI004, M75-GUI005, M75-GUI006, M75-GUI007, M75-GUI008
 - **M8** (6): M8-REC001, M8-REC002, M8-REC003, M8-REC004, M8-REC005, M8-REC006
+- **M9** (10): M9-BOK001, M9-BOK002, M9-BOK003, M9-BOK004, M9-BOK005, M9-BOK006, M9-BOK007, M9-BOK008, M9-BOK009, M9-BOK010
 
 ### Pending — implementation path (next 15)
 
-- [M9-BOK001](tasks/m09-booking/m9-bok001.md) — Booking Domain + Repository
-- [M9-BOK002](tasks/m09-booking/m9-bok002.md) — POST /api/v1/bookings (buyer request)
-- [M9-BOK003](tasks/m09-booking/m9-bok003.md) — Agent Confirm / Decline / Cancel APIs
-- [M9-BOK004](tasks/m09-booking/m9-bok004.md) — Double-Booking + Agent Quota Guards
-- [M9-BOK005](tasks/m09-booking/m9-bok005.md) — NotificationsModule + BullMQ Processor
-- [M9-BOK006](tasks/m09-booking/m9-bok006.md) — FCM Push Integration
-- [M9-BOK007](tasks/m09-booking/m9-bok007.md) — Bilingual Email Templates (ar/en)
-- [M9-BOK008](tasks/m09-booking/m9-bok008.md) — Mobile Booking Request from Listing Detail
-- [M9-BOK009](tasks/m09-booking/m9-bok009.md) — Mobile Agent Booking Inbox
-- [M9-BOK010](tasks/m09-booking/m9-bok010.md) — Booking E2E Lifecycle Test
 - [M10-QLT001](tasks/m10-quality/m10-qlt001.md) — MVP Launch Checklist Document
 - [M10-QLT002](tasks/m10-quality/m10-qlt002.md) — Flutter integration_test P0 Journey
 - [M10-QLT003](tasks/m10-quality/m10-qlt003.md) — API E2E Suite (supertest)
 - [M10-QLT004](tasks/m10-quality/m10-qlt004.md) — Domain Coverage Gate ≥80%
 - [M10-QLT005](tasks/m10-quality/m10-qlt005.md) — Prometheus Metrics + Grafana Dashboards
-- *…and 21 more (excl. M1 registry)*
+- [M10-QLT006](tasks/m10-quality/m10-qlt006.md) — Firebase Analytics + Crashlytics
+- [M10-QLT007](tasks/m10-quality/m10-qlt007.md) — AI Quality Metrics (hallucination, citations)
+- [M10-QLT008](tasks/m10-quality/m10-qlt008.md) — Security Review Checklist (OWASP + PDPL)
+- [M10-QLT009](tasks/m10-quality/m10-qlt009.md) — Load Test Report (search + chat)
+- [M10-QLT010](tasks/m10-quality/m10-qlt010.md) — PO MVP Sign-Off Artifact
+- [M11-DEP001](tasks/m11-staging-gcp/m11-dep001.md) — GCP Staging Project + WIF for GitHub
+- [M11-DEP002](tasks/m11-staging-gcp/m11-dep002.md) — Cloud SQL PostgreSQL + pgvector
+- [M11-DEP003](tasks/m11-staging-gcp/m11-dep003.md) — Cloud Run API + Worker Services
+- [M11-DEP004](tasks/m11-staging-gcp/m11-dep004.md) — Secret Manager Wiring
+- [M11-DEP005](tasks/m11-staging-gcp/m11-dep005.md) — Vertex AI Gemini Staging Config
+- *…and 11 more (excl. M1 registry)*
 
 ### In progress
 

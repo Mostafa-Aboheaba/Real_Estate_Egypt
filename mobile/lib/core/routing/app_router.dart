@@ -15,6 +15,7 @@ import 'package:property_assistant/features/profile/presentation/pages/favorites
 import 'package:property_assistant/features/profile/presentation/pages/profile_page.dart';
 import 'package:property_assistant/features/property_search/presentation/pages/search_page.dart';
 import 'package:property_assistant/features/ai_chat/presentation/pages/chat_page.dart';
+import 'package:property_assistant/features/booking/presentation/pages/agent_booking_inbox_page.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 
@@ -89,6 +90,21 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: RoutePaths.chat,
         name: 'chat',
         builder: (context, state) => const ChatPage(),
+      ),
+      GoRoute(
+        path: RoutePaths.agentBookings,
+        name: 'agentBookings',
+        builder: (context, state) => const AgentBookingInboxPage(),
+        routes: [
+          GoRoute(
+            path: ':id',
+            name: 'agentBookingDetail',
+            builder: (context, state) {
+              final id = state.pathParameters['id'];
+              return AgentBookingInboxPage(initialBookingId: id);
+            },
+          ),
+        ],
       ),
     ],
   );

@@ -49,10 +49,10 @@
     "signoff_complete": true
   },
   "next_task": {
-    "id": "M8-REC001",
-    "name": "Recommendation Domain + Scoring Port",
-    "path": "tasks/m08-recommendations/m8-rec001.md",
-    "reason": "M75 complete — start M8 recommendations."
+    "id": "M10-QA001",
+    "name": "Security baseline scan",
+    "path": "tasks/m10-quality/m10-qa001.md",
+    "reason": "M9 complete — start M10 quality & E2E hardening."
   },
   "risks": [
     {

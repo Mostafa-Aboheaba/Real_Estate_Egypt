@@ -69,6 +69,13 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                 trailing: const Icon(Icons.chevron_right),
                 onTap: () => context.push(RoutePaths.favorites),
               ),
+              if (p.role == 'agent')
+                ListTile(
+                  leading: const Icon(Icons.inbox_outlined),
+                  title: Text(l10n.agentBookingsTitle),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => context.push(RoutePaths.agentBookings),
+                ),
               ListTile(
                 leading: const Icon(Icons.edit_outlined),
                 title: Text(l10n.profileEdit),

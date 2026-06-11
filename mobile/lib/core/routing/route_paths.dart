@@ -11,5 +11,7 @@ abstract final class RoutePaths {
   static const String editProfile = '/profile/edit';
   static const String favorites = '/favorites';
   static const String chat = '/chat';
+  static const String agentBookings = '/agent/bookings';
   static String propertyDetail(String id) => '/properties/$id';
+  static String agentBookingDetail(String id) => '/agent/bookings/$id';
 }

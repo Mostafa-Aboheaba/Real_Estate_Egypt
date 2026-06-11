@@ -64,4 +64,19 @@ export default () => ({
   rag: {
     cacheTtlSec: parseInt(process.env.RAG_CACHE_TTL_SEC ?? '900', 10),
   },
+  booking: {
+    slotWindowMinutes: parseInt(process.env.BOOKING_SLOT_WINDOW_MIN ?? '30', 10),
+    agentFreeQuotaPerMonth: parseInt(
+      process.env.BOOKING_AGENT_FREE_QUOTA ?? '5',
+      10,
+    ),
+  },
+  notifications: {
+    fcmMock:
+      process.env.FCM_MOCK !== 'false' &&
+      process.env.NODE_ENV !== 'production',
+    emailMock:
+      process.env.EMAIL_MOCK !== 'false' &&
+      process.env.NODE_ENV !== 'production',
+  },
 });

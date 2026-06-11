@@ -30,5 +30,18 @@
   "recommendationsPopularTitle": "الأكثر شعبية في القاهرة",
   "recommendationsGuestCta": "سجّل الدخول للحصول على توصيات مخصصة.",
   "recommendationsSignIn": "تسجيل الدخول",
-  "recommendationsRefresh": "تحديث التوصيات"
+  "recommendationsRefresh": "تحديث التوصيات",
+  "bookingRequestCta": "طلب معاينة",
+  "bookingRequestTitle": "طلب معاينة",
+  "bookingPickDateTime": "اختر التاريخ والوقت",
+  "bookingNotesLabel": "ملاحظات للوكيل (اختياري)",
+  "bookingSubmit": "إرسال الطلب",
+  "bookingRequestSent": "تم إرسال طلب المعاينة",
+  "bookingSignInToRequest": "سجّل الدخول لطلب معاينة",
+  "bookingValidationRequired": "يرجى اختيار التاريخ والوقت",
+  "bookingValidationFuture": "يرجى اختيار وقت في المستقبل",
+  "agentBookingsTitle": "طلبات المعاينة",
+  "agentBookingsEmpty": "لا توجد طلبات معاينة معلّقة.",
+  "agentBookingConfirm": "تأكيد",
+  "agentBookingDecline": "رفض"
 }

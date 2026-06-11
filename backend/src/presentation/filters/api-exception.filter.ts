@@ -30,6 +30,10 @@ import {
   RecommendationDomainException,
   RecommendationErrorCode,
 } from '../../domain/recommendation/failures/recommendation.failures';
+import {
+  BookingDomainException,
+  BookingErrorCode,
+} from '../../domain/booking/failures/booking.failures';
 import { CORRELATION_ID_HEADER } from '../../common/middleware/correlation-id.middleware';
 
 const PROPERTY_STATUS: Record<PropertyErrorCode, number> = {
@@ -61,6 +65,18 @@ const CHAT_STATUS: Record<ChatErrorCode, number> = {
   [ChatErrorCode.AI_UNAVAILABLE]: HttpStatus.SERVICE_UNAVAILABLE,
   [ChatErrorCode.AI_QUOTA_EXCEEDED]: HttpStatus.FORBIDDEN,
   [ChatErrorCode.RATE_LIMITED]: HttpStatus.TOO_MANY_REQUESTS,
+};
+
+const BOOKING_STATUS: Record<BookingErrorCode, number> = {
+  [BookingErrorCode.BOOKING_NOT_FOUND]: HttpStatus.NOT_FOUND,
+  [BookingErrorCode.PROPERTY_NOT_FOUND]: HttpStatus.NOT_FOUND,
+  [BookingErrorCode.VALIDATION_ERROR]: HttpStatus.BAD_REQUEST,
+  [BookingErrorCode.FORBIDDEN]: HttpStatus.FORBIDDEN,
+  [BookingErrorCode.INVALID_TRANSITION]: HttpStatus.CONFLICT,
+  [BookingErrorCode.SLOT_UNAVAILABLE]: HttpStatus.CONFLICT,
+  [BookingErrorCode.AGENT_QUOTA_EXCEEDED]: HttpStatus.FORBIDDEN,
+  [BookingErrorCode.CANCEL_WINDOW_CLOSED]: HttpStatus.CONFLICT,
+  [BookingErrorCode.DUPLICATE_REQUEST]: HttpStatus.CONFLICT,
 };
 
 const RECOMMENDATION_STATUS: Record<RecommendationErrorCode, number> = {
@@ -134,6 +150,19 @@ export class ApiExceptionFilter implements ExceptionFilter {
 
     if (exception instanceof ChatDomainException) {
       const status = CHAT_STATUS[exception.code] ?? HttpStatus.BAD_REQUEST;
+      response.status(status).json({
+        error: {
+          code: exception.code,
+          message: exception.message,
+          details: [],
+          correlationId,
+        },
+      });
+      return;
+    }
+
+    if (exception instanceof BookingDomainException) {
+      const status = BOOKING_STATUS[exception.code] ?? HttpStatus.BAD_REQUEST;
       response.status(status).json({
         error: {
           code: exception.code,

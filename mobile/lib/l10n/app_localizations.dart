@@ -283,6 +283,84 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Refresh recommendations'**
   String get recommendationsRefresh;
+
+  /// No description provided for @bookingRequestCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Request a viewing'**
+  String get bookingRequestCta;
+
+  /// No description provided for @bookingRequestTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Request a viewing'**
+  String get bookingRequestTitle;
+
+  /// No description provided for @bookingPickDateTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick date and time'**
+  String get bookingPickDateTime;
+
+  /// No description provided for @bookingNotesLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Notes for the agent (optional)'**
+  String get bookingNotesLabel;
+
+  /// No description provided for @bookingSubmit.
+  ///
+  /// In en, this message translates to:
+  /// **'Send request'**
+  String get bookingSubmit;
+
+  /// No description provided for @bookingRequestSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Viewing request sent'**
+  String get bookingRequestSent;
+
+  /// No description provided for @bookingSignInToRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to request a viewing'**
+  String get bookingSignInToRequest;
+
+  /// No description provided for @bookingValidationRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please pick a date and time'**
+  String get bookingValidationRequired;
+
+  /// No description provided for @bookingValidationFuture.
+  ///
+  /// In en, this message translates to:
+  /// **'Please choose a future time'**
+  String get bookingValidationFuture;
+
+  /// No description provided for @agentBookingsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Viewing requests'**
+  String get agentBookingsTitle;
+
+  /// No description provided for @agentBookingsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No pending viewing requests.'**
+  String get agentBookingsEmpty;
+
+  /// No description provided for @agentBookingConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm'**
+  String get agentBookingConfirm;
+
+  /// No description provided for @agentBookingDecline.
+  ///
+  /// In en, this message translates to:
+  /// **'Decline'**
+  String get agentBookingDecline;
 }
 
 class _AppLocalizationsDelegate

@@ -40,5 +40,18 @@
   "recommendationsPopularTitle": "Popular in Cairo",
   "recommendationsGuestCta": "Sign in for personalized recommendations.",
   "recommendationsSignIn": "Sign in",
-  "recommendationsRefresh": "Refresh recommendations"
+  "recommendationsRefresh": "Refresh recommendations",
+  "bookingRequestCta": "Request a viewing",
+  "bookingRequestTitle": "Request a viewing",
+  "bookingPickDateTime": "Pick date and time",
+  "bookingNotesLabel": "Notes for the agent (optional)",
+  "bookingSubmit": "Send request",
+  "bookingRequestSent": "Viewing request sent",
+  "bookingSignInToRequest": "Sign in to request a viewing",
+  "bookingValidationRequired": "Please pick a date and time",
+  "bookingValidationFuture": "Please choose a future time",
+  "agentBookingsTitle": "Viewing requests",
+  "agentBookingsEmpty": "No pending viewing requests.",
+  "agentBookingConfirm": "Confirm",
+  "agentBookingDecline": "Decline"
 }

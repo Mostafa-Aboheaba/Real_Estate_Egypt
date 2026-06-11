@@ -27,6 +27,14 @@ import '../../features/authentication/data/repositories/auth_repository_impl.dar
     as _i317;
 import '../../features/authentication/domain/repositories/auth_repository.dart'
     as _i742;
+import '../../features/booking/data/datasources/remote/booking_api_service.dart'
+    as _i481;
+import '../../features/booking/data/datasources/remote/booking_remote_datasource.dart'
+    as _i542;
+import '../../features/booking/data/repositories/booking_repository_impl.dart'
+    as _i265;
+import '../../features/booking/domain/repositories/booking_repository.dart'
+    as _i912;
 import '../../features/profile/data/datasources/remote/profile_api_service.dart'
     as _i428;
 import '../../features/profile/data/datasources/remote/profile_remote_datasource.dart'
@@ -128,11 +136,17 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i71.RecommendationApiService>(
       () => registerModule.recommendationApiService(gh<_i361.Dio>()),
     );
+    gh.lazySingleton<_i481.BookingApiService>(
+      () => registerModule.bookingApiService(gh<_i361.Dio>()),
+    );
     gh.lazySingleton<_i610.PropertyFilterRemoteDataSource>(
       () => _i610.PropertyFilterRemoteDataSource(gh<_i361.Dio>()),
     );
     gh.lazySingleton<_i696.ChatRemoteDataSource>(
       () => _i696.ChatRemoteDataSource(gh<_i361.Dio>()),
+    );
+    gh.lazySingleton<_i542.BookingRemoteDataSource>(
+      () => _i542.BookingRemoteDataSource(gh<_i481.BookingApiService>()),
     );
     gh.lazySingleton<_i993.PropertyRemoteDataSource>(
       () => _i993.PropertyRemoteDataSource(gh<_i787.PropertyApiService>()),
@@ -145,6 +159,9 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i610.PropertyFilterRemoteDataSource>(),
         gh<_i37.PropertyFilterLocalDataSource>(),
       ),
+    );
+    gh.lazySingleton<_i912.BookingRepository>(
+      () => _i265.BookingRepositoryImpl(gh<_i542.BookingRemoteDataSource>()),
     );
     gh.lazySingleton<_i203.ChatRepository>(
       () => _i203.ChatRepositoryImpl(gh<_i696.ChatRemoteDataSource>()),

@@ -5,6 +5,10 @@ import 'package:property_assistant/core/widgets/error_view.dart';
 import 'package:property_assistant/core/widgets/loading_indicator.dart';
 import 'package:property_assistant/features/authentication/presentation/providers/auth_provider.dart';
 import 'package:property_assistant/features/profile/presentation/providers/profile_provider.dart';
+import 'package:go_router/go_router.dart';
+import 'package:property_assistant/core/routing/route_paths.dart';
+import 'package:property_assistant/features/booking/presentation/widgets/request_booking_sheet.dart';
+import 'package:property_assistant/features/profile/presentation/providers/profile_provider.dart';
 import 'package:property_assistant/features/property_search/presentation/providers/property_search_provider.dart';
 import 'package:property_assistant/l10n/app_localizations.dart';
 
@@ -25,6 +29,8 @@ class PropertyDetailPage extends ConsumerWidget {
     final isFavorite = isSignedIn
         ? ref.watch(isFavoriteProvider(propertyId))
         : false;
+    final profile = isSignedIn ? ref.watch(userProfileProvider).valueOrNull : null;
+    final isBuyer = profile?.role == 'buyer';
 
     return Scaffold(
       appBar: AppBar(
@@ -111,6 +117,32 @@ class PropertyDetailPage extends ConsumerWidget {
                     detail.providerLabel,
                     style: Theme.of(context).textTheme.labelSmall,
                   ),
+                  if (isBuyer) ...[
+                    const SizedBox(height: 24),
+                    FilledButton.icon(
+                      onPressed: () async {
+                        final submitted = await showModalBottomSheet<bool>(
+                          context: context,
+                          isScrollControlled: true,
+                          builder: (_) =>
+                              RequestBookingSheet(propertyId: propertyId),
+                        );
+                        if (submitted == true && context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text(l10n.bookingRequestSent)),
+                          );
+                        }
+                      },
+                      icon: const Icon(Icons.event_available_outlined),
+                      label: Text(l10n.bookingRequestCta),
+                    ),
+                  ] else if (!isSignedIn) ...[
+                    const SizedBox(height: 24),
+                    OutlinedButton(
+                      onPressed: () => context.push(RoutePaths.login),
+                      child: Text(l10n.bookingSignInToRequest),
+                    ),
+                  ],
                 ],
               ),
             ),
